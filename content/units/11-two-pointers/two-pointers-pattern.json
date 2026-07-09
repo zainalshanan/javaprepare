@@ -1,0 +1,159 @@
+[
+  {
+    "id": "pat-tp-mcq-why",
+    "type": "mcq",
+    "title": "Why it's safe",
+    "prompt": "Sorted array, `nums[l] + nums[r] < target`. Why is `l++` correct (not skipping any answer)?",
+    "options": [
+      "r is the largest remaining value, so if even nums[l]+nums[r] is too small, l pairs with nothing — discard l",
+      "Because we always move the left pointer on ties",
+      "It isn't — you must check all pairs",
+      "Because l++ is O(1)"
+    ],
+    "answer": 0,
+    "explanation": "Each move permanently eliminates one endpoint with a proof it can't be in the answer. That's what makes two pointers O(n) instead of O(n²) — and why it needs sorted input."
+  },
+  {
+    "id": "pat-tp-drill-pal",
+    "type": "code-method",
+    "title": "Drill: converging pointers",
+    "prompt": "From memory: return whether `nums` reads the same forwards and backwards (an array palindrome). The converging while-loop template, no copies allowed.",
+    "drill": true,
+    "method": {
+      "name": "isArrayPalindrome",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "boolean"
+    },
+    "starter": "class Solution {\n    public boolean isArrayPalindrome(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            2,
+            1
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            2,
+            1
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": true,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": true,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public boolean isArrayPalindrome(int[] nums) {\n        int l = 0, r = nums.length - 1;\n        while (l < r) {\n            if (nums[l] != nums[r]) return false;\n            l++;\n            r--;\n        }\n        return true;\n    }\n}"
+    },
+    "hints": [
+      "`while (l < r)` — mismatched pair → return false immediately."
+    ]
+  },
+  {
+    "id": "pat-tp-drill-dedup",
+    "type": "code-method",
+    "title": "Drill: dedup a sorted array (same-direction)",
+    "prompt": "From memory (slow/fast, same direction): remove duplicates from the SORTED array `nums` in place so each value appears once, and return the new length. The first `length` elements of nums must hold the unique values.",
+    "drill": true,
+    "method": {
+      "name": "dedup",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int dedup(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            1,
+            2
+          ]
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            0,
+            0,
+            1,
+            1,
+            1,
+            2,
+            2
+          ]
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": 3,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int dedup(int[] nums) {\n        if (nums.length == 0) return 0;\n        int slow = 0;\n        for (int fast = 1; fast < nums.length; fast++) {\n            if (nums[fast] != nums[slow]) {\n                slow++;\n                nums[slow] = nums[fast];\n            }\n        }\n        return slow + 1;\n    }\n}"
+    },
+    "hints": [
+      "`slow` marks the last unique slot; advance it only when `nums[fast]` differs.",
+      "New length is `slow + 1`."
+    ]
+  }
+]

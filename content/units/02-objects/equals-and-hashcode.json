@@ -1,0 +1,60 @@
+[
+  {
+    "id": "eq-mcq-why",
+    "type": "mcq",
+    "title": "Why no dedup?",
+    "prompt": "You add two `Point` objects with the same x and y to a `HashSet`, but `size()` is 2. Why?",
+    "options": [
+      "The default `equals`/`hashCode` compare object identity, so value-equal Points look different",
+      "HashSet doesn't remove duplicates",
+      "Points can't be stored in a HashSet",
+      "You must call `set.dedup()` explicitly"
+    ],
+    "answer": 0,
+    "explanation": "Without overriding, `equals` asks 'same object?' and `hashCode` is address-based — so two separately-constructed Points never match. Override both to compare by value."
+  },
+  {
+    "id": "eq-fill-skeleton",
+    "type": "fill-blank",
+    "title": "Recall: the override skeleton",
+    "prompt": "Complete the equals/hashCode overrides for a Point.",
+    "drill": true,
+    "code": "public boolean {{1}}(Object o) {\n    if (!(o instanceof Point)) return false;\n    Point p = (Point) o;\n    return x == p.x && y == p.y;\n}\n\npublic int {{2}}() {\n    return Objects.{{3}}(x, y);\n}",
+    "blanks": { "1": ["equals"], "2": ["hashCode"], "3": ["hash"] },
+    "explanation": "`equals(Object o)` does an instanceof check, casts, and compares fields; `hashCode()` combines the same fields via `Objects.hash`."
+  },
+  {
+    "id": "eq-mcq-contract",
+    "type": "mcq",
+    "title": "The equals/hashCode contract",
+    "prompt": "Which statement MUST hold for hash-based collections to work?",
+    "options": [
+      "If two objects are equal, they must have the same hashCode",
+      "If two objects have the same hashCode, they must be equal",
+      "hashCode must be unique for every object",
+      "equals and hashCode are independent and can disagree"
+    ],
+    "answer": 0,
+    "explanation": "Equal ⇒ same hash (required). Same hash ⇏ equal (collisions are allowed and resolved by equals). Override one without the other and you violate the contract."
+  },
+  {
+    "id": "eq-code-distinct",
+    "type": "code-method",
+    "title": "Drill: count distinct points",
+    "prompt": "Return the number of DISTINCT points in `points` (each `[x, y]`). Define your own `Point` class with `equals` and `hashCode`, put them in a `HashSet`, and return its size. (A class without the overrides will wrongly count every point as distinct — the hidden tests catch that.)",
+    "drill": true,
+    "method": { "name": "distinctPoints", "params": [ { "name": "points", "type": "int[][]" } ], "returns": "int" },
+    "starter": "import java.util.*;\n\nclass Point {\n    int x, y;\n    Point(int x, int y) { this.x = x; this.y = y; }\n    // override equals and hashCode here\n}\n\nclass Solution {\n    public int distinctPoints(int[][] points) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[[1, 2], [1, 2], [3, 4]]], "expected": 2 },
+      { "args": [[[0, 0]]], "expected": 1 },
+      { "args": [[[1, 1], [2, 2], [1, 1], [2, 2]]], "expected": 2, "hidden": true },
+      { "args": [[]], "expected": 0, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Point {\n    int x, y;\n    Point(int x, int y) { this.x = x; this.y = y; }\n\n    @Override\n    public boolean equals(Object o) {\n        if (!(o instanceof Point)) return false;\n        Point p = (Point) o;\n        return x == p.x && y == p.y;\n    }\n\n    @Override\n    public int hashCode() {\n        return Objects.hash(x, y);\n    }\n}\n\nclass Solution {\n    public int distinctPoints(int[][] points) {\n        Set<Point> set = new HashSet<>();\n        for (int[] p : points) set.add(new Point(p[0], p[1]));\n        return set.size();\n    }\n}",
+      "explanation": "With value-based equals/hashCode, the HashSet collapses coordinate-equal points, so its size is the distinct count. Omit the overrides and every point hashes to a unique bucket — the hidden tests with repeats would fail."
+    },
+    "hints": ["Override `equals` (instanceof + field compare) and `hashCode` (`Objects.hash(x, y)`).", "Then just add every point to a HashSet and return its size."]
+  }
+]

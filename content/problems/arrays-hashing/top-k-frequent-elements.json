@@ -1,0 +1,30 @@
+{
+  "id": "top-k-frequent-elements",
+  "type": "code-method",
+  "title": "Top K Frequent Elements",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/top-k-frequent-elements/",
+  "prompt": "Given an integer array `nums` and an integer `k`, return the `k` most frequent elements, in any order. The answer is guaranteed unique.\n\n**Example**: `nums = [1,1,1,2,2,3]`, `k = 2` → `[1,2]`.\n\nCount with a HashMap, then select with a size-k heap (the Collections lesson pattern) — the comparator reads counts from the map.",
+  "method": {
+    "name": "topKFrequent",
+    "params": [ { "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" } ],
+    "returns": "int[]"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 1, 1, 2, 2, 3], 2], "expected": [1, 2], "compare": "unordered" },
+    { "args": [[1], 1], "expected": [1], "compare": "unordered" },
+    { "args": [[4, 4, 4, 5, 5, 6], 3], "expected": [4, 5, 6], "compare": "unordered" },
+    { "args": [[-1, -1, -2], 1], "expected": [-1], "compare": "unordered", "hidden": true },
+    { "args": [[7, 7, 8, 8, 9], 2], "expected": [7, 8], "compare": "unordered", "hidden": true }
+  ],
+  "hints": [
+    "Phase 1: the counting idiom into `Map<Integer, Integer> count`.",
+    "Phase 2: a MIN-heap of keys ordered by their count, capped at size k — evict the least frequent.",
+    "`new PriorityQueue<>((a, b) -> Integer.compare(count.get(a), count.get(b)))`"
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) {\n            count.put(x, count.getOrDefault(x, 0) + 1);\n        }\n        PriorityQueue<Integer> heap = new PriorityQueue<>(\n                (a, b) -> Integer.compare(count.get(a), count.get(b)));\n        for (int key : count.keySet()) {\n            heap.offer(key);\n            if (heap.size() > k) heap.poll();\n        }\n        int[] res = new int[k];\n        for (int i = 0; i < k; i++) {\n            res[i] = heap.poll();\n        }\n        return res;\n    }\n}",
+    "explanation": "O(n log k). The heap's comparator closes over the count map — keys are stored, counts decide the order. (The O(n) alternative is bucket sort: index buckets by frequency.)"
+  }
+}

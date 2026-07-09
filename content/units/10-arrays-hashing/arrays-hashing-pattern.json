@@ -1,0 +1,158 @@
+[
+  {
+    "id": "pat-ah-mcq-key",
+    "type": "mcq",
+    "title": "Choose the key",
+    "prompt": "To group words that are anagrams of each other, the HashMap key should be…",
+    "options": [
+      "The word's letters sorted (`\"tea\"` → `\"aet\"`) — identical for all anagrams",
+      "The word itself",
+      "The word's length",
+      "The first letter"
+    ],
+    "answer": 0,
+    "explanation": "A good grouping key is a canonical form: something equal for exactly the items that belong together. Length or first letter collide for non-anagrams. (A 26-count signature also works.)"
+  },
+  {
+    "id": "pat-ah-drill-pairs",
+    "type": "code-method",
+    "title": "Drill: count equal pairs",
+    "prompt": "From memory: return the number of pairs `(i, j)` with `i < j` and `nums[i] == nums[j]`. One pass: for each element, the pairs it completes = how many copies came before it. Read the count, add to answer, then increment the count — the counting idiom with a twist.",
+    "drill": true,
+    "method": {
+      "name": "countEqualPairs",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int countEqualPairs(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            1,
+            1,
+            3
+          ]
+        ],
+        "expected": 4,
+        "note": "three 1s make 3 pairs, two 3s make 1"
+      },
+      {
+        "args": [
+          [
+            1,
+            1,
+            1,
+            1
+          ]
+        ],
+        "expected": 6
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int countEqualPairs(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        int pairs = 0;\n        for (int x : nums) {\n            pairs += count.getOrDefault(x, 0);\n            count.put(x, count.getOrDefault(x, 0) + 1);\n        }\n        return pairs;\n    }\n}",
+      "explanation": "Check-then-record, one pass, O(n). The same accumulate-before-insert ordering as Two Sum."
+    },
+    "hints": [
+      "When you meet x, every earlier x forms one new pair: `pairs += count.getOrDefault(x, 0)`.",
+      "Then record x with the counting idiom."
+    ]
+  },
+  {
+    "id": "pat-ah-drill-complement",
+    "type": "code-method",
+    "title": "Drill: any pair sums to target",
+    "prompt": "From memory (the complement move): return whether any two distinct elements of `nums` add up to `target`. Use a HashSet of seen values, checking the complement before inserting.",
+    "drill": true,
+    "method": {
+      "name": "hasPairSum",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "target",
+          "type": "int"
+        }
+      ],
+      "returns": "boolean"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public boolean hasPairSum(int[] nums, int target) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          5
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          7
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          [
+            3,
+            3
+          ],
+          6
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          2
+        ],
+        "expected": false,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean hasPairSum(int[] nums, int target) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) {\n            if (seen.contains(target - x)) return true;\n            seen.add(x);\n        }\n        return false;\n    }\n}"
+    },
+    "hints": [
+      "Check `seen.contains(target - x)` before adding x."
+    ]
+  }
+]

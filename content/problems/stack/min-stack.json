@@ -1,0 +1,47 @@
+{
+  "id": "min-stack",
+  "type": "code-design",
+  "title": "Min Stack",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/min-stack/",
+  "prompt": "Design a stack that supports `push`, `pop`, `top`, and retrieving the minimum element — **all in O(1)**.\n\n- `MinStack()` — construct\n- `void push(int val)`\n- `void pop()`\n- `int top()`\n- `int getMin()` — the minimum across the whole stack\n\nThe trick: store, alongside each value, the minimum *as of that element* — popping then automatically \"rewinds\" the minimum.",
+  "className": "MinStack",
+  "methods": {
+    "MinStack": { "params": [], "returns": "void" },
+    "push": { "params": ["int"], "returns": "void" },
+    "pop": { "params": [], "returns": "void" },
+    "top": { "params": [], "returns": "int" },
+    "getMin": { "params": [], "returns": "int" }
+  },
+  "starter": "import java.util.*;\n\nclass MinStack {\n\n    public MinStack() {\n\n    }\n\n    public void push(int val) {\n\n    }\n\n    public void pop() {\n\n    }\n\n    public int top() {\n\n    }\n\n    public int getMin() {\n\n    }\n}\n",
+  "tests": [
+    {
+      "ops": ["MinStack", "push", "push", "push", "getMin", "pop", "top", "getMin"],
+      "args": [[], [-2], [0], [-3], [], [], [], []],
+      "expected": [null, null, null, null, -3, null, 0, -2]
+    },
+    {
+      "ops": ["MinStack", "push", "getMin", "push", "getMin", "pop", "getMin"],
+      "args": [[], [5], [], [3], [], [], []],
+      "expected": [null, null, 5, null, 3, null, 5],
+      "hidden": true,
+      "note": "min rewinds after pop"
+    },
+    {
+      "ops": ["MinStack", "push", "push", "getMin", "top"],
+      "args": [[], [1], [1], [], []],
+      "expected": [null, null, null, 1, 1],
+      "hidden": true,
+      "note": "duplicates of the min"
+    }
+  ],
+  "hints": [
+    "Push pairs: `{value, minSoFar}` where minSoFar = min(value, previous minSoFar).",
+    "An `int[2]` per entry in a `Deque<int[]>` works nicely.",
+    "getMin is just `stack.peek()[1]` — no searching."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass MinStack {\n    private Deque<int[]> stack = new ArrayDeque<>();   // {value, min-so-far}\n\n    public MinStack() {\n    }\n\n    public void push(int val) {\n        int min = stack.isEmpty() ? val : Math.min(val, stack.peek()[1]);\n        stack.push(new int[]{val, min});\n    }\n\n    public void pop() {\n        stack.pop();\n    }\n\n    public int top() {\n        return stack.peek()[0];\n    }\n\n    public int getMin() {\n        return stack.peek()[1];\n    }\n}",
+    "explanation": "Each entry snapshots the minimum of everything at or below it, so popping restores the previous minimum for free. All four operations are O(1); space is O(n)."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "letter-combinations-of-a-phone-number",
+  "type": "code-method",
+  "title": "Letter Combinations of a Phone Number",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+  "prompt": "Given digits 2–9, return all letter combinations they could spell on a phone keypad (2→abc, 3→def, …, 7→pqrs, 8→tuv, 9→wxyz). Return `[]` for an empty input.\n\n**Example**: `\"23\"` → `[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]`.\n\nBacktracking across digit positions: at each digit, branch over its letters.",
+  "method": {
+    "name": "letterCombinations",
+    "params": [ { "name": "digits", "type": "String" } ],
+    "returns": "List<String>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> letterCombinations(String digits) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["23"], "expected": ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"], "compare": "unordered" },
+    { "args": [""], "expected": [], "compare": "unordered" },
+    { "args": ["2"], "expected": ["a", "b", "c"], "compare": "unordered" },
+    { "args": ["7"], "expected": ["p", "q", "r", "s"], "compare": "unordered", "hidden": true, "note": "7 has 4 letters" },
+    { "args": ["79"], "expected": ["pw", "px", "py", "pz", "qw", "qx", "qy", "qz", "rw", "rx", "ry", "rz", "sw", "sx", "sy", "sz"], "compare": "unordered", "hidden": true }
+  ],
+  "hints": [
+    "A lookup array maps a digit to its letters (index 2..9).",
+    "Recurse over digit positions; at position i, loop its letters, append, recurse to i+1, remove.",
+    "Guard the empty input up front so you don't return `[\"\"]`."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    private static final String[] MAP = {\"\", \"\", \"abc\", \"def\", \"ghi\", \"jkl\", \"mno\", \"pqrs\", \"tuv\", \"wxyz\"};\n    private List<String> res = new ArrayList<>();\n\n    public List<String> letterCombinations(String digits) {\n        if (digits.isEmpty()) return res;\n        backtrack(0, new StringBuilder(), digits);\n        return res;\n    }\n\n    private void backtrack(int idx, StringBuilder sb, String digits) {\n        if (idx == digits.length()) {\n            res.add(sb.toString());\n            return;\n        }\n        String letters = MAP[digits.charAt(idx) - '0'];\n        for (char c : letters.toCharArray()) {\n            sb.append(c);\n            backtrack(idx + 1, sb, digits);\n            sb.deleteCharAt(sb.length() - 1);\n        }\n    }\n}",
+    "explanation": "A classic Cartesian-product backtrack: each digit position contributes one letter, and the recursion depth equals the number of digits. Output size is the product of the per-digit letter counts (3 or 4 each)."
+  }
+}

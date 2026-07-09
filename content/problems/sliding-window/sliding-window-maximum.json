@@ -1,0 +1,30 @@
+{
+  "id": "sliding-window-maximum",
+  "type": "code-method",
+  "title": "Sliding Window Maximum",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/sliding-window-maximum/",
+  "prompt": "Given `nums` and a window size `k`, return an array of the maximum in each window of `k` consecutive elements as the window slides left to right.\n\n**Example**: `nums = [1,3,-1,-3,5,3,6,7]`, `k = 3` → `[3,3,5,5,6,7]`.\n\nA **monotonic deque** of indices: keep it decreasing so the front is always the window's max, in O(n) total.",
+  "method": {
+    "name": "maxSlidingWindow",
+    "params": [ { "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" } ],
+    "returns": "int[]"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 3, -1, -3, 5, 3, 6, 7], 3], "expected": [3, 3, 5, 5, 6, 7] },
+    { "args": [[1], 1], "expected": [1] },
+    { "args": [[9, 8, 7, 6], 2], "expected": [9, 8, 7], "note": "decreasing input" },
+    { "args": [[1, 2, 3, 4, 5], 5], "expected": [5], "hidden": true },
+    { "args": [[7, 2, 4], 2], "expected": [7, 4], "hidden": true }
+  ],
+  "hints": [
+    "Store INDICES in a deque, kept so their values are strictly decreasing front→back.",
+    "Before pushing i, pop from the back every index whose value is ≤ nums[i] (they can never be a max again).",
+    "Pop the front if it has slid out of the window (`front <= i - k`). Once `i >= k-1`, the front index holds this window's max."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int n = nums.length;\n        int[] res = new int[n - k + 1];\n        Deque<Integer> dq = new ArrayDeque<>();   // indices, values decreasing\n        for (int i = 0; i < n; i++) {\n            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {\n                dq.pollLast();\n            }\n            dq.offerLast(i);\n            if (dq.peekFirst() <= i - k) dq.pollFirst();   // drop out-of-window\n            if (i >= k - 1) res[i - k + 1] = nums[dq.peekFirst()];\n        }\n        return res;\n    }\n}",
+    "explanation": "O(n): each index is pushed and popped at most once. Smaller values behind a bigger one are useless (the bigger one outlives them and dominates), so evicting them keeps the deque a decreasing sequence whose front is always the current window maximum."
+  }
+}

@@ -1,0 +1,75 @@
+[
+  {
+    "id": "rec-mcq-base",
+    "type": "mcq",
+    "title": "Spot the bug",
+    "prompt": "What happens when you call `f(3)`?\n`public int f(int n) { return n + f(n - 1); }`",
+    "options": [
+      "StackOverflowError — there's no base case, so it recurses forever",
+      "Returns 6 (3+2+1)",
+      "Returns 3",
+      "Compile error"
+    ],
+    "answer": 0,
+    "explanation": "Nothing ever stops the recursion: f(3) → f(2) → f(1) → f(0) → f(-1) → ... until the call stack runs out. Base case first, always."
+  },
+  {
+    "id": "rec-fill-fib",
+    "type": "fill-blank",
+    "title": "Fibonacci skeleton",
+    "prompt": "Complete the classic (inefficient but canonical) recursive Fibonacci.",
+    "code": "public int fib(int n) {\n    if (n <= 1) return {{1}};\n    return fib(n - 1) {{2}} fib({{3}});\n}",
+    "blanks": {
+      "1": ["n"],
+      "2": ["+"],
+      "3": ["n - 2", "n-2"]
+    },
+    "explanation": "fib(0)=0 and fib(1)=1, which `return n` covers in one line. Each call branches into two — that exponential blowup is exactly what dynamic programming will fix later."
+  },
+  {
+    "id": "rec-power",
+    "type": "code-method",
+    "title": "Power, recursively",
+    "prompt": "Return `base` raised to `exp` (exp ≥ 0) using recursion, not `Math.pow`. Base case: anything to the 0th power is 1. Recursive case: `base * power(base, exp - 1)`.",
+    "method": {
+      "name": "power",
+      "params": [ { "name": "base", "type": "int" }, { "name": "exp", "type": "int" } ],
+      "returns": "long"
+    },
+    "starter": "class Solution {\n    public long power(int base, int exp) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [2, 10], "expected": 1024 },
+      { "args": [5, 0], "expected": 1, "note": "base case" },
+      { "args": [3, 4], "expected": 81 },
+      { "args": [2, 40], "expected": 1099511627776, "hidden": true, "note": "needs long" }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public long power(int base, int exp) {\n        if (exp == 0) return 1;\n        return base * power(base, exp - 1);\n    }\n}",
+      "explanation": "The return type is `long` because 2^40 overflows int. (Fast exponentiation halves exp instead — an optimization you'll meet later.)"
+    },
+    "hints": ["`if (exp == 0) return 1;` then one recursive call."]
+  },
+  {
+    "id": "rec-drill-countdown",
+    "type": "code-method",
+    "title": "Drill: recursive digit count",
+    "prompt": "From memory: return the number of digits in `n` (n ≥ 0) recursively. Base case: `n < 10` has 1 digit. Otherwise: 1 + digits of `n / 10`.",
+    "drill": true,
+    "method": {
+      "name": "digits",
+      "params": [ { "name": "n", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int digits(int n) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [12345], "expected": 5 },
+      { "args": [7], "expected": 1 },
+      { "args": [0], "expected": 1 },
+      { "args": [1000000], "expected": 7, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int digits(int n) {\n        if (n < 10) return 1;\n        return 1 + digits(n / 10);\n    }\n}"
+    },
+    "hints": ["Base case handles 0-9 in one line."]
+  }
+]

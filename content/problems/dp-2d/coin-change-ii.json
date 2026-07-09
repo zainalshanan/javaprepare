@@ -1,0 +1,31 @@
+{
+  "id": "coin-change-ii",
+  "type": "code-method",
+  "title": "Coin Change II",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/coin-change-ii/",
+  "prompt": "Given coin denominations and an `amount`, return the number of distinct **combinations** that make up the amount (unlimited coins; order doesn't matter).\n\n**Example**: `amount = 5`, `coins = [1,2,5]` → `4` (5; 2+2+1; 2+1+1+1; 1×5).\n\ndp[a] = number of ways to make amount a. Iterate coins in the OUTER loop so each combination is counted once (not permutations).",
+  "method": {
+    "name": "change",
+    "params": [ { "name": "amount", "type": "int" }, { "name": "coins", "type": "int[]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int change(int amount, int[] coins) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [5, [1, 2, 5]], "expected": 4 },
+    { "args": [3, [2]], "expected": 0 },
+    { "args": [10, [10]], "expected": 1 },
+    { "args": [0, [7]], "expected": 1, "note": "one way to make 0: use nothing" },
+    { "args": [4, [1, 2, 3]], "expected": 4, "hidden": true },
+    { "args": [10, [2, 5, 3, 6]], "expected": 5, "hidden": true }
+  ],
+  "hints": [
+    "dp[0] = 1 (the empty combination). dp[a] accumulates ways to form amount a.",
+    "Loop coins OUTER, amounts INNER: `dp[a] += dp[a - coin]`.",
+    "The coin-outer order is what counts combinations (unordered) rather than permutations."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int change(int amount, int[] coins) {\n        int[] dp = new int[amount + 1];\n        dp[0] = 1;\n        for (int coin : coins) {\n            for (int a = coin; a <= amount; a++) {\n                dp[a] += dp[a - coin];\n            }\n        }\n        return dp[amount];\n    }\n}",
+    "explanation": "Fixing the coin loop outside means each amount is built by considering coins in a fixed order, so `1+2` and `2+1` are the same combination counted once. (Swapping the loop order would count ordered permutations — a different problem.) O(amount · coins)."
+  }
+}

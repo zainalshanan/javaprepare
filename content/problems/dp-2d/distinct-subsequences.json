@@ -1,0 +1,31 @@
+{
+  "id": "distinct-subsequences",
+  "type": "code-method",
+  "title": "Distinct Subsequences",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/distinct-subsequences/",
+  "prompt": "Return the number of distinct subsequences of `s` that equal `t` (a subsequence keeps order but may drop characters).\n\n**Example**: `s = \"rabbbit\"`, `t = \"rabbit\"` → `3`.\n\ndp[i][j] = number of ways the first i chars of s form the first j chars of t.",
+  "method": {
+    "name": "numDistinct",
+    "params": [ { "name": "s", "type": "String" }, { "name": "t", "type": "String" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int numDistinct(String s, String t) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["rabbbit", "rabbit"], "expected": 3 },
+    { "args": ["babgbag", "bag"], "expected": 5 },
+    { "args": ["abc", "abc"], "expected": 1 },
+    { "args": ["a", ""], "expected": 1, "note": "empty t: one way — delete everything" },
+    { "args": ["aaa", "a"], "expected": 3, "hidden": true },
+    { "args": ["b", "ab"], "expected": 0, "hidden": true }
+  ],
+  "hints": [
+    "dp[i][0] = 1 for all i (the empty target is matched by deleting everything).",
+    "Always inherit dp[i-1][j] (skip s's current char).",
+    "If s[i-1] == t[j-1], also add dp[i-1][j-1] (use it to match t's current char)."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int numDistinct(String s, String t) {\n        int m = s.length(), n = t.length();\n        int[][] dp = new int[m + 1][n + 1];\n        for (int i = 0; i <= m; i++) dp[i][0] = 1;\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                dp[i][j] = dp[i - 1][j];                        // skip s[i-1]\n                if (s.charAt(i - 1) == t.charAt(j - 1)) {\n                    dp[i][j] += dp[i - 1][j - 1];               // or use it to match t[j-1]\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
+    "explanation": "For each character of s you decide to skip it (always allowed) or, when it matches t's needed character, also count the subsequences that use it. Summing those two sources counts all distinct matchings. The empty-target base case (delete everything) seeds column 0. O(m·n)."
+  }
+}

@@ -1,0 +1,64 @@
+[
+  {
+    "id": "start-mcq-signature",
+    "type": "mcq",
+    "title": "Read the signature",
+    "prompt": "Given `public boolean isValid(String s)`, what does this method receive and what must it return?",
+    "options": [
+      "Receives a String named `s`, must return `true` or `false`",
+      "Receives a boolean, must return a String",
+      "Receives nothing, prints `true` or `false`",
+      "Receives a String, must print it"
+    ],
+    "answer": 0,
+    "explanation": "The parameter list `(String s)` is what comes in; the type before the name (`boolean`) is what must come back via `return`."
+  },
+  {
+    "id": "start-mcq-drills",
+    "type": "mcq",
+    "title": "How drills work",
+    "prompt": "You pass a drill twice, then fail your third attempt. What happens?",
+    "options": [
+      "The streak resets to 0 — you need 3 consecutive passes",
+      "You keep your 2 passes and need 1 more",
+      "The drill is failed permanently",
+      "Nothing; drills aren't graded"
+    ],
+    "answer": 0,
+    "explanation": "Consecutive means consecutive. It sounds harsh, but it's what makes the syntax stick."
+  },
+  {
+    "id": "start-hello",
+    "type": "code-output",
+    "title": "Hello, grader",
+    "prompt": "Write a program that prints exactly `ready to grind`. The starter code gives you the boilerplate — every Java program needs a class with a `main` method as its entry point.",
+    "starter": "public class Main {\n    public static void main(String[] args) {\n        // print here\n    }\n}\n",
+    "expectedOutput": "ready to grind",
+    "solution": {
+      "code": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"ready to grind\");\n    }\n}",
+      "explanation": "`System.out.println` prints its argument followed by a newline."
+    }
+  },
+  {
+    "id": "start-add",
+    "type": "code-method",
+    "title": "Your first method",
+    "prompt": "Return the sum of `a` and `b`. Use the `+` operator and the `return` keyword.",
+    "method": {
+      "name": "add",
+      "params": [ { "name": "a", "type": "int" }, { "name": "b", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int add(int a, int b) {\n        // your code here\n    }\n}\n",
+    "tests": [
+      { "args": [2, 3], "expected": 5 },
+      { "args": [-4, 4], "expected": 0 },
+      { "args": [100, 250], "expected": 350, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int add(int a, int b) {\n        return a + b;\n    }\n}",
+      "explanation": "A method with a non-void return type must `return` a value of that type on every path."
+    },
+    "hints": ["The method must end with `return <something>;`"]
+  }
+]

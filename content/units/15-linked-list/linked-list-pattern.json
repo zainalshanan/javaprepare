@@ -1,0 +1,182 @@
+[
+  {
+    "id": "pat-ll-mcq-order",
+    "type": "mcq",
+    "title": "Reverse: why save first?",
+    "prompt": "In the reverse loop, why must `ListNode next = curr.next;` come BEFORE `curr.next = prev;`?",
+    "options": [
+      "Flipping the pointer destroys the only path to the rest of the list — save it or lose it",
+      "Java requires declarations first",
+      "It's just convention",
+      "To avoid a compile error"
+    ],
+    "answer": 0,
+    "explanation": "`curr.next = prev` overwrites the forward link. Without the saved reference, the unvisited remainder of the list becomes unreachable."
+  },
+  {
+    "id": "pat-ll-drill-middle",
+    "type": "code-method",
+    "title": "Drill: middle node",
+    "prompt": "From memory: return the middle node of the list using fast & slow pointers (for even lengths, the second middle — which is what this template naturally gives). The grader compares the list from the node you return.",
+    "drill": true,
+    "method": {
+      "name": "middleNode",
+      "params": [
+        {
+          "name": "head",
+          "type": "ListNode"
+        }
+      ],
+      "returns": "ListNode"
+    },
+    "starter": "class Solution {\n    public ListNode middleNode(ListNode head) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": [
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "expected": [
+          3,
+          4
+        ],
+        "note": "even length → second middle"
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": [
+          1
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": [
+          2
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public ListNode middleNode(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n        }\n        return slow;\n    }\n}",
+      "explanation": "Fast moves twice as far, so when it exhausts the list, slow is halfway. The `fast != null && fast.next != null` guard order is load-bearing."
+    },
+    "hints": [
+      "Both start at head; the while guard checks fast AND fast.next."
+    ]
+  },
+  {
+    "id": "pat-ll-drill-remove",
+    "type": "code-method",
+    "title": "Drill: remove all nodes with a value (dummy head)",
+    "prompt": "From memory (dummy head): remove every node equal to `val` and return the head. The dummy node kills the special case of deleting the first node.",
+    "drill": true,
+    "method": {
+      "name": "removeValue",
+      "params": [
+        {
+          "name": "head",
+          "type": "ListNode"
+        },
+        {
+          "name": "val",
+          "type": "int"
+        }
+      ],
+      "returns": "ListNode"
+    },
+    "starter": "class Solution {\n    public ListNode removeValue(ListNode head, int val) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            6,
+            3,
+            4,
+            5,
+            6
+          ],
+          6
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "args": [
+          [
+            7,
+            7,
+            7
+          ],
+          7
+        ],
+        "expected": []
+      },
+      {
+        "args": [
+          [],
+          1
+        ],
+        "expected": []
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          9
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public ListNode removeValue(ListNode head, int val) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode cur = dummy;\n        while (cur.next != null) {\n            if (cur.next.val == val) cur.next = cur.next.next;\n            else cur = cur.next;\n        }\n        return dummy.next;\n    }\n}"
+    },
+    "hints": [
+      "Walk with `cur`; when `cur.next` matches, splice it out (don't advance).",
+      "Return `dummy.next`."
+    ]
+  }
+]

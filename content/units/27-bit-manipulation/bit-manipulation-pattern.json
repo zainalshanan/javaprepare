@@ -1,0 +1,126 @@
+[
+  {
+    "id": "pat-bit-mcq-xor",
+    "type": "mcq",
+    "title": "XOR cancellation",
+    "prompt": "What is `5 ^ 3 ^ 5`?",
+    "options": [
+      "`3` — the two 5s cancel (a ^ a = 0, and 0 ^ 3 = 3)",
+      "`5`",
+      "`13`",
+      "`0`"
+    ],
+    "answer": 0,
+    "explanation": "XOR is order-independent, so pair up the 5s first: (5 ^ 5) ^ 3 = 0 ^ 3 = 3. This cancellation is the entire trick behind Single Number and Missing Number."
+  },
+  {
+    "id": "pat-bit-drill-count",
+    "type": "code-method",
+    "title": "Drill: count set bits",
+    "prompt": "From memory: return the number of 1-bits in `n` (n ≥ 0) using the `x & (x - 1)` clear-lowest-bit loop — not Integer.bitCount.",
+    "drill": true,
+    "method": {
+      "name": "countBits",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int countBits(int n) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          11
+        ],
+        "expected": 3,
+        "note": "1011"
+      },
+      {
+        "args": [
+          0
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          128
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          2147483647
+        ],
+        "expected": 31,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int countBits(int n) {\n        int count = 0;\n        while (n != 0) {\n            n &= (n - 1);\n            count++;\n        }\n        return count;\n    }\n}",
+      "explanation": "Each iteration erases exactly one set bit, so the loop runs `popcount(n)` times — faster than checking all 32 positions."
+    },
+    "hints": [
+      "`n &= (n - 1)` erases the lowest set bit; count until n is 0."
+    ]
+  },
+  {
+    "id": "pat-bit-drill-pow2",
+    "type": "code-method",
+    "title": "Drill: power of two?",
+    "prompt": "From memory (clear-lowest-bit trick): return whether `n` is a power of two. A positive power of two has exactly one set bit, so `n & (n - 1)` clears it to 0.",
+    "drill": true,
+    "method": {
+      "name": "isPowerOfTwo",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "returns": "boolean"
+    },
+    "starter": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          1
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          16
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          3
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          0
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          1073741824
+        ],
+        "expected": true,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n        return n > 0 && (n & (n - 1)) == 0;\n    }\n}"
+    },
+    "hints": [
+      "Guard `n > 0`, then `(n & (n - 1)) == 0` means a single set bit."
+    ]
+  }
+]

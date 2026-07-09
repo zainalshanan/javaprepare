@@ -1,0 +1,145 @@
+[
+  {
+    "id": "pat-tr-mcq-base",
+    "type": "mcq",
+    "title": "The null base case",
+    "prompt": "Why does almost every tree DFS start with `if (node == null) return ...;`?",
+    "options": [
+      "Leaves have null children, so recursion inevitably reaches null — the base case defines what an empty subtree is worth",
+      "It's required by the compiler",
+      "null nodes are common in the input arrays",
+      "To handle duplicate values"
+    ],
+    "answer": 0,
+    "explanation": "dfs(leaf.left) is dfs(null). Defining the empty tree's value (0 for counts, true for validity checks, null for searches) is usually the whole trick."
+  },
+  {
+    "id": "pat-tr-drill-sum",
+    "type": "code-method",
+    "title": "Drill: tree sum",
+    "prompt": "From memory: return the sum of all node values via DFS recursion. Base case: null contributes 0. Combine: node.val + left sum + right sum.",
+    "drill": true,
+    "method": {
+      "name": "treeSum",
+      "params": [
+        {
+          "name": "root",
+          "type": "TreeNode"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int treeSum(TreeNode root) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": 15
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0,
+        "note": "empty tree"
+      },
+      {
+        "args": [
+          [
+            7
+          ]
+        ],
+        "expected": 7
+      },
+      {
+        "args": [
+          [
+            1,
+            null,
+            2
+          ]
+        ],
+        "expected": 3,
+        "hidden": true,
+        "note": "right-skewed"
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int treeSum(TreeNode root) {\n        if (root == null) return 0;\n        return root.val + treeSum(root.left) + treeSum(root.right);\n    }\n}"
+    },
+    "hints": [
+      "Three lines: null check, then val + recurse left + recurse right."
+    ]
+  },
+  {
+    "id": "pat-tr-drill-count",
+    "type": "code-method",
+    "title": "Drill: count nodes (DFS)",
+    "prompt": "From memory: return the total number of nodes via DFS. Base case: null is 0. Combine: 1 + left count + right count.",
+    "drill": true,
+    "method": {
+      "name": "countNodes",
+      "params": [
+        {
+          "name": "root",
+          "type": "TreeNode"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int countNodes(TreeNode root) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "expected": 4
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            1,
+            null,
+            2,
+            null,
+            3
+          ]
+        ],
+        "expected": 3,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int countNodes(TreeNode root) {\n        if (root == null) return 0;\n        return 1 + countNodes(root.left) + countNodes(root.right);\n    }\n}"
+    },
+    "hints": [
+      "Three lines: null check, then 1 + recurse left + recurse right."
+    ]
+  }
+]

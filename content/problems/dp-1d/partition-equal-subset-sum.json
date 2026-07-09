@@ -1,0 +1,30 @@
+{
+  "id": "partition-equal-subset-sum",
+  "type": "code-method",
+  "title": "Partition Equal Subset Sum",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/partition-equal-subset-sum/",
+  "prompt": "Return whether `nums` can be split into two subsets with equal sum.\n\n**Example**: `[1,5,11,5]` → `true` (`[1,5,5]` and `[11]`).\n\nEqual halves means finding a subset summing to `total/2` — a 0/1 knapsack over a boolean reachability array.",
+  "method": {
+    "name": "canPartition",
+    "params": [ { "name": "nums", "type": "int[]" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean canPartition(int[] nums) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 5, 11, 5]], "expected": true },
+    { "args": [[1, 2, 3, 5]], "expected": false },
+    { "args": [[1, 1]], "expected": true },
+    { "args": [[2, 2, 3, 5]], "expected": false, "hidden": true },
+    { "args": [[3, 3, 3, 4, 5]], "expected": true, "hidden": true }
+  ],
+  "hints": [
+    "If the total sum is odd, it's immediately false.",
+    "Otherwise, target = sum/2. dp[j] = 'can we form sum j from some subset?', dp[0] = true.",
+    "For each number, update j from target down to num: `dp[j] |= dp[j - num]` (iterate downward so each number is used once)."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean canPartition(int[] nums) {\n        int sum = 0;\n        for (int x : nums) sum += x;\n        if (sum % 2 != 0) return false;\n        int target = sum / 2;\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int x : nums) {\n            for (int j = target; j >= x; j--) {\n                if (dp[j - x]) dp[j] = true;\n            }\n        }\n        return dp[target];\n    }\n}",
+    "explanation": "One subset summing to half the total forces the other half to match, so this reduces to subset-sum. The 1-D knapsack tracks reachable sums; iterating j downward prevents reusing the same element within one number's pass. O(n · target)."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "id": "subsets",
+  "type": "code-method",
+  "title": "Subsets",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/subsets/",
+  "prompt": "Given an array of **unique** integers, return all possible subsets (the power set), in any order, no duplicates.\n\n**Example**: `[1,2,3]` → `[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]`.\n\nThe backtracking template exactly as written in the pattern lesson.",
+  "method": {
+    "name": "subsets",
+    "params": [ { "name": "nums", "type": "int[]" } ],
+    "returns": "List<List<Integer>>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> subsets(int[] nums) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3]], "expected": [[], [1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]], "compare": "unordered-deep" },
+    { "args": [[0]], "expected": [[], [0]], "compare": "unordered-deep" },
+    { "args": [[1, 2]], "expected": [[], [1], [2], [1, 2]], "compare": "unordered-deep", "hidden": true },
+    { "args": [[4, 7, 9, 2]], "expected": [[], [4], [7], [9], [2], [4, 7], [4, 9], [4, 2], [7, 9], [7, 2], [9, 2], [4, 7, 9], [4, 7, 2], [4, 9, 2], [7, 9, 2], [4, 7, 9, 2]], "compare": "unordered-deep", "hidden": true }
+  ],
+  "hints": [
+    "Record a COPY of path at every recursion node — every state along the way is a subset.",
+    "The `start` parameter prevents picking earlier elements again — that's what makes them subsets, not permutations.",
+    "choose → explore(i + 1) → un-choose."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> subsets(int[] nums) {\n        backtrack(0, new ArrayList<>(), nums);\n        return res;\n    }\n\n    private void backtrack(int start, List<Integer> path, int[] nums) {\n        res.add(new ArrayList<>(path));\n        for (int i = start; i < nums.length; i++) {\n            path.add(nums[i]);\n            backtrack(i + 1, path, nums);\n            path.remove(path.size() - 1);\n        }\n    }\n}",
+    "explanation": "2ⁿ subsets, O(n · 2ⁿ) total. Every node of the recursion tree IS a subset (record unconditionally); `start` enforces increasing indices so each combination appears exactly once."
+  }
+}

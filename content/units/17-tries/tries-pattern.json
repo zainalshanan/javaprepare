@@ -1,0 +1,134 @@
+[
+  {
+    "id": "pat-trie-fill-walk",
+    "type": "fill-blank",
+    "title": "The trie walk",
+    "prompt": "Complete the insert walk — this loop is the entire data structure.",
+    "code": "TrieNode node = root;\nfor (char c : word.toCharArray()) {\n    int i = c - {{1}};\n    if (node.children[i] == {{2}}) {\n        node.children[i] = new TrieNode();\n    }\n    node = {{3}};\n}\nnode.isEnd = true;",
+    "blanks": {
+      "1": [
+        "'a'"
+      ],
+      "2": [
+        "null"
+      ],
+      "3": [
+        "node.children[i]"
+      ]
+    },
+    "explanation": "Map the letter to a slot, create the child if missing, descend. Search is the same walk that returns null/false instead of creating."
+  },
+  {
+    "id": "pat-trie-mcq-why",
+    "type": "mcq",
+    "title": "Trie vs HashSet",
+    "prompt": "You have 10⁵ words and must answer `startsWith(prefix)` queries. Why is a HashSet of words insufficient?",
+    "options": [
+      "A set only matches whole words — checking a prefix would require scanning every word: O(n · len) per query",
+      "HashSets can't store strings",
+      "The set would use too much memory",
+      "It's fine — contains(prefix) works"
+    ],
+    "answer": 0,
+    "explanation": "Hashing is all-or-nothing. The trie shares prefixes structurally, so any prefix query is a single O(len) walk regardless of dictionary size."
+  },
+  {
+    "id": "pat-trie-drill-mini",
+    "type": "code-design",
+    "title": "Drill: minimal prefix tree",
+    "prompt": "From memory: implement a `PrefixTree` supporting `insert(word)` and `startsWith(prefix)` (lowercase words). This is the core trie walk — insert creates missing children; startsWith follows them and returns whether the path exists.",
+    "drill": true,
+    "className": "PrefixTree",
+    "methods": {
+      "PrefixTree": {
+        "params": [],
+        "returns": "void"
+      },
+      "insert": {
+        "params": [
+          "String"
+        ],
+        "returns": "void"
+      },
+      "startsWith": {
+        "params": [
+          "String"
+        ],
+        "returns": "boolean"
+      }
+    },
+    "starter": "class PrefixTree {\n\n    public PrefixTree() {\n\n    }\n\n    public void insert(String word) {\n\n    }\n\n    public boolean startsWith(String prefix) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "ops": [
+          "PrefixTree",
+          "insert",
+          "startsWith",
+          "startsWith",
+          "startsWith"
+        ],
+        "args": [
+          [],
+          [
+            "apple"
+          ],
+          [
+            "app"
+          ],
+          [
+            "apple"
+          ],
+          [
+            "banana"
+          ]
+        ],
+        "expected": [
+          null,
+          null,
+          true,
+          true,
+          false
+        ]
+      },
+      {
+        "ops": [
+          "PrefixTree",
+          "insert",
+          "insert",
+          "startsWith",
+          "startsWith"
+        ],
+        "args": [
+          [],
+          [
+            "cat"
+          ],
+          [
+            "car"
+          ],
+          [
+            "ca"
+          ],
+          [
+            "cab"
+          ]
+        ],
+        "expected": [
+          null,
+          null,
+          null,
+          true,
+          false
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class PrefixTree {\n    private PrefixTree[] children = new PrefixTree[26];\n\n    public PrefixTree() {\n    }\n\n    public void insert(String word) {\n        PrefixTree node = this;\n        for (char c : word.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) node.children[i] = new PrefixTree();\n            node = node.children[i];\n        }\n    }\n\n    public boolean startsWith(String prefix) {\n        PrefixTree node = this;\n        for (char c : prefix.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) return false;\n            node = node.children[i];\n        }\n        return true;\n    }\n}"
+    },
+    "hints": [
+      "A node is a 26-way children array. insert creates missing children while walking.",
+      "startsWith walks the same way; a missing child means the prefix isn't present."
+    ]
+  }
+]

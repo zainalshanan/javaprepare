@@ -1,0 +1,29 @@
+{
+  "id": "combination-sum-ii",
+  "type": "code-method",
+  "title": "Combination Sum II",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/combination-sum-ii/",
+  "prompt": "Given `candidates` (may contain duplicates) and a `target`, return all unique combinations summing to target. Each number may be used **at most once**.\n\n**Example**: `candidates = [10,1,2,7,6,1,5]`, `target = 8` → `[[1,1,6],[1,2,5],[1,7],[2,6]]`.\n\nSort, recurse with `i + 1` (each used once), and skip duplicate siblings.",
+  "method": {
+    "name": "combinationSum2",
+    "params": [ { "name": "candidates", "type": "int[]" }, { "name": "target", "type": "int" } ],
+    "returns": "List<List<Integer>>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> combinationSum2(int[] candidates, int target) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[10, 1, 2, 7, 6, 1, 5], 8], "expected": [[1, 1, 6], [1, 2, 5], [1, 7], [2, 6]], "compare": "unordered-deep" },
+    { "args": [[2, 5, 2, 1, 2], 5], "expected": [[1, 2, 2], [5]], "compare": "unordered-deep" },
+    { "args": [[1], 2], "expected": [], "compare": "unordered-deep" },
+    { "args": [[3, 1, 3, 5, 1, 1], 8], "expected": [[1, 1, 1, 5], [1, 1, 3, 3], [3, 5]], "compare": "unordered-deep", "hidden": true }
+  ],
+  "hints": [
+    "Sort candidates. Track remaining target; record a copy when it hits 0.",
+    "Recurse with `i + 1` so each element is used once.",
+    "Skip duplicate siblings: `if (i > start && candidates[i] == candidates[i-1]) continue;`. Break early once `candidates[i] > remaining`."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> combinationSum2(int[] candidates, int target) {\n        Arrays.sort(candidates);\n        backtrack(0, target, new ArrayList<>(), candidates);\n        return res;\n    }\n\n    private void backtrack(int start, int remaining, List<Integer> path, int[] candidates) {\n        if (remaining == 0) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        for (int i = start; i < candidates.length; i++) {\n            if (i > start && candidates[i] == candidates[i - 1]) continue;\n            if (candidates[i] > remaining) break;\n            path.add(candidates[i]);\n            backtrack(i + 1, remaining - candidates[i], path, candidates);\n            path.remove(path.size() - 1);\n        }\n    }\n}",
+    "explanation": "Two differences from Combination Sum I: `i + 1` (no reuse) and the duplicate-sibling skip (so `[1,7]` from the two different 1s appears once). The sorted-order `break` prunes candidates too big to fit — a free speedup."
+  }
+}

@@ -1,0 +1,153 @@
+[
+  {
+    "id": "hm-mcq-get",
+    "type": "mcq",
+    "title": "Missing keys",
+    "prompt": "`map.get(k)` when `k` was never put — what comes back?",
+    "options": [
+      "`null` — which is why getOrDefault exists",
+      "`0`",
+      "An exception is thrown",
+      "`-1`"
+    ],
+    "answer": 0,
+    "explanation": "`get` returns null for absent keys. Unboxing that null into an `int` throws NPE — use `getOrDefault(k, 0)` when counting."
+  },
+  {
+    "id": "hm-fill-count",
+    "type": "fill-blank",
+    "title": "The counting idiom",
+    "prompt": "Complete the frequency-count loop. This must be automatic.",
+    "code": "Map<Character, Integer> count = new HashMap<>();\nfor (char c : s.toCharArray()) {\n    count.put(c, count.{{1}}(c, {{2}}) + {{3}});\n}",
+    "blanks": {
+      "1": ["getOrDefault"],
+      "2": ["0"],
+      "3": ["1"]
+    },
+    "explanation": "Read (defaulting to 0), add 1, write back. You will type this in a third of all NeetCode problems."
+  },
+  {
+    "id": "hm-first-repeat",
+    "type": "code-method",
+    "title": "First repeated value",
+    "prompt": "Return the first value that appears a second time while scanning left to right, or `-1` if all values are distinct. Track seen values in a map or set as you go.",
+    "method": {
+      "name": "firstRepeat",
+      "params": [ { "name": "nums", "type": "int[]" } ],
+      "returns": "int"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int firstRepeat(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[2, 5, 3, 5, 2]], "expected": 5, "note": "5 repeats before 2 does" },
+      { "args": [[1, 2, 3]], "expected": -1 },
+      { "args": [[7, 7]], "expected": 7 },
+      { "args": [[]], "expected": -1, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int firstRepeat(int[] nums) {\n        Map<Integer, Boolean> seen = new HashMap<>();\n        for (int x : nums) {\n            if (seen.containsKey(x)) return x;\n            seen.put(x, true);\n        }\n        return -1;\n    }\n}",
+      "explanation": "Check before insert — the scan order guarantees the FIRST repeat wins. (A HashSet is the leaner tool here; next lesson.)"
+    },
+    "hints": ["Check `containsKey` BEFORE putting, and return immediately on a hit."]
+  },
+  {
+    "id": "hm-drill-count",
+    "type": "code-method",
+    "title": "Drill: word frequency",
+    "prompt": "From memory: given a sentence of space-separated words, return the number of times `target` occurs. Use `split(\" \")` and the counting idiom (build the full count map, then read the target's count).",
+    "drill": true,
+    "method": {
+      "name": "wordCount",
+      "params": [ { "name": "sentence", "type": "String" }, { "name": "target", "type": "String" } ],
+      "returns": "int"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int wordCount(String sentence, String target) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["the cat and the dog", "the"], "expected": 2 },
+      { "args": ["a b c", "z"], "expected": 0 },
+      { "args": ["go go go go", "go"], "expected": 4, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int wordCount(String sentence, String target) {\n        Map<String, Integer> count = new HashMap<>();\n        for (String w : sentence.split(\" \")) {\n            count.put(w, count.getOrDefault(w, 0) + 1);\n        }\n        return count.getOrDefault(target, 0);\n    }\n}",
+      "explanation": "Note `.equals` semantics come free: HashMap compares String keys by content."
+    },
+    "hints": ["`sentence.split(\" \")` gives a `String[]`.", "Finish with `count.getOrDefault(target, 0)`."]
+  },
+  {
+    "id": "hm-mode",
+    "type": "code-method",
+    "title": "Most frequent element",
+    "prompt": "Return the value that occurs most often in `nums` (a unique winner is guaranteed). Count with a map, then scan `entrySet()` for the entry with the highest count.",
+    "method": {
+      "name": "mode",
+      "params": [ { "name": "nums", "type": "int[]" } ],
+      "returns": "int"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int mode(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 2, 3, 2]], "expected": 2 },
+      { "args": [[5]], "expected": 5 },
+      { "args": [[-1, -1, 4]], "expected": -1, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int mode(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) {\n            count.put(x, count.getOrDefault(x, 0) + 1);\n        }\n        int best = nums[0], bestCount = 0;\n        for (Map.Entry<Integer, Integer> e : count.entrySet()) {\n            if (e.getValue() > bestCount) {\n                bestCount = e.getValue();\n                best = e.getKey();\n            }\n        }\n        return best;\n    }\n}",
+      "explanation": "Count pass + argmax pass over entrySet — the two-phase shape behind Top K Frequent Elements."
+    },
+    "hints": ["Phase 1: the counting idiom. Phase 2: loop `count.entrySet()`, tracking the best key."]
+  },
+  {
+    "id": "hm-ref-put-fill",
+    "type": "fill-blank",
+    "title": "Recall: put & read",
+    "prompt": "Fill in the insert, safe-read, and membership operations.",
+    "drill": true,
+    "code": "Map<String, Integer> map = new HashMap<>();\nmap.{{1}}(\"a\", 1);              // insert or overwrite\nint v = map.{{2}}(\"a\", 0);      // value, or 0 if absent\nboolean has = map.{{3}}(\"a\");   // is the key present?",
+    "blanks": { "1": ["put"], "2": ["getOrDefault"], "3": ["containsKey"] },
+    "explanation": "`put` writes, `getOrDefault(key, fallback)` reads without risking a null, `containsKey` checks membership."
+  },
+  {
+    "id": "hm-ref-put-code",
+    "type": "code-method",
+    "title": "Drill: count occurrences",
+    "prompt": "From memory: return how many times `target` appears in `nums`, building a frequency map with the counting idiom and reading it with `getOrDefault`.",
+    "drill": true,
+    "method": { "name": "countOf", "params": [ { "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" } ], "returns": "int" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int countOf(int[] nums, int target) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 2, 3], 2], "expected": 2 },
+      { "args": [[1], 9], "expected": 0 },
+      { "args": [[5, 5, 5], 5], "expected": 3, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int countOf(int[] nums, int target) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) count.put(x, count.getOrDefault(x, 0) + 1);\n        return count.getOrDefault(target, 0);\n    }\n}"
+    },
+    "hints": ["Build the count map with `put(x, getOrDefault(x, 0) + 1)`.", "Return `count.getOrDefault(target, 0)`."]
+  },
+  {
+    "id": "hm-ref-iter-fill",
+    "type": "fill-blank",
+    "title": "Recall: iterate entries",
+    "prompt": "Fill in the entry-iteration operations.",
+    "drill": true,
+    "code": "for (Map.Entry<String, Integer> e : map.{{1}}()) {\n    String k = e.{{2}}();\n    int v = e.{{3}}();\n}",
+    "blanks": { "1": ["entrySet"], "2": ["getKey"], "3": ["getValue"] },
+    "explanation": "`entrySet()` yields `Map.Entry` objects; `getKey()` and `getValue()` read each pair."
+  },
+  {
+    "id": "hm-ref-iter-code",
+    "type": "code-method",
+    "title": "Drill: sum the values",
+    "prompt": "From memory: build a frequency map of `nums`, then return the sum of all its values (by iterating `values()` or `entrySet()`).",
+    "drill": true,
+    "method": { "name": "sumOfCounts", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int sumOfCounts(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 1, 2]], "expected": 3 },
+      { "args": [[]], "expected": 0 },
+      { "args": [[4, 4, 4, 4]], "expected": 4, "hidden": true, "note": "one key, count 4" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int sumOfCounts(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) count.put(x, count.getOrDefault(x, 0) + 1);\n        int sum = 0;\n        for (int v : count.values()) sum += v;\n        return sum;\n    }\n}"
+    },
+    "hints": ["After building the map, loop `for (int v : count.values())` and accumulate."]
+  }
+]

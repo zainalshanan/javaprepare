@@ -1,0 +1,30 @@
+{
+  "id": "trapping-rain-water",
+  "type": "code-method",
+  "title": "Trapping Rain Water",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/trapping-rain-water/",
+  "prompt": "Given an elevation map `height`, compute how much rain water it traps.\n\n**Example**: `[0,1,0,2,1,0,1,3,2,1,2,1]` → `6`.\n\nWater above bar `i` = `min(maxLeft, maxRight) - height[i]`. The two-pointer version computes this in O(1) space by advancing whichever side has the smaller running max.",
+  "method": {
+    "name": "trap",
+    "params": [ { "name": "height", "type": "int[]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int trap(int[] height) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]], "expected": 6 },
+    { "args": [[4, 2, 0, 3, 2, 5]], "expected": 9 },
+    { "args": [[]], "expected": 0 },
+    { "args": [[3, 2, 1]], "expected": 0, "hidden": true, "note": "monotonic — no basin" },
+    { "args": [[5, 4, 1, 2]], "expected": 1, "hidden": true }
+  ],
+  "hints": [
+    "Two pointers l, r with running `leftMax` and `rightMax`.",
+    "Whichever side has the SMALLER wall determines the water there — advance that side.",
+    "At each step, if leftMax is the limiter, `water += leftMax - height[l]`, then l++."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int trap(int[] height) {\n        int l = 0, r = height.length - 1;\n        int leftMax = 0, rightMax = 0, water = 0;\n        while (l < r) {\n            if (height[l] < height[r]) {\n                leftMax = Math.max(leftMax, height[l]);\n                water += leftMax - height[l];\n                l++;\n            } else {\n                rightMax = Math.max(rightMax, height[r]);\n                water += rightMax - height[r];\n                r--;\n            }\n        }\n        return water;\n    }\n}",
+    "explanation": "O(n)/O(1). Key insight: when height[l] < height[r], the water over l is bounded by leftMax alone — because there's guaranteed to be a taller wall on the right (r itself). So we can safely commit l's water and advance, never needing the full left/right max arrays."
+  }
+}

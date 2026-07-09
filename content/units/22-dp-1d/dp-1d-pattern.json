@@ -1,0 +1,146 @@
+[
+  {
+    "id": "pat-dp1-mcq-state",
+    "type": "mcq",
+    "title": "Define the state",
+    "prompt": "For House Robber (rob non-adjacent houses, maximize loot), the right meaning for `dp[i]` is…",
+    "options": [
+      "The maximum loot obtainable from houses 0..i (whether or not house i itself is robbed)",
+      "Whether house i gets robbed",
+      "The loot in house i",
+      "The number of ways to rob i houses"
+    ],
+    "answer": 0,
+    "explanation": "With that meaning, the recurrence reads itself: either skip house i (dp[i-1]) or rob it, which forbids i-1 (dp[i-2] + nums[i]). Take the max."
+  },
+  {
+    "id": "pat-dp1-drill-fib",
+    "type": "code-method",
+    "title": "Drill: space-optimized DP",
+    "prompt": "From memory: tribonacci — T(0)=0, T(1)=1, T(2)=1, then T(n) = T(n-1)+T(n-2)+T(n-3). Return T(n) using THREE rolling variables, no array. (n ≤ 37, fits in int.)",
+    "drill": true,
+    "method": {
+      "name": "tribonacci",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int tribonacci(int n) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          4
+        ],
+        "expected": 4
+      },
+      {
+        "args": [
+          0
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          1
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          2
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          25
+        ],
+        "expected": 1389537,
+        "hidden": true
+      },
+      {
+        "args": [
+          37
+        ],
+        "expected": 2082876103,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int tribonacci(int n) {\n        if (n == 0) return 0;\n        if (n <= 2) return 1;\n        int a = 0, b = 1, c = 1;   // T(i-3), T(i-2), T(i-1)\n        for (int i = 3; i <= n; i++) {\n            int cur = a + b + c;\n            a = b;\n            b = c;\n            c = cur;\n        }\n        return c;\n    }\n}",
+      "explanation": "The roll: compute, then shift every variable one slot left. Bases handled before the loop."
+    },
+    "hints": [
+      "Handle n=0,1,2 explicitly first.",
+      "Roll: `a = b; b = c; c = cur;` — order matters."
+    ]
+  },
+  {
+    "id": "pat-dp1-drill-rob",
+    "type": "code-method",
+    "title": "Drill: max non-adjacent sum",
+    "prompt": "From memory (rolling dp): return the maximum sum of elements of `nums` with no two chosen elements adjacent. `dp = max(skip, take)` with two rolling variables.",
+    "drill": true,
+    "method": {
+      "name": "maxNonAdjacent",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int maxNonAdjacent(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            2,
+            7,
+            9,
+            3,
+            1
+          ]
+        ],
+        "expected": 12
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            1
+          ]
+        ],
+        "expected": 4
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": 5,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int maxNonAdjacent(int[] nums) {\n        int prev2 = 0, prev1 = 0;\n        for (int x : nums) {\n            int cur = Math.max(prev1, prev2 + x);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}"
+    },
+    "hints": [
+      "`cur = max(prev1 (skip), prev2 + x (take))`, then roll the variables."
+    ]
+  }
+]

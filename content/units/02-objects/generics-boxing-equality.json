@@ -1,0 +1,56 @@
+[
+  {
+    "id": "gen-mcq-wrapper",
+    "type": "mcq",
+    "title": "Declare it",
+    "prompt": "Which declaration is valid for a list of whole numbers?",
+    "options": [
+      "`List<Integer> nums = new ArrayList<>();`",
+      "`List<int> nums = new ArrayList<>();`",
+      "`List nums<Integer> = new ArrayList<>();`",
+      "`ArrayList<int> nums = new List<>();`"
+    ],
+    "answer": 0,
+    "explanation": "Generics require the wrapper type `Integer`. The `<>` on the right (diamond) lets the compiler infer the type parameter."
+  },
+  {
+    "id": "gen-mcq-nullunbox",
+    "type": "mcq",
+    "title": "The null unbox",
+    "prompt": "`Map<String, Integer> m = new HashMap<>();` then `int x = m.get(\"missing\");` — what happens?",
+    "options": [
+      "NullPointerException — get returns null, and null can't unbox to int",
+      "x becomes 0",
+      "x becomes -1",
+      "Compile error"
+    ],
+    "answer": 0,
+    "explanation": "`get` on a missing key returns `null`. Assigning to `int` forces unboxing → NPE. Defensive idiom: `m.getOrDefault(\"missing\", 0)`."
+  },
+  {
+    "id": "gen-mcq-equals",
+    "type": "mcq",
+    "title": "String comparison",
+    "prompt": "Two strings `s` and `t` arrive as method parameters. The correct content comparison is:",
+    "options": [
+      "`s.equals(t)`",
+      "`s == t`",
+      "`s = t`",
+      "`s.compare(t) == true`"
+    ],
+    "answer": 0,
+    "explanation": "`==` on strings asks whether they're the same object in memory — sometimes coincidentally true, usually false. `.equals` compares characters. In interviews, `==` on strings is an instant red flag."
+  },
+  {
+    "id": "gen-fill-safe",
+    "type": "fill-blank",
+    "title": "Null-safe lookups",
+    "prompt": "Complete the two standard null-safe map reads.",
+    "code": "int count = map.{{1}}(key, 0);            // 0 if key absent\nif (map.{{2}}(key)) {\n    int val = map.get(key);                 // safe: key exists\n}",
+    "blanks": {
+      "1": ["getOrDefault"],
+      "2": ["containsKey"]
+    },
+    "explanation": "`getOrDefault(key, fallback)` and a `containsKey` guard are the two ways to avoid the null-unboxing NPE."
+  }
+]

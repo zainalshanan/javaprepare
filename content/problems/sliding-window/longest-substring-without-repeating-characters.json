@@ -1,0 +1,31 @@
+{
+  "id": "longest-substring-without-repeating-characters",
+  "type": "code-method",
+  "title": "Longest Substring Without Repeating Characters",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+  "prompt": "Given a string `s`, find the length of the longest substring with **no repeated characters**.\n\n**Example**: `\"abcabcbb\"` → `3` (`\"abc\"`).\n\nThe variable-size window template verbatim: grow right; while the new character is a duplicate, shrink from the left.",
+  "method": {
+    "name": "lengthOfLongestSubstring",
+    "params": [ { "name": "s", "type": "String" } ],
+    "returns": "int"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int lengthOfLongestSubstring(String s) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["abcabcbb"], "expected": 3 },
+    { "args": ["bbbbb"], "expected": 1 },
+    { "args": ["pwwkew"], "expected": 3, "note": "wke — substrings are contiguous" },
+    { "args": [""], "expected": 0, "hidden": true },
+    { "args": ["dvdf"], "expected": 3, "hidden": true, "note": "window must shrink past the FIRST d only" },
+    { "args": ["abba"], "expected": 2, "hidden": true }
+  ],
+  "hints": [
+    "Window state: a HashSet of the characters currently inside [l..r].",
+    "Before adding s.charAt(r): while the set already contains it, remove s.charAt(l) and l++.",
+    "Record `r - l + 1` after the window becomes valid."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int lengthOfLongestSubstring(String s) {\n        Set<Character> window = new HashSet<>();\n        int l = 0, best = 0;\n        for (int r = 0; r < s.length(); r++) {\n            char c = s.charAt(r);\n            while (window.contains(c)) {\n                window.remove(s.charAt(l));\n                l++;\n            }\n            window.add(c);\n            best = Math.max(best, r - l + 1);\n        }\n        return best;\n    }\n}",
+    "explanation": "O(n): l and r each traverse the string once. The while-loop evicts from the left exactly until the duplicate of c leaves — the set then admits c. Test \"dvdf\" is the one that catches broken shrink logic."
+  }
+}

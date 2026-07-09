@@ -1,0 +1,73 @@
+[
+  {
+    "id": "streams-mcq-what",
+    "type": "mcq",
+    "title": "What does it return?",
+    "prompt": "What does `Arrays.stream(nums).filter(x -> x > 0).count()` compute?",
+    "options": [
+      "The number of positive elements in nums",
+      "The sum of the positive elements",
+      "The largest positive element",
+      "A new array of the positives"
+    ],
+    "answer": 0,
+    "explanation": "`filter` keeps elements matching the predicate; `count` returns how many survived (as a `long`). To sum them instead you'd end with `.sum()`."
+  },
+  {
+    "id": "streams-fill-aggregate",
+    "type": "fill-blank",
+    "title": "Recall: aggregate an int[]",
+    "prompt": "Fill in the stream aggregation operations.",
+    "drill": true,
+    "code": "int total = Arrays.{{1}}(nums).sum();\nint biggest = Arrays.stream(nums).{{2}}().getAsInt();\nlong evens = Arrays.stream(nums).{{3}}(x -> x % 2 == 0).count();",
+    "blanks": { "1": ["stream"], "2": ["max"], "3": ["filter"] },
+    "explanation": "`Arrays.stream(nums)` opens an IntStream; `sum`/`max` aggregate, `filter` narrows before you count or sum."
+  },
+  {
+    "id": "streams-code-sumpos",
+    "type": "code-method",
+    "title": "Drill: sum of positives (streams)",
+    "prompt": "From memory: return the sum of the positive numbers in `nums` using a stream — `Arrays.stream(...).filter(...).sum()`.",
+    "drill": true,
+    "method": { "name": "sumPositives", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int sumPositives(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, -2, 3]], "expected": 4 },
+      { "args": [[-1, -2]], "expected": 0 },
+      { "args": [[]], "expected": 0 },
+      { "args": [[5, 5, -5]], "expected": 10, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int sumPositives(int[] nums) {\n        return Arrays.stream(nums).filter(x -> x > 0).sum();\n    }\n}"
+    },
+    "hints": ["`Arrays.stream(nums).filter(x -> x > 0).sum()` — one line."]
+  },
+  {
+    "id": "streams-fill-convert",
+    "type": "fill-blank",
+    "title": "Recall: int[] ↔ List<Integer>",
+    "prompt": "Fill in the boxing conversions.",
+    "drill": true,
+    "code": "int[] arr = list.stream().{{1}}(i -> i).toArray();          // List -> int[]\nList<Integer> boxed = Arrays.stream(nums).{{2}}().collect(Collectors.toList()); // int[] -> List",
+    "blanks": { "1": ["mapToInt"], "2": ["boxed"] },
+    "explanation": "`mapToInt(i -> i)` unboxes Integer→int for `toArray`; `boxed()` boxes int→Integer so `collect(Collectors.toList())` can build a `List<Integer>`."
+  },
+  {
+    "id": "streams-code-tolist",
+    "type": "code-method",
+    "title": "Drill: int[] to List<Integer>",
+    "prompt": "From memory: convert `nums` to a `List<Integer>` in one line using `Arrays.stream(...).boxed().collect(...)`.",
+    "drill": true,
+    "method": { "name": "toList", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "List<Integer>" },
+    "starter": "import java.util.*;\nimport java.util.stream.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3]], "expected": [1, 2, 3] },
+      { "args": [[]], "expected": [] },
+      { "args": [[-4, 4]], "expected": [-4, 4], "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\nimport java.util.stream.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n        return Arrays.stream(nums).boxed().collect(Collectors.toList());\n    }\n}"
+    },
+    "hints": ["`Arrays.stream(nums).boxed().collect(Collectors.toList())` — remember `import java.util.stream.*;`"]
+  }
+]

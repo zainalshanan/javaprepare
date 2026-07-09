@@ -1,0 +1,29 @@
+{
+  "id": "best-time-to-buy-and-sell-stock",
+  "type": "code-method",
+  "title": "Best Time to Buy and Sell Stock",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
+  "prompt": "`prices[i]` is a stock's price on day `i`. Choose one day to buy and a **later** day to sell; return the maximum profit (0 if no profit is possible).\n\n**Example**: `[7,1,5,3,6,4]` → `5` (buy at 1, sell at 6).\n\nOne pass: for each day, the best sale uses the cheapest buy seen so far.",
+  "method": {
+    "name": "maxProfit",
+    "params": [ { "name": "prices", "type": "int[]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int maxProfit(int[] prices) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[7, 1, 5, 3, 6, 4]], "expected": 5 },
+    { "args": [[7, 6, 4, 3, 1]], "expected": 0, "note": "prices only fall" },
+    { "args": [[1, 2]], "expected": 1 },
+    { "args": [[2, 4, 1, 7]], "expected": 6, "hidden": true, "note": "best buy comes after an earlier peak" },
+    { "args": [[5]], "expected": 0, "hidden": true }
+  ],
+  "hints": [
+    "Track two things in one loop: the minimum price so far, and the best profit so far.",
+    "Selling today earns `prices[i] - minSoFar`; compare it to the best before updating the min."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int maxProfit(int[] prices) {\n        int minSoFar = prices[0];\n        int best = 0;\n        for (int p : prices) {\n            best = Math.max(best, p - minSoFar);\n            minSoFar = Math.min(minSoFar, p);\n        }\n        return best;\n    }\n}",
+    "explanation": "O(n)/O(1). Viewed as a window: the left edge (buy day) only ever moves forward to a new minimum — a sliding window where 'invalid' means 'a cheaper buy exists'. Starting best at 0 covers the all-declining case."
+  }
+}

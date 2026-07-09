@@ -1,0 +1,178 @@
+[
+  {
+    "id": "arr-mcq-length",
+    "type": "mcq",
+    "title": "length, length(), size()",
+    "prompt": "Which is correct for an `int[] a`?",
+    "options": [
+      "`a.length` — a field, no parentheses",
+      "`a.length()` — a method call",
+      "`a.size()` — like a list",
+      "`length(a)` — a global function"
+    ],
+    "answer": 0,
+    "explanation": "Arrays: `.length` (field). Strings: `.length()` (method). Collections: `.size()`. Mixing these up is a rite of passage — get it over with now."
+  },
+  {
+    "id": "arr-max",
+    "type": "code-method",
+    "title": "Largest element",
+    "prompt": "Return the largest value in `nums` (always non-empty). Track a running max starting at `nums[0]`.",
+    "method": {
+      "name": "maxValue",
+      "params": [ { "name": "nums", "type": "int[]" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int maxValue(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[3, 9, 2, 5]], "expected": 9 },
+      { "args": [[-5, -2, -8]], "expected": -2, "note": "all negative — don't start max at 0!" },
+      { "args": [[7]], "expected": 7 },
+      { "args": [[1, 2, 3, 100, 4]], "expected": 100, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int maxValue(int[] nums) {\n        int max = nums[0];\n        for (int x : nums) {\n            max = Math.max(max, x);\n        }\n        return max;\n    }\n}",
+      "explanation": "Seeding with `nums[0]` (not 0) handles all-negative arrays — a classic hidden-test trap."
+    },
+    "hints": ["Start `max` at `nums[0]`, not 0.", "`max = Math.max(max, x)` inside the loop."]
+  },
+  {
+    "id": "arr-mcq-reference",
+    "type": "mcq",
+    "title": "Reference semantics",
+    "prompt": "After `int[] a = {1, 2}; int[] b = a; b[0] = 9;` — what is `a[0]`?",
+    "options": [
+      "`9` — a and b point at the same array",
+      "`1` — b is a copy",
+      "`0` — a was reset",
+      "Compile error"
+    ],
+    "answer": 0,
+    "explanation": "Assignment copies the reference, not the data. For an independent copy: `int[] b = Arrays.copyOf(a, a.length);`"
+  },
+  {
+    "id": "arr-count-2d",
+    "type": "code-method",
+    "title": "Count in a grid",
+    "prompt": "Return how many cells in `grid` equal `target`. Nested loops over rows and columns.",
+    "method": {
+      "name": "countCells",
+      "params": [ { "name": "grid", "type": "int[][]" }, { "name": "target", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int countCells(int[][] grid, int target) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[[1, 0], [0, 1]], 1], "expected": 2 },
+      { "args": [[[5, 5, 5]], 5], "expected": 3, "note": "single row" },
+      { "args": [[[1], [1], [1]], 2], "expected": 0, "note": "single column, no matches" },
+      { "args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], 5], "expected": 1, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int countCells(int[][] grid, int target) {\n        int count = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                if (grid[r][c] == target) count++;\n            }\n        }\n        return count;\n    }\n}",
+      "explanation": "`grid.length` is the row count; `grid[0].length` is the column count."
+    },
+    "hints": ["Outer loop `r` over `grid.length`, inner loop `c` over `grid[0].length`."]
+  },
+  {
+    "id": "arr-drill-sum",
+    "type": "code-method",
+    "title": "Drill: array sum",
+    "prompt": "From memory: return the sum of all elements using an enhanced for loop (`for (int x : nums)`).",
+    "drill": true,
+    "method": {
+      "name": "sum",
+      "params": [ { "name": "nums", "type": "int[]" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int sum(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3, 4]], "expected": 10 },
+      { "args": [[]], "expected": 0, "note": "empty array" },
+      { "args": [[-5, 5, -5]], "expected": -5, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int sum(int[] nums) {\n        int total = 0;\n        for (int x : nums) {\n            total += x;\n        }\n        return total;\n    }\n}"
+    },
+    "hints": ["`for (int x : nums) total += x;`"]
+  },
+  {
+    "id": "arr-drill-reverse",
+    "type": "code-method",
+    "title": "Drill: reverse in place",
+    "prompt": "From memory: reverse `nums` in place using the two-pointer swap — `l` from the front, `r` from the back, swap and move inward while `l < r`. The method returns nothing; the grader checks the mutated array.",
+    "drill": true,
+    "method": {
+      "name": "reverse",
+      "params": [ { "name": "nums", "type": "int[]" } ],
+      "returns": "void"
+    },
+    "starter": "class Solution {\n    public void reverse(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3, 4]], "expected": [4, 3, 2, 1] },
+      { "args": [[1, 2, 3]], "expected": [3, 2, 1], "note": "odd length — middle stays" },
+      { "args": [[7]], "expected": [7] },
+      { "args": [[]], "expected": [], "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public void reverse(int[] nums) {\n        for (int l = 0, r = nums.length - 1; l < r; l++, r--) {\n            int t = nums[l];\n            nums[l] = nums[r];\n            nums[r] = t;\n        }\n    }\n}",
+      "explanation": "The three-line swap with a temp variable is pure muscle memory — you'll write it hundreds of times."
+    },
+    "hints": ["Swap needs a temp: `int t = nums[l]; nums[l] = nums[r]; nums[r] = t;`"]
+  },
+  {
+    "id": "arr-ref-create-fill",
+    "type": "fill-blank",
+    "title": "Recall: create & fill",
+    "prompt": "Fill in the array creation, fill, and length operations.",
+    "drill": true,
+    "code": "int[] a = new int[{{1}}];     // n zero-filled slots\nArrays.{{2}}(a, -1);           // set every slot to -1\nint len = a.{{3}};             // number of slots (no parentheses!)",
+    "blanks": { "1": ["n"], "2": ["fill"], "3": ["length"] },
+    "explanation": "`new int[n]` allocates n zeros, `Arrays.fill` overwrites them, and `.length` is a field (no parentheses)."
+  },
+  {
+    "id": "arr-ref-create-code",
+    "type": "code-method",
+    "title": "Drill: build a filled array",
+    "prompt": "From memory: return a new `int[]` of length `n` with every element equal to `val`.",
+    "drill": true,
+    "method": { "name": "make", "params": [ { "name": "n", "type": "int" }, { "name": "val", "type": "int" } ], "returns": "int[]" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] make(int n, int val) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [3, 7], "expected": [7, 7, 7] },
+      { "args": [0, 1], "expected": [] },
+      { "args": [1, -5], "expected": [-5], "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] make(int n, int val) {\n        int[] a = new int[n];\n        Arrays.fill(a, val);\n        return a;\n    }\n}"
+    },
+    "hints": ["`new int[n]`, then `Arrays.fill(a, val)`."]
+  },
+  {
+    "id": "arr-ref-sort-fill",
+    "type": "fill-blank",
+    "title": "Recall: sort & copy",
+    "prompt": "Fill in the sort and sub-range copy operations.",
+    "drill": true,
+    "code": "Arrays.{{1}}(a);                       // ascending, in place\nint[] sub = Arrays.{{2}}(a, 1, 4);     // copy indices [1, 4)",
+    "blanks": { "1": ["sort"], "2": ["copyOfRange"] },
+    "explanation": "`Arrays.sort` sorts in place; `Arrays.copyOfRange(a, from, to)` copies the half-open range [from, to)."
+  },
+  {
+    "id": "arr-ref-sort-code",
+    "type": "code-method",
+    "title": "Drill: sort ascending",
+    "prompt": "From memory: sort `nums` ascending in place and return it (one `Arrays.sort` call).",
+    "drill": true,
+    "method": { "name": "sortAsc", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int[]" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] sortAsc(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[3, 1, 2]], "expected": [1, 2, 3] },
+      { "args": [[]], "expected": [] },
+      { "args": [[5, -1, 5, 0]], "expected": [-1, 0, 5, 5], "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] sortAsc(int[] nums) {\n        Arrays.sort(nums);\n        return nums;\n    }\n}"
+    },
+    "hints": ["`Arrays.sort(nums); return nums;`"]
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "id": "max-area-of-island",
+  "type": "code-method",
+  "title": "Max Area of Island",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/max-area-of-island/",
+  "prompt": "Same grid setup as Number of Islands (here with int 0/1), but return the **area of the largest island** (0 if there's no land).\n\nThe twist: the DFS now *returns a value* — the size of the region it flooded. Compare with tree DFS: same combine-the-recursion shape.",
+  "method": {
+    "name": "maxAreaOfIsland",
+    "params": [ { "name": "grid", "type": "int[][]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int maxAreaOfIsland(int[][] grid) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[0, 0, 1, 0, 0], [0, 1, 1, 1, 0], [0, 0, 1, 0, 0], [0, 0, 0, 0, 0]]], "expected": 5 },
+    { "args": [[[0, 0, 0]]], "expected": 0 },
+    { "args": [[[1]]], "expected": 1 },
+    { "args": [[[1, 1], [1, 1]]], "expected": 4, "hidden": true },
+    { "args": [[[1, 0, 1, 1, 1]]], "expected": 3, "hidden": true }
+  ],
+  "hints": [
+    "dfs returns an int: 0 for out-of-bounds/water, else 1 + the four recursive areas.",
+    "The scan loop takes `best = Math.max(best, dfs(r, c))` for every cell."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int maxAreaOfIsland(int[][] grid) {\n        int best = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                best = Math.max(best, dfs(grid, r, c));\n            }\n        }\n        return best;\n    }\n\n    private int dfs(int[][] grid, int r, int c) {\n        if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] != 1) {\n            return 0;\n        }\n        grid[r][c] = 0;\n        return 1 + dfs(grid, r + 1, c) + dfs(grid, r - 1, c)\n                 + dfs(grid, r, c + 1) + dfs(grid, r, c - 1);\n    }\n}",
+    "explanation": "Identical traversal to Number of Islands, but the DFS aggregates a value instead of just marking — the grid version of `treeSum`. O(m·n)."
+  }
+}

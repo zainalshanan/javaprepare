@@ -1,0 +1,29 @@
+{
+  "id": "n-queens",
+  "type": "code-method",
+  "title": "N-Queens",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/n-queens/",
+  "prompt": "Place `n` queens on an `n×n` board so none attack each other, and return all distinct solutions. Each solution is a list of board rows, where `'Q'` is a queen and `'.'` is empty.\n\n**Example**: `n = 4` → `[[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]`.\n\nPlace one queen per row; track threatened columns and both diagonals with boolean arrays for O(1) safety checks.",
+  "method": {
+    "name": "solveNQueens",
+    "params": [ { "name": "n", "type": "int" } ],
+    "returns": "List<List<String>>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<String>> solveNQueens(int n) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [4], "expected": [[".Q..", "...Q", "Q...", "..Q."], ["..Q.", "Q...", "...Q", ".Q.."]], "compare": "unordered" },
+    { "args": [1], "expected": [["Q"]], "compare": "unordered" },
+    { "args": [2], "expected": [], "compare": "unordered", "note": "no solution" },
+    { "args": [3], "expected": [], "compare": "unordered", "hidden": true }
+  ],
+  "hints": [
+    "Recurse row by row; a queen at (row, col) claims that column, the diagonal `row-col`, and the anti-diagonal `row+col`.",
+    "Use boolean arrays `cols`, `diag`, `anti` (offset diagonal indices to stay non-negative).",
+    "When you place a queen in the last row, snapshot the board into a list of strings."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    private List<List<String>> res = new ArrayList<>();\n\n    public List<List<String>> solveNQueens(int n) {\n        char[][] board = new char[n][n];\n        for (char[] row : board) Arrays.fill(row, '.');\n        backtrack(0, board, new boolean[n], new boolean[2 * n], new boolean[2 * n], n);\n        return res;\n    }\n\n    private void backtrack(int row, char[][] board, boolean[] cols, boolean[] diag, boolean[] anti, int n) {\n        if (row == n) {\n            List<String> sol = new ArrayList<>();\n            for (char[] r : board) sol.add(new String(r));\n            res.add(sol);\n            return;\n        }\n        for (int col = 0; col < n; col++) {\n            int d = row - col + n, a = row + col;\n            if (cols[col] || diag[d] || anti[a]) continue;\n            cols[col] = diag[d] = anti[a] = true;\n            board[row][col] = 'Q';\n            backtrack(row + 1, board, cols, diag, anti, n);\n            board[row][col] = '.';\n            cols[col] = diag[d] = anti[a] = false;\n        }\n    }\n}",
+    "explanation": "One queen per row removes the row conflict automatically. Cells on the same ↘ diagonal share `row - col`; on the same ↙ anti-diagonal share `row + col` — so three boolean arrays make each safety test O(1). Adding `n` to the diagonal index keeps it non-negative for array use."
+  }
+}

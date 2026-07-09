@@ -1,0 +1,30 @@
+{
+  "id": "product-of-array-except-self",
+  "type": "code-method",
+  "title": "Product of Array Except Self",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/product-of-array-except-self/",
+  "prompt": "Return an array `answer` where `answer[i]` is the product of every element of `nums` **except** `nums[i]`. Solve it in O(n) **without division**.\n\n**Example**: `[1,2,3,4]` → `[24,12,8,6]`.\n\nThe trick: `answer[i]` = (product of everything to the left) × (product of everything to the right). Two sweeps, no division.",
+  "method": {
+    "name": "productExceptSelf",
+    "params": [ { "name": "nums", "type": "int[]" } ],
+    "returns": "int[]"
+  },
+  "starter": "class Solution {\n    public int[] productExceptSelf(int[] nums) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3, 4]], "expected": [24, 12, 8, 6] },
+    { "args": [[-1, 1, 0, -3, 3]], "expected": [0, 0, 9, 0, 0], "note": "zeros" },
+    { "args": [[2, 3]], "expected": [3, 2] },
+    { "args": [[5, 0, 0]], "expected": [0, 0, 0], "hidden": true, "note": "two zeros → all zero" },
+    { "args": [[1, 1, 1, 1]], "expected": [1, 1, 1, 1], "hidden": true }
+  ],
+  "hints": [
+    "First pass left→right: res[i] = product of everything before i.",
+    "Second pass right→left: multiply res[i] by a running product of everything after i.",
+    "Keep the running right-product in a single variable so you use O(1) extra space."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int[] productExceptSelf(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        res[0] = 1;\n        for (int i = 1; i < n; i++) {\n            res[i] = res[i - 1] * nums[i - 1];   // prefix product\n        }\n        int right = 1;\n        for (int i = n - 1; i >= 0; i--) {\n            res[i] *= right;                     // multiply in the suffix product\n            right *= nums[i];\n        }\n        return res;\n    }\n}",
+    "explanation": "O(n) time, O(1) extra space (the output array doesn't count). res[i] first holds the prefix product, then gets multiplied by the suffix product accumulated in `right`. Avoiding division is what makes the zero cases (which would divide by zero) work cleanly."
+  }
+}

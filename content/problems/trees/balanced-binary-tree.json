@@ -1,0 +1,30 @@
+{
+  "id": "balanced-binary-tree",
+  "type": "code-method",
+  "title": "Balanced Binary Tree",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/balanced-binary-tree/",
+  "prompt": "Return whether a binary tree is **height-balanced**: for every node, its two subtrees' heights differ by at most 1.\n\n**Example**: `[3,9,20,null,null,15,7]` → `true`; `[1,2,2,3,3,null,null,4,4]` → `false`.\n\nCompute heights bottom-up, using a sentinel `-1` to signal 'already unbalanced' so you don't recompute.",
+  "method": {
+    "name": "isBalanced",
+    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean isBalanced(TreeNode root) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[3, 9, 20, null, null, 15, 7]], "expected": true },
+    { "args": [[1, 2, 2, 3, 3, null, null, 4, 4]], "expected": false },
+    { "args": [[]], "expected": true },
+    { "args": [[1, 2, null, 3, null, 4]], "expected": false, "hidden": true, "note": "left chain of depth 3" },
+    { "args": [[1, 2, 2, 3, null, null, 3, 4, null, null, 4]], "expected": false, "hidden": true }
+  ],
+  "hints": [
+    "Write a helper returning subtree height, or -1 if any subtree below is unbalanced.",
+    "If either child returns -1, propagate -1 up immediately (short-circuit).",
+    "If `abs(leftH - rightH) > 1`, this node is unbalanced → return -1. Balanced overall ⟺ helper(root) != -1."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean isBalanced(TreeNode root) {\n        return height(root) != -1;\n    }\n\n    private int height(TreeNode node) {\n        if (node == null) return 0;\n        int l = height(node.left);\n        if (l == -1) return -1;\n        int r = height(node.right);\n        if (r == -1) return -1;\n        if (Math.abs(l - r) > 1) return -1;\n        return 1 + Math.max(l, r);\n    }\n}",
+    "explanation": "O(n). Overloading the height value with a -1 'poison' means one post-order pass both measures heights and detects imbalance — no separate O(n) height call per node (which would make the naive version O(n²))."
+  }
+}

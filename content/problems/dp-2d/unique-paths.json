@@ -1,0 +1,30 @@
+{
+  "id": "unique-paths",
+  "type": "code-method",
+  "title": "Unique Paths",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/unique-paths/",
+  "prompt": "A robot starts at the top-left of an `m x n` grid and moves only right or down. How many distinct paths reach the bottom-right? (Answers fit in int.)\n\n**Example**: `m = 3, n = 7` → `28`.\n\nYou drilled this exact table in the pattern lesson — now it's the real problem.",
+  "method": {
+    "name": "uniquePaths",
+    "params": [ { "name": "m", "type": "int" }, { "name": "n", "type": "int" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int uniquePaths(int m, int n) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [3, 7], "expected": 28 },
+    { "args": [3, 2], "expected": 3 },
+    { "args": [1, 1], "expected": 1 },
+    { "args": [7, 3], "expected": 28, "hidden": true, "note": "symmetric" },
+    { "args": [23, 12], "expected": 193536720, "hidden": true }
+  ],
+  "hints": [
+    "dp[i][j] = paths into cell (i, j) = dp[i-1][j] + dp[i][j-1].",
+    "First row and first column are all 1 — only one straight-line way in.",
+    "Bonus: a single 1-D row array suffices, updated left to right."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int uniquePaths(int m, int n) {\n        int[] dp = new int[n];\n        java.util.Arrays.fill(dp, 1);          // first row\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[j] = dp[j] + dp[j - 1];      // above + left\n            }\n        }\n        return dp[n - 1];\n    }\n}",
+    "explanation": "The rolled 1-D version: before assignment, `dp[j]` still holds the value from the row above and `dp[j-1]` is already this row's left neighbor. O(m·n) time, O(n) space. (The full 2-D table from the drill is equally accepted.)"
+  }
+}

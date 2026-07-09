@@ -1,0 +1,29 @@
+{
+  "id": "reverse-linked-list",
+  "type": "code-method",
+  "title": "Reverse Linked List",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/reverse-linked-list/",
+  "prompt": "Given the head of a singly linked list, reverse it and return the new head.\n\n**Example**: `1→2→3→4→5` → `5→4→3→2→1`.\n\nMove 1 from the pattern lesson: save → flip → advance ×2. This must become pure muscle memory — it's a sub-step of many harder problems.",
+  "method": {
+    "name": "reverseList",
+    "params": [ { "name": "head", "type": "ListNode" } ],
+    "returns": "ListNode"
+  },
+  "starter": "class Solution {\n    public ListNode reverseList(ListNode head) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3, 4, 5]], "expected": [5, 4, 3, 2, 1] },
+    { "args": [[1, 2]], "expected": [2, 1] },
+    { "args": [[]], "expected": [], "note": "empty list → null" },
+    { "args": [[7]], "expected": [7], "hidden": true }
+  ],
+  "hints": [
+    "Two travelers: `prev` (starts null) and `curr` (starts head).",
+    "Loop body, exactly this order: save `curr.next`, point `curr.next` at prev, advance prev to curr, advance curr to the saved node.",
+    "When curr hits null, `prev` is the new head."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public ListNode reverseList(ListNode head) {\n        ListNode prev = null, curr = head;\n        while (curr != null) {\n            ListNode next = curr.next;\n            curr.next = prev;\n            prev = curr;\n            curr = next;\n        }\n        return prev;\n    }\n}",
+    "explanation": "O(n)/O(1). `prev == null` initially makes the old head become the new tail (its next becomes null) with zero special-casing. The recursive version is elegant but the iterative one is the interview default."
+  }
+}

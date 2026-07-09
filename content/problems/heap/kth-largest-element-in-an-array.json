@@ -1,0 +1,30 @@
+{
+  "id": "kth-largest-element-in-an-array",
+  "type": "code-method",
+  "title": "Kth Largest Element in an Array",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+  "prompt": "Return the `k`-th largest element in `nums` (the k-th in sorted-descending order, not the k-th distinct).\n\n**Example**: `nums = [3,2,1,5,6,4]`, `k = 2` → `5`.\n\nThe size-k min-heap pattern: keep only the k largest seen; its minimum is the answer.",
+  "method": {
+    "name": "findKthLargest",
+    "params": [ { "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" } ],
+    "returns": "int"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int findKthLargest(int[] nums, int k) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[3, 2, 1, 5, 6, 4], 2], "expected": 5 },
+    { "args": [[3, 2, 3, 1, 2, 4, 5, 5, 6], 4], "expected": 4 },
+    { "args": [[1], 1], "expected": 1 },
+    { "args": [[7, 7, 7], 2], "expected": 7, "hidden": true, "note": "duplicates count individually" },
+    { "args": [[-1, 2, 0], 3], "expected": -1, "hidden": true }
+  ],
+  "hints": [
+    "Min-heap capped at size k: offer each number, poll when size exceeds k.",
+    "The heap ends holding the k largest values; its top (minimum of those) is the k-th largest.",
+    "O(n log k). (Quickselect gives O(n) average if you want to go further.)"
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int findKthLargest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) {\n            heap.offer(x);\n            if (heap.size() > k) heap.poll();\n        }\n        return heap.peek();\n    }\n}",
+    "explanation": "Evicting the smallest whenever the heap exceeds k means it always contains exactly the k biggest elements seen so far, so its minimum is the k-th largest overall. O(n log k) time, O(k) space."
+  }
+}

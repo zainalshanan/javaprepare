@@ -1,0 +1,30 @@
+{
+  "id": "valid-anagram",
+  "type": "code-method",
+  "title": "Valid Anagram",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/valid-anagram/",
+  "prompt": "Given two strings `s` and `t` (lowercase letters), return `true` if `t` is an anagram of `s` — the same letters with the same counts, rearranged.\n\n**Example**: `s = \"anagram\"`, `t = \"nagaram\"` → `true`.\n\nThe `int[26]` count array from the Strings lesson is the ideal tool.",
+  "method": {
+    "name": "isAnagram",
+    "params": [ { "name": "s", "type": "String" }, { "name": "t", "type": "String" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean isAnagram(String s, String t) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["anagram", "nagaram"], "expected": true },
+    { "args": ["rat", "car"], "expected": false },
+    { "args": ["a", "ab"], "expected": false, "note": "different lengths" },
+    { "args": ["", ""], "expected": true, "hidden": true },
+    { "args": ["aacc", "ccac"], "expected": false, "hidden": true, "note": "same letters, different counts" }
+  ],
+  "hints": [
+    "Different lengths can never be anagrams — check that first.",
+    "One count array: increment for s's chars, decrement for t's chars.",
+    "Anagram ⟺ every counter ends at exactly 0."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n        int[] counts = new int[26];\n        for (int i = 0; i < s.length(); i++) {\n            counts[s.charAt(i) - 'a']++;\n            counts[t.charAt(i) - 'a']--;\n        }\n        for (int c : counts) {\n            if (c != 0) return false;\n        }\n        return true;\n    }\n}",
+    "explanation": "Increment/decrement in one pass, then verify all zeros: O(n) time, O(1) space (the array is always 26 slots). Sorting both strings and comparing also works at O(n log n)."
+  }
+}

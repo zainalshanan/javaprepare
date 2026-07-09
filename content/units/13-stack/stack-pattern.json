@@ -1,0 +1,158 @@
+[
+  {
+    "id": "pat-st-mcq-mono",
+    "type": "mcq",
+    "title": "Why O(n)?",
+    "prompt": "The monotonic stack has a while-loop inside a for-loop. Why is it still O(n) overall?",
+    "options": [
+      "Each index is pushed once and popped at most once — total stack operations ≤ 2n",
+      "The while loop rarely runs",
+      "It's actually O(n²) but fast in practice",
+      "Java optimizes nested loops"
+    ],
+    "answer": 0,
+    "explanation": "Amortized analysis: charge each pop to the element being popped, not to the current iteration. Total pops ≤ total pushes = n."
+  },
+  {
+    "id": "pat-st-drill-dedup",
+    "type": "code-method",
+    "title": "Drill: remove adjacent duplicates",
+    "prompt": "From memory: repeatedly delete adjacent equal pairs — `\"abbaca\"` → remove `bb` → `\"aaca\"` → remove `aa` → `\"ca\"`. Stack version: for each char, if it equals the top, pop; else push. Build the answer with StringBuilder from the stack bottom (hint: use the deque as a stack but a StringBuilder works as the stack itself!).",
+    "drill": true,
+    "method": {
+      "name": "removeAdjacentDuplicates",
+      "params": [
+        {
+          "name": "s",
+          "type": "String"
+        }
+      ],
+      "returns": "String"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public String removeAdjacentDuplicates(String s) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          "abbaca"
+        ],
+        "expected": "ca"
+      },
+      {
+        "args": [
+          "azxxzy"
+        ],
+        "expected": "ay"
+      },
+      {
+        "args": [
+          "abc"
+        ],
+        "expected": "abc"
+      },
+      {
+        "args": [
+          "aaaa"
+        ],
+        "expected": "",
+        "hidden": true
+      },
+      {
+        "args": [
+          ""
+        ],
+        "expected": "",
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public String removeAdjacentDuplicates(String s) {\n        StringBuilder stack = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            int top = stack.length() - 1;\n            if (top >= 0 && stack.charAt(top) == c) {\n                stack.deleteCharAt(top);   // pop\n            } else {\n                stack.append(c);           // push\n            }\n        }\n        return stack.toString();\n    }\n}",
+      "explanation": "A StringBuilder IS a char stack: append = push, deleteCharAt(last) = pop, charAt(last) = peek — and the final answer needs no reversal."
+    },
+    "hints": [
+      "Compare each char with the current last char of the StringBuilder.",
+      "Equal → delete the last char; different → append."
+    ]
+  },
+  {
+    "id": "pat-st-drill-nge",
+    "type": "code-method",
+    "title": "Drill: next greater element (monotonic stack)",
+    "prompt": "From memory (monotonic stack of indices): for each element, return the next greater element to its RIGHT, or -1 if none.",
+    "drill": true,
+    "method": {
+      "name": "nextGreater",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] nextGreater(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            2,
+            1,
+            3
+          ]
+        ],
+        "expected": [
+          3,
+          3,
+          -1
+        ]
+      },
+      {
+        "args": [
+          [
+            3,
+            2,
+            1
+          ]
+        ],
+        "expected": [
+          -1,
+          -1,
+          -1
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            2,
+            4
+          ]
+        ],
+        "expected": [
+          3,
+          4,
+          4,
+          -1
+        ]
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": [
+          -1
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] nextGreater(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        Arrays.fill(res, -1);\n        Deque<Integer> st = new ArrayDeque<>();\n        for (int i = 0; i < n; i++) {\n            while (!st.isEmpty() && nums[i] > nums[st.peek()]) {\n                res[st.pop()] = nums[i];\n            }\n            st.push(i);\n        }\n        return res;\n    }\n}"
+    },
+    "hints": [
+      "Push indices; when nums[i] beats the top, it's that index's answer.",
+      "Anything left on the stack keeps -1."
+    ]
+  }
+]

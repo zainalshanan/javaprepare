@@ -1,0 +1,29 @@
+{
+  "id": "generate-parentheses",
+  "type": "code-method",
+  "title": "Generate Parentheses",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/generate-parentheses/",
+  "prompt": "Given `n` pairs of parentheses, return all **well-formed** combinations, in any order.\n\n**Example**: `n = 3` → `[\"((()))\",\"(()())\",\"(())()\",\"()(())\",\"()()()\"]`.\n\nBacktracking with two counters: you may add `(` while `open < n`, and `)` only while `close < open` (so it never goes unbalanced).",
+  "method": {
+    "name": "generateParenthesis",
+    "params": [ { "name": "n", "type": "int" } ],
+    "returns": "List<String>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> generateParenthesis(int n) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [1], "expected": ["()"], "compare": "unordered" },
+    { "args": [2], "expected": ["(())", "()()"], "compare": "unordered" },
+    { "args": [3], "expected": ["((()))", "(()())", "(())()", "()(())", "()()()"], "compare": "unordered" },
+    { "args": [4], "expected": ["(((())))", "((()()))", "((())())", "((()))()", "(()(()))", "(()()())", "(()())()", "(())(())", "(())()()", "()((()))", "()(()())", "()(())()", "()()(())", "()()()()"], "compare": "unordered", "hidden": true }
+  ],
+  "hints": [
+    "Track `open` and `close` counts used so far; base case is length 2n.",
+    "Add `(` only if `open < n`. Add `)` only if `close < open` — that invariant guarantees validity.",
+    "Use a StringBuilder: append, recurse, deleteCharAt."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    private List<String> res = new ArrayList<>();\n\n    public List<String> generateParenthesis(int n) {\n        backtrack(new StringBuilder(), 0, 0, n);\n        return res;\n    }\n\n    private void backtrack(StringBuilder sb, int open, int close, int n) {\n        if (sb.length() == 2 * n) {\n            res.add(sb.toString());\n            return;\n        }\n        if (open < n) {\n            sb.append('(');\n            backtrack(sb, open + 1, close, n);\n            sb.deleteCharAt(sb.length() - 1);\n        }\n        if (close < open) {\n            sb.append(')');\n            backtrack(sb, open, close + 1, n);\n            sb.deleteCharAt(sb.length() - 1);\n        }\n    }\n}",
+    "explanation": "The two guards (`open < n`, `close < open`) prune every invalid branch before it's built, so the recursion only ever visits well-formed prefixes — no validity filter needed at the end. Output count is the nth Catalan number."
+  }
+}

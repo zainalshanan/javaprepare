@@ -1,0 +1,30 @@
+{
+  "id": "task-scheduler",
+  "type": "code-method",
+  "title": "Task Scheduler",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/task-scheduler/",
+  "prompt": "`tasks` are labeled A–Z; identical tasks must be separated by at least `n` intervals of cooldown (during which the CPU can run a different task or idle). Return the minimum number of intervals to finish all tasks.\n\n**Example**: `tasks = ['A','A','A','B','B','B']`, `n = 2` → `8` (e.g. `A B _ A B _ A B`).\n\nThe most frequent task dictates the schedule's skeleton; a direct formula counts the forced idle slots.",
+  "method": {
+    "name": "leastInterval",
+    "params": [ { "name": "tasks", "type": "char[]" }, { "name": "n", "type": "int" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int leastInterval(char[] tasks, int n) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["AAABBB", 2], "expected": 8 },
+    { "args": ["AAABBB", 0], "expected": 6, "note": "no cooldown → just run them all" },
+    { "args": ["AAAAAABCDEFG", 2], "expected": 16 },
+    { "args": ["AACCB", 1], "expected": 5, "hidden": true },
+    { "args": ["A", 5], "expected": 1, "hidden": true }
+  ],
+  "hints": [
+    "Count frequencies; let `maxCount` be the highest and `maxFreqTasks` how many tasks share it.",
+    "The busiest task lays out `(maxCount - 1)` gaps of length `n`; other max-frequency tasks fill the last column.",
+    "Answer = max(total tasks, `(maxCount - 1) * (n + 1) + maxFreqTasks`)."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int leastInterval(char[] tasks, int n) {\n        int[] counts = new int[26];\n        for (char t : tasks) counts[t - 'A']++;\n        int maxCount = 0, maxFreqTasks = 0;\n        for (int c : counts) {\n            if (c > maxCount) { maxCount = c; maxFreqTasks = 1; }\n            else if (c == maxCount) maxFreqTasks++;\n        }\n        int frame = (maxCount - 1) * (n + 1) + maxFreqTasks;\n        return Math.max(tasks.length, frame);\n    }\n}",
+    "explanation": "Imagine the busiest task pinned every (n+1) slots: that builds a frame of `(maxCount-1)*(n+1)` plus the final row of the tasks tied for most-frequent. If there are enough OTHER tasks to fill every idle gap, no idling is needed — hence the `max` with the raw task count."
+  }
+}

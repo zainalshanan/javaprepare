@@ -1,0 +1,32 @@
+{
+  "id": "valid-parenthesis-string",
+  "type": "code-method",
+  "title": "Valid Parenthesis String",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/valid-parenthesis-string/",
+  "prompt": "Given a string of `(`, `)`, and `*` (where `*` can be `(`, `)`, or empty), return whether it can be a valid parenthesis string.\n\n**Example**: `\"(*)\"` → `true`; `\"(*))\"` → `true`.\n\nTrack the RANGE of possible open-paren counts as you scan; valid if 0 stays in range and the range can end at 0.",
+  "method": {
+    "name": "checkValidString",
+    "params": [ { "name": "s", "type": "String" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean checkValidString(String s) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["()"], "expected": true },
+    { "args": ["(*)"], "expected": true },
+    { "args": ["(*))"], "expected": true },
+    { "args": [")("], "expected": false },
+    { "args": ["(("], "expected": false, "hidden": true },
+    { "args": ["*"], "expected": true, "hidden": true },
+    { "args": ["(*()"], "expected": true, "hidden": true }
+  ],
+  "hints": [
+    "Keep `low` and `high`: the min and max number of unmatched '(' possible so far.",
+    "'(' bumps both; ')' drops both; '*' drops low (treat as ')') and raises high (treat as '(').",
+    "If high < 0, too many ')' → false. Clamp low at 0. Valid iff low can reach 0 at the end."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean checkValidString(String s) {\n        int low = 0, high = 0;\n        for (char c : s.toCharArray()) {\n            if (c == '(') { low++; high++; }\n            else if (c == ')') { low--; high--; }\n            else { low--; high++; }\n            if (high < 0) return false;\n            if (low < 0) low = 0;\n        }\n        return low == 0;\n    }\n}",
+    "explanation": "Rather than trying every meaning of each '*', track the interval [low, high] of possible open counts. high < 0 means even the most-open interpretation has excess ')'. Clamping low at 0 forbids negative opens. If 0 is achievable at the end (low == 0), some valid assignment exists. O(n)/O(1)."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "multiply-strings",
+  "type": "code-method",
+  "title": "Multiply Strings",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/multiply-strings/",
+  "prompt": "Given two non-negative integers as strings `num1` and `num2`, return their product as a string. No built-in big-integer conversion.\n\n**Example**: `\"123\" × \"456\"` → `\"56088\"`.\n\nGrade-school multiplication: digit `i` × digit `j` lands in result positions `i+j` and `i+j+1`.",
+  "method": {
+    "name": "multiply",
+    "params": [ { "name": "num1", "type": "String" }, { "name": "num2", "type": "String" } ],
+    "returns": "String"
+  },
+  "starter": "class Solution {\n    public String multiply(String num1, String num2) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["2", "3"], "expected": "6" },
+    { "args": ["123", "456"], "expected": "56088" },
+    { "args": ["0", "52"], "expected": "0" },
+    { "args": ["9", "99"], "expected": "891", "hidden": true },
+    { "args": ["123456789", "987654321"], "expected": "121932631112635269", "hidden": true }
+  ],
+  "hints": [
+    "A product of an m-digit and n-digit number has at most m+n digits.",
+    "digit[i] × digit[j] contributes to positions i+j (carry) and i+j+1 (units) of the result array.",
+    "Accumulate, then skip leading zeros when building the string (but keep \"0\" itself)."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public String multiply(String num1, String num2) {\n        if (num1.equals(\"0\") || num2.equals(\"0\")) return \"0\";\n        int m = num1.length(), n = num2.length();\n        int[] pos = new int[m + n];\n        for (int i = m - 1; i >= 0; i--) {\n            for (int j = n - 1; j >= 0; j--) {\n                int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');\n                int p1 = i + j, p2 = i + j + 1;\n                int sum = mul + pos[p2];\n                pos[p2] = sum % 10;\n                pos[p1] += sum / 10;\n            }\n        }\n        StringBuilder sb = new StringBuilder();\n        for (int p : pos) {\n            if (!(sb.length() == 0 && p == 0)) sb.append(p);\n        }\n        return sb.length() == 0 ? \"0\" : sb.toString();\n    }\n}",
+    "explanation": "Multiplying digit i of num1 by digit j of num2 produces a value whose units land at result index i+j+1 and whose carry lands at i+j — a positional identity that lets you accumulate all partial products into one array without aligning shifts manually. A final pass drops leading zeros. O(m·n)."
+  }
+}

@@ -1,0 +1,118 @@
+[
+  {
+    "id": "ops-mcq-intdiv",
+    "type": "mcq",
+    "title": "Integer division",
+    "prompt": "What does `System.out.println(9 / 4 + 9 % 4);` print?",
+    "options": [
+      "`3` — 9/4 is 2 (truncated), 9%4 is 1, so 2+1",
+      "`3.25` — division keeps decimals",
+      "`2` — the remainder is dropped",
+      "`4` — 9/4 rounds to 2.25 then to 2, plus 2"
+    ],
+    "answer": 0,
+    "explanation": "Both operands are ints, so `/` truncates: 9/4 = 2. The remainder 9%4 = 1. 2 + 1 = 3."
+  },
+  {
+    "id": "ops-mcq-shortcircuit",
+    "type": "mcq",
+    "title": "Short-circuit order",
+    "prompt": "`arr` has length 3. Which condition is safe when `i` might be 5?",
+    "options": [
+      "`i < arr.length && arr[i] > 0` — bounds check first",
+      "`arr[i] > 0 && i < arr.length` — same thing, order doesn't matter",
+      "Both crash",
+      "Neither compiles"
+    ],
+    "answer": 0,
+    "explanation": "`&&` evaluates left to right and stops at the first false. Checking `i < arr.length` first means `arr[i]` is never touched when `i` is out of bounds. The reversed order throws ArrayIndexOutOfBoundsException."
+  },
+  {
+    "id": "ops-fill-math",
+    "type": "fill-blank",
+    "title": "Math toolbox",
+    "prompt": "Fill in the Math calls.",
+    "code": "int bigger = Math.{{1}}(a, b);          // larger of the two\nint distance = Math.{{2}}(a - b);       // always non-negative\nint pow = (int) Math.{{3}}(2, 10);      // 1024 — note the cast",
+    "blanks": {
+      "1": ["max"],
+      "2": ["abs"],
+      "3": ["pow"]
+    },
+    "explanation": "`Math.pow` returns `double` even for whole numbers, hence the `(int)` cast."
+  },
+  {
+    "id": "ops-lastdigit",
+    "type": "code-method",
+    "title": "Sum of digits",
+    "prompt": "Return the sum of the digits of `n` (n ≥ 0). Peel digits with `% 10` and `/ 10` in a loop: while `n > 0`, add `n % 10` to a running total, then set `n = n / 10`.",
+    "method": {
+      "name": "digitSum",
+      "params": [ { "name": "n", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int digitSum(int n) {\n        int sum = 0;\n        // peel digits here\n        return sum;\n    }\n}\n",
+    "tests": [
+      { "args": [507], "expected": 12 },
+      { "args": [9], "expected": 9 },
+      { "args": [0], "expected": 0, "note": "zero has digit sum 0" },
+      { "args": [99999], "expected": 45, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int digitSum(int n) {\n        int sum = 0;\n        while (n > 0) {\n            sum += n % 10;\n            n /= 10;\n        }\n        return sum;\n    }\n}",
+      "explanation": "`n % 10` reads the last digit; `n /= 10` removes it. The loop ends when every digit is consumed."
+    },
+    "hints": ["`while (n > 0) { ... }`", "Inside: `sum += n % 10; n /= 10;`"]
+  },
+  {
+    "id": "ops-drill-minmax",
+    "type": "code-method",
+    "title": "Drill: clamp",
+    "prompt": "From memory: return `x` clamped into the range `[lo, hi]` — if `x < lo` return `lo`, if `x > hi` return `hi`, else `x`. One line with `Math.max` and `Math.min` is the idiomatic answer.",
+    "drill": true,
+    "method": {
+      "name": "clamp",
+      "params": [ { "name": "x", "type": "int" }, { "name": "lo", "type": "int" }, { "name": "hi", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int clamp(int x, int lo, int hi) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [5, 0, 10], "expected": 5 },
+      { "args": [-3, 0, 10], "expected": 0 },
+      { "args": [99, 0, 10], "expected": 10 },
+      { "args": [7, 7, 7], "expected": 7, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int clamp(int x, int lo, int hi) {\n        return Math.max(lo, Math.min(x, hi));\n    }\n}",
+      "explanation": "`Math.min(x, hi)` caps the top; `Math.max(lo, ...)` lifts the bottom."
+    },
+    "hints": ["Cap the top first: `Math.min(x, hi)` — then lift the result with `Math.max(lo, ...)`."]
+  },
+  {
+    "id": "ops-ref-math-fill",
+    "type": "fill-blank",
+    "title": "Recall: Math toolbox",
+    "prompt": "Fill in the three Math calls you'll use constantly.",
+    "drill": true,
+    "code": "int hi = Math.{{1}}(a, b);   // larger of the two\nint lo = Math.{{2}}(a, b);   // smaller of the two\nint d  = Math.{{3}}(a - b);  // non-negative distance",
+    "blanks": { "1": ["max"], "2": ["min"], "3": ["abs"] },
+    "explanation": "`Math.max`, `Math.min`, and `Math.abs` — the three you reach for in almost every problem."
+  },
+  {
+    "id": "ops-ref-math-code",
+    "type": "code-method",
+    "title": "Drill: range of three",
+    "prompt": "From memory: return the range (largest minus smallest) of three ints, using nested `Math.max` / `Math.min`.",
+    "drill": true,
+    "method": { "name": "range", "params": [ { "name": "a", "type": "int" }, { "name": "b", "type": "int" }, { "name": "c", "type": "int" } ], "returns": "int" },
+    "starter": "class Solution {\n    public int range(int a, int b, int c) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [1, 5, 3], "expected": 4 },
+      { "args": [7, 7, 7], "expected": 0 },
+      { "args": [-2, 0, 5], "expected": 7, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int range(int a, int b, int c) {\n        int mx = Math.max(a, Math.max(b, c));\n        int mn = Math.min(a, Math.min(b, c));\n        return mx - mn;\n    }\n}"
+    },
+    "hints": ["Nest to get the max of three: `Math.max(a, Math.max(b, c))`.", "Do the same with `Math.min`, then subtract."]
+  }
+]

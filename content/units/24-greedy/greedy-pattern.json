@@ -1,0 +1,160 @@
+[
+  {
+    "id": "pat-gd-mcq-kadane",
+    "type": "mcq",
+    "title": "Kadane's decision",
+    "prompt": "In `running = Math.max(nums[i], running + nums[i])`, choosing the left option means…",
+    "options": [
+      "Abandoning the previous run and starting a new subarray at i — done exactly when the old running sum went negative",
+      "Extending the current subarray",
+      "Skipping element i",
+      "Taking the global max"
+    ],
+    "answer": 0,
+    "explanation": "`nums[i]` alone beats `running + nums[i]` precisely when running < 0 — a negative prefix is dead weight."
+  },
+  {
+    "id": "pat-gd-drill-kadane",
+    "type": "code-method",
+    "title": "Drill: best time to sell (one pass)",
+    "prompt": "From memory — the running-best shape on prices: track the MINIMUM price seen so far; at each day, profit if selling today = price - minSoFar; return the best such profit (0 if prices only fall).",
+    "drill": true,
+    "method": {
+      "name": "bestProfit",
+      "params": [
+        {
+          "name": "prices",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int bestProfit(int[] prices) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            7,
+            1,
+            5,
+            3,
+            6,
+            4
+          ]
+        ],
+        "expected": 5,
+        "note": "buy at 1, sell at 6"
+      },
+      {
+        "args": [
+          [
+            7,
+            6,
+            4,
+            3,
+            1
+          ]
+        ],
+        "expected": 0,
+        "note": "never profitable"
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            2,
+            10,
+            1,
+            3
+          ]
+        ],
+        "expected": 8,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int bestProfit(int[] prices) {\n        int minSoFar = prices[0];\n        int best = 0;\n        for (int p : prices) {\n            best = Math.max(best, p - minSoFar);\n            minSoFar = Math.min(minSoFar, p);\n        }\n        return best;\n    }\n}",
+      "explanation": "Two running values, one pass. (This is Best Time to Buy and Sell Stock — you drilled the real problem's core here; the sliding-window unit frames it differently.)"
+    },
+    "hints": [
+      "Track `minSoFar` and `best` together in one loop."
+    ]
+  },
+  {
+    "id": "pat-gd-drill-reach",
+    "type": "code-method",
+    "title": "Drill: can you reach the end? (jump)",
+    "prompt": "From memory (reachability scan): `nums[i]` is the max jump from index i. Starting at 0, return whether the last index is reachable. Track the farthest reachable frontier.",
+    "drill": true,
+    "method": {
+      "name": "canReachEnd",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "boolean"
+    },
+    "starter": "class Solution {\n    public boolean canReachEnd(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            2,
+            3,
+            1,
+            1,
+            4
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            3,
+            2,
+            1,
+            0,
+            4
+          ]
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          [
+            0
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            1,
+            0,
+            1
+          ]
+        ],
+        "expected": false,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public boolean canReachEnd(int[] nums) {\n        int reach = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (i > reach) return false;\n            reach = Math.max(reach, i + nums[i]);\n        }\n        return true;\n    }\n}"
+    },
+    "hints": [
+      "If the scan index passes `reach`, you're stuck.",
+      "Otherwise extend `reach = max(reach, i + nums[i])`."
+    ]
+  }
+]

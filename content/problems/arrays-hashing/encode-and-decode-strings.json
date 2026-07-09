@@ -1,0 +1,30 @@
+{
+  "id": "encode-and-decode-strings",
+  "type": "code-method",
+  "title": "Encode and Decode Strings",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/encode-and-decode-strings/",
+  "prompt": "Design an algorithm to **encode** a list of strings into one string, and **decode** it back to the original list. The strings can contain ANY characters (commas, `#`, spaces, empty strings) — so a naive `join(\",\")` won't work.\n\nTo make this testable here, implement two private helpers `encode(List<String>)` and `decode(String)`, and the graded method returns `decode(encode(strs))` — it must reproduce the input exactly.\n\nThe classic scheme: prefix each string with its length and a delimiter, e.g. `\"5#hello3#foo\"`.",
+  "method": {
+    "name": "roundTrip",
+    "params": [ { "name": "strs", "type": "List<String>" } ],
+    "returns": "List<String>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> roundTrip(List<String> strs) {\n        return decode(encode(strs));\n    }\n\n    private String encode(List<String> strs) {\n\n    }\n\n    private List<String> decode(String s) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [["neet", "code", "love", "you"]], "expected": ["neet", "code", "love", "you"] },
+    { "args": [["", "", ""]], "expected": ["", "", ""], "note": "empty strings must survive" },
+    { "args": [["#", "3#abc", "we love"]], "expected": ["#", "3#abc", "we love"], "note": "delimiter and digits inside the data" },
+    { "args": [[]], "expected": [], "hidden": true },
+    { "args": [["a,b,c", "x"]], "expected": ["a,b,c", "x"], "hidden": true, "note": "commas would break join(\",\")" }
+  ],
+  "hints": [
+    "Encode each string as `<length>#<string>`. The length tells the decoder exactly how many chars to read, so the content can contain anything.",
+    "Decode: read digits until `#` to get the length, then take exactly that many characters as the string, and continue.",
+    "Track an index `i` through the encoded string; after reading one chunk, jump `i` past it."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public List<String> roundTrip(List<String> strs) {\n        return decode(encode(strs));\n    }\n\n    private String encode(List<String> strs) {\n        StringBuilder sb = new StringBuilder();\n        for (String s : strs) {\n            sb.append(s.length()).append('#').append(s);\n        }\n        return sb.toString();\n    }\n\n    private List<String> decode(String s) {\n        List<String> res = new ArrayList<>();\n        int i = 0;\n        while (i < s.length()) {\n            int j = i;\n            while (s.charAt(j) != '#') j++;         // read the length prefix\n            int len = Integer.parseInt(s.substring(i, j));\n            res.add(s.substring(j + 1, j + 1 + len));\n            i = j + 1 + len;                         // jump past this chunk\n        }\n        return res;\n    }\n}",
+    "explanation": "Length-prefixing is delimiter-proof: because the decoder reads a fixed count of characters, the payload can legally contain `#`, digits, commas, or be empty. This same framing (\"length then bytes\") is how real network protocols avoid ambiguity."
+  }
+}

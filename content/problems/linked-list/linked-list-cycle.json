@@ -1,0 +1,31 @@
+{
+  "id": "linked-list-cycle",
+  "type": "code-method",
+  "title": "Linked List Cycle",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/linked-list-cycle/",
+  "prompt": "Return `true` if the linked list has a cycle (some node's `next` points back to an earlier node).\n\nDo it in O(1) space with Floyd's tortoise-and-hare: a slow pointer and a fast pointer — if there's a loop, the fast one eventually laps the slow one and they meet.",
+  "method": {
+    "name": "hasCycle",
+    "params": [ { "name": "head", "type": "ListNode" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean hasCycle(ListNode head) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [{ "vals": [3, 2, 0, -4], "pos": 1 }], "expected": true, "note": "tail links back to index 1" },
+    { "args": [{ "vals": [1, 2], "pos": 0 }], "expected": true },
+    { "args": [{ "vals": [1], "pos": -1 }], "expected": false, "note": "single node, no cycle" },
+    { "args": [{ "vals": [], "pos": -1 }], "expected": false, "hidden": true },
+    { "args": [{ "vals": [1, 2, 3, 4, 5], "pos": -1 }], "expected": false, "hidden": true },
+    { "args": [{ "vals": [1, 2], "pos": 1 }], "expected": true, "hidden": true, "note": "self-loop at the tail" }
+  ],
+  "hints": [
+    "Fast moves 2, slow moves 1. In a cycle, the gap closes by 1 each step — they MUST meet.",
+    "Loop guard: `while (fast != null && fast.next != null)`. If fast escapes to null, there's no cycle.",
+    "Compare with `==` (same node object), and only after moving both."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean hasCycle(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n            if (slow == fast) return true;\n        }\n        return false;\n    }\n}",
+    "explanation": "O(n)/O(1). This is one place where `==` is CORRECT: we're asking whether the pointers reference the same node object, not equal values. (The HashSet-of-visited-nodes solution also works but costs O(n) space.)"
+  }
+}

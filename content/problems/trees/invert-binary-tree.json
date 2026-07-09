@@ -1,0 +1,29 @@
+{
+  "id": "invert-binary-tree",
+  "type": "code-method",
+  "title": "Invert Binary Tree",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/invert-binary-tree/",
+  "prompt": "Invert a binary tree (mirror it left-right) and return its root.\n\n**Example**: `[4,2,7,1,3,6,9]` → `[4,7,2,9,6,3,1]`.\n\nThe gentlest possible DFS: swap children, recurse into both.",
+  "method": {
+    "name": "invertTree",
+    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "returns": "TreeNode"
+  },
+  "starter": "class Solution {\n    public TreeNode invertTree(TreeNode root) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[4, 2, 7, 1, 3, 6, 9]], "expected": [4, 7, 2, 9, 6, 3, 1] },
+    { "args": [[2, 1, 3]], "expected": [2, 3, 1] },
+    { "args": [[]], "expected": [] },
+    { "args": [[1]], "expected": [1], "hidden": true },
+    { "args": [[1, 2]], "expected": [1, null, 2], "hidden": true, "note": "one-sided tree" }
+  ],
+  "hints": [
+    "Base case: null returns null.",
+    "Swap `root.left` and `root.right` (needs a temp), then recurse on both children — or recurse first; either order works."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public TreeNode invertTree(TreeNode root) {\n        if (root == null) return null;\n        TreeNode temp = root.left;\n        root.left = root.right;\n        root.right = temp;\n        invertTree(root.left);\n        invertTree(root.right);\n        return root;\n    }\n}",
+    "explanation": "O(n) time, O(height) stack. Every tree problem's skeleton in miniature: null base case, local work, recurse into children."
+  }
+}

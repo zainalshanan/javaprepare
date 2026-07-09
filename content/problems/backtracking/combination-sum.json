@@ -1,0 +1,29 @@
+{
+  "id": "combination-sum",
+  "type": "code-method",
+  "title": "Combination Sum",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/combination-sum/",
+  "prompt": "Given distinct positive `candidates` and a `target`, return all unique combinations that sum to target. The **same number may be reused** unlimited times.\n\n**Example**: `candidates = [2,3,6,7]`, `target = 7` → `[[2,2,3],[7]]`.\n\nBacktracking where recursing with `i` (not `i + 1`) grants reuse.",
+  "method": {
+    "name": "combinationSum",
+    "params": [ { "name": "candidates", "type": "int[]" }, { "name": "target", "type": "int" } ],
+    "returns": "List<List<Integer>>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> combinationSum(int[] candidates, int target) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[2, 3, 6, 7], 7], "expected": [[2, 2, 3], [7]], "compare": "unordered-deep" },
+    { "args": [[2, 3, 5], 8], "expected": [[2, 2, 2, 2], [2, 3, 3], [3, 5]], "compare": "unordered-deep" },
+    { "args": [[2], 1], "expected": [], "compare": "unordered-deep" },
+    { "args": [[7, 3, 2], 18], "expected": [[2, 2, 2, 2, 2, 2, 2, 2, 2], [2, 2, 2, 2, 2, 2, 3, 3], [2, 2, 2, 3, 3, 3, 3], [2, 2, 7, 7], [2, 3, 3, 3, 7], [3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 3, 7]], "compare": "unordered-deep", "hidden": true }
+  ],
+  "hints": [
+    "Track the REMAINING target; base cases: 0 → record a copy, negative → dead end, return.",
+    "Loop from `start`; recurse with `i` (same index!) to allow reuse — `i + 1` would forbid it.",
+    "Keeping `start` still matters: it prevents [2,3] and [3,2] both appearing."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> combinationSum(int[] candidates, int target) {\n        backtrack(0, target, new ArrayList<>(), candidates);\n        return res;\n    }\n\n    private void backtrack(int start, int remaining, List<Integer> path, int[] candidates) {\n        if (remaining == 0) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        if (remaining < 0) return;\n        for (int i = start; i < candidates.length; i++) {\n            path.add(candidates[i]);\n            backtrack(i, remaining - candidates[i], path, candidates);\n            path.remove(path.size() - 1);\n        }\n    }\n}",
+    "explanation": "The one-character difference from Subsets — recursing on `i` instead of `i + 1` — is exactly \"this element may be chosen again.\" `start` still imposes non-decreasing index order, which is what deduplicates permuted copies."
+  }
+}

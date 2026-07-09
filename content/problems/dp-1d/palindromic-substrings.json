@@ -1,0 +1,30 @@
+{
+  "id": "palindromic-substrings",
+  "type": "code-method",
+  "title": "Palindromic Substrings",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/palindromic-substrings/",
+  "prompt": "Count how many substrings of `s` are palindromes (each occurrence counts; single characters count).\n\n**Example**: `\"aaa\"` → `6` (`\"a\"`×3, `\"aa\"`×2, `\"aaa\"`×1).\n\nExpand around each center and count every palindrome found while growing.",
+  "method": {
+    "name": "countSubstrings",
+    "params": [ { "name": "s", "type": "String" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int countSubstrings(String s) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["abc"], "expected": 3 },
+    { "args": ["aaa"], "expected": 6 },
+    { "args": ["a"], "expected": 1 },
+    { "args": ["aaaa"], "expected": 10, "hidden": true },
+    { "args": ["abba"], "expected": 6, "hidden": true }
+  ],
+  "hints": [
+    "Same centers as Longest Palindromic Substring: odd (i, i) and even (i, i+1).",
+    "Each successful expansion step is one more palindrome — count them.",
+    "Sum over all centers."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int countSubstrings(String s) {\n        int count = 0;\n        for (int i = 0; i < s.length(); i++) {\n            count += expand(s, i, i);       // odd-length centers\n            count += expand(s, i, i + 1);   // even-length centers\n        }\n        return count;\n    }\n\n    private int expand(String s, int l, int r) {\n        int c = 0;\n        while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {\n            c++;\n            l--;\n            r++;\n        }\n        return c;\n    }\n}",
+    "explanation": "Each outward step from a center that still matches reveals exactly one new palindrome, so counting expansion steps counts palindromes. O(n²) time, O(1) space — the counting twin of Longest Palindromic Substring."
+  }
+}

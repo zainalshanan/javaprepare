@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #131c2e;
+  --color-panel: #1b2740;
+  --color-panel-2: #223052;
+  --color-line: #2c3b58;
+  --color-paper: #e8edf7;
+  --color-dim: #8b99b8;
+  --color-amber: #f5b84c;
+  --color-amber-deep: #d99a26;
+  --color-pass: #5cd69a;
+  --color-fail: #f26d6d;
+  --color-sky: #6fa8ff;
+
+  --font-display: "Bricolage Grotesque", "IBM Plex Sans", sans-serif;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html { background: var(--color-ink); }
+body {
+  color: var(--color-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: color-mix(in srgb, var(--color-amber) 35%, transparent); }
+
+/* Markdown lesson content */
+.prose-lesson { line-height: 1.7; }
+.prose-lesson h1, .prose-lesson h2, .prose-lesson h3 {
+  font-family: var(--font-display);
+  font-weight: 640;
+  letter-spacing: -0.01em;
+  margin: 1.6em 0 0.5em;
+}
+.prose-lesson h1 { font-size: 1.6rem; }
+.prose-lesson h2 { font-size: 1.3rem; }
+.prose-lesson h3 { font-size: 1.1rem; }
+.prose-lesson p { margin: 0.7em 0; }
+.prose-lesson ul, .prose-lesson ol { margin: 0.7em 0; padding-left: 1.4em; }
+.prose-lesson ul { list-style: disc; }
+.prose-lesson ol { list-style: decimal; }
+.prose-lesson li { margin: 0.25em 0; }
+.prose-lesson a { color: var(--color-sky); text-decoration: underline; }
+.prose-lesson strong { color: var(--color-amber); font-weight: 600; }
+.prose-lesson blockquote {
+  border-left: 3px solid var(--color-amber);
+  padding: 0.4em 1em;
+  margin: 1em 0;
+  background: color-mix(in srgb, var(--color-amber) 6%, transparent);
+  border-radius: 0 6px 6px 0;
+  color: var(--color-paper);
+}
+.prose-lesson code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--color-panel-2);
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+}
+.prose-lesson pre {
+  background: #10182a;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  padding: 0.9em 1.1em;
+  overflow-x: auto;
+  margin: 0.9em 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+.prose-lesson pre code { background: transparent; padding: 0; font-size: inherit; }
+.prose-lesson table { border-collapse: collapse; margin: 1em 0; font-size: 0.9em; }
+.prose-lesson th, .prose-lesson td { border: 1px solid var(--color-line); padding: 0.4em 0.8em; }
+.prose-lesson th { background: var(--color-panel); font-weight: 600; }
+
+/* highlight.js-ish token colors tuned to the palette */
+.hljs-keyword { color: #c792ea; }
+.hljs-string { color: #5cd69a; }
+.hljs-number { color: #f5b84c; }
+.hljs-title, .hljs-title.class_ { color: #6fa8ff; }
+.hljs-comment { color: #64748f; font-style: italic; }
+.hljs-type, .hljs-built_in { color: #6fa8ff; }
+.hljs-literal { color: #f5b84c; }
+
+/* fill-blank inputs */
+.blank-input {
+  font-family: var(--font-mono);
+  background: color-mix(in srgb, var(--color-amber) 10%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--color-amber) 55%, transparent);
+  border-radius: 4px;
+  color: var(--color-amber);
+  padding: 0 0.35em;
+  margin: 0 0.15em;
+  outline: none;
+}
+.blank-input:focus { border-style: solid; border-color: var(--color-amber); }
+.blank-input.blank-good { color: var(--color-pass); border-color: var(--color-pass); background: color-mix(in srgb, var(--color-pass) 10%, transparent); }
+.blank-input.blank-bad { color: var(--color-fail); border-color: var(--color-fail); background: color-mix(in srgb, var(--color-fail) 10%, transparent); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}

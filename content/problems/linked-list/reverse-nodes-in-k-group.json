@@ -1,0 +1,30 @@
+{
+  "id": "reverse-nodes-in-k-group",
+  "type": "code-method",
+  "title": "Reverse Nodes in k-Group",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
+  "prompt": "Reverse the nodes of the list `k` at a time. Nodes left over at the end (fewer than k) stay in original order.\n\n**Example**: `[1,2,3,4,5]`, `k = 2` → `[2,1,4,3,5]`; `k = 3` → `[3,2,1,4,5]`.\n\nFor each group: first check `k` nodes exist, then reverse that segment and stitch it back to the previous group's tail.",
+  "method": {
+    "name": "reverseKGroup",
+    "params": [ { "name": "head", "type": "ListNode" }, { "name": "k", "type": "int" } ],
+    "returns": "ListNode"
+  },
+  "starter": "class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3, 4, 5], 2], "expected": [2, 1, 4, 3, 5] },
+    { "args": [[1, 2, 3, 4, 5], 3], "expected": [3, 2, 1, 4, 5] },
+    { "args": [[1, 2, 3, 4, 5], 1], "expected": [1, 2, 3, 4, 5] },
+    { "args": [[1, 2], 3], "expected": [1, 2], "hidden": true, "note": "fewer than k — leave as is" },
+    { "args": [[1, 2, 3, 4], 2], "expected": [2, 1, 4, 3], "hidden": true }
+  ],
+  "hints": [
+    "Use a dummy node; keep a `groupPrev` pointing at the node before the current group.",
+    "Walk k steps to find the k-th node; if you run off the end, stop — leftover stays as-is.",
+    "Reverse the group by pointing each node back, then reconnect groupPrev to the new group head and advance groupPrev to the group's (now last) node."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode groupPrev = dummy;\n        while (true) {\n            ListNode kth = groupPrev;\n            for (int i = 0; i < k && kth != null; i++) kth = kth.next;\n            if (kth == null) break;                 // fewer than k left\n            ListNode groupNext = kth.next;\n            ListNode prev = groupNext, curr = groupPrev.next;\n            while (curr != groupNext) {             // reverse the group\n                ListNode next = curr.next;\n                curr.next = prev;\n                prev = curr;\n                curr = next;\n            }\n            ListNode newGroupPrev = groupPrev.next; // old head = new tail\n            groupPrev.next = kth;\n            groupPrev = newGroupPrev;\n        }\n        return dummy.next;\n    }\n}",
+    "explanation": "O(n): each node is visited a constant number of times. The k-node lookahead both validates the group and gives the boundary (`groupNext`) that the standard reverse loop stops at. Reconnecting the old group-head (now the tail) as the next `groupPrev` chains the groups together correctly."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "target-sum",
+  "type": "code-method",
+  "title": "Target Sum",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/target-sum/",
+  "prompt": "Assign a `+` or `-` to each number in `nums` so the signed sum equals `target`. Return the number of ways.\n\n**Example**: `nums = [1,1,1,1,1]`, `target = 3` → `5`.\n\nAlgebra turns this into subset-sum: if `P` is the positive subset, `P - (sum - P) = target`, so `P = (sum + target) / 2`. Count subsets summing to P.",
+  "method": {
+    "name": "findTargetSumWays",
+    "params": [ { "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int findTargetSumWays(int[] nums, int target) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 1, 1, 1, 1], 3], "expected": 5 },
+    { "args": [[1], 1], "expected": 1 },
+    { "args": [[1], 2], "expected": 0 },
+    { "args": [[1, 0], 1], "expected": 2, "note": "the 0 can be +0 or -0" },
+    { "args": [[0, 0, 0, 0, 0, 0, 0, 0, 1], 1], "expected": 256, "hidden": true },
+    { "args": [[100], -200], "expected": 0, "hidden": true }
+  ],
+  "hints": [
+    "Let P = sum of the '+' numbers. Then P = (total + target) / 2 — count subsets summing to P.",
+    "Impossible if |target| > total or (total + target) is odd → return 0.",
+    "0/1 knapsack: dp[j] = number of subsets summing to j, iterate j downward."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int findTargetSumWays(int[] nums, int target) {\n        int sum = 0;\n        for (int x : nums) sum += x;\n        if (Math.abs(target) > sum || (sum + target) % 2 != 0) return 0;\n        int subset = (sum + target) / 2;\n        int[] dp = new int[subset + 1];\n        dp[0] = 1;\n        for (int x : nums) {\n            for (int j = subset; j >= x; j--) {\n                dp[j] += dp[j - x];\n            }\n        }\n        return dp[subset];\n    }\n}",
+    "explanation": "Splitting into a positive set P and negative set N with P - N = target and P + N = sum gives P = (sum + target)/2. Counting subsets that reach P is a standard counting knapsack. Zeros double the count (±0 both valid), which the dp naturally handles. O(n · subset)."
+  }
+}

@@ -1,0 +1,91 @@
+[
+  {
+    "id": "cond-fizzbuzz-order",
+    "type": "mcq",
+    "title": "Order matters",
+    "prompt": "For FizzBuzz (multiples of 3 → \"Fizz\", of 5 → \"Buzz\", of both → \"FizzBuzz\"), why must `n % 15 == 0` be checked first?",
+    "options": [
+      "Because `n % 3 == 0` is also true for 15, so checking it first would print \"Fizz\" and never reach the FizzBuzz case",
+      "Because 15 is the largest number",
+      "Because Java evaluates conditions bottom-up",
+      "It doesn't matter — any order works"
+    ],
+    "answer": 0,
+    "explanation": "if/else chains stop at the FIRST true branch. When conditions overlap, put the most specific one first."
+  },
+  {
+    "id": "cond-fill-ternary",
+    "type": "fill-blank",
+    "title": "Ternary syntax",
+    "prompt": "Complete the ternary expressions.",
+    "code": "int max = a > b {{1}} a {{2}} b;\nString sign = x >= 0 ? {{3}} : \"negative\";",
+    "blanks": {
+      "1": ["?"],
+      "2": [":"],
+      "3": ["\"non-negative\"", "\"positive\"", "\"nonnegative\""]
+    },
+    "explanation": "condition `?` whenTrue `:` whenFalse. Both branches must produce a value of the same type."
+  },
+  {
+    "id": "cond-mcq-fallthrough",
+    "type": "mcq",
+    "title": "Fall-through",
+    "prompt": "With `x = 1`, what does this print?\n`switch (x) { case 1: System.out.println(\"one\"); case 2: System.out.println(\"two\"); break; default: System.out.println(\"other\"); }`",
+    "options": [
+      "`one` then `two` — case 1 has no break, so it falls through into case 2",
+      "`one` only",
+      "`one`, `two`, then `other`",
+      "Compile error"
+    ],
+    "answer": 0,
+    "explanation": "Without `break`, execution continues into the next case's code. The `break` in case 2 stops it before `default`."
+  },
+  {
+    "id": "cond-fizzbuzz",
+    "type": "code-method",
+    "title": "FizzBuzz (single value)",
+    "prompt": "Return `\"FizzBuzz\"` if `n` is divisible by both 3 and 5, `\"Fizz\"` if only by 3, `\"Buzz\"` if only by 5, otherwise the number itself as a string (`String.valueOf(n)`).",
+    "method": {
+      "name": "fizzBuzz",
+      "params": [ { "name": "n", "type": "int" } ],
+      "returns": "String"
+    },
+    "starter": "class Solution {\n    public String fizzBuzz(int n) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [15], "expected": "FizzBuzz" },
+      { "args": [9], "expected": "Fizz" },
+      { "args": [10], "expected": "Buzz" },
+      { "args": [7], "expected": "7" },
+      { "args": [30], "expected": "FizzBuzz", "hidden": true },
+      { "args": [1], "expected": "1", "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public String fizzBuzz(int n) {\n        if (n % 15 == 0) return \"FizzBuzz\";\n        if (n % 3 == 0) return \"Fizz\";\n        if (n % 5 == 0) return \"Buzz\";\n        return String.valueOf(n);\n    }\n}",
+      "explanation": "Most specific condition first. `return` exits immediately, so no `else` is needed — a very common clean-code style."
+    },
+    "hints": ["Divisible by both 3 and 5 means divisible by 15.", "`String.valueOf(n)` converts an int to a String."]
+  },
+  {
+    "id": "cond-drill-grade",
+    "type": "code-method",
+    "title": "Drill: sign of a number",
+    "prompt": "From memory: return `1` if `x` is positive, `-1` if negative, `0` if zero.",
+    "drill": true,
+    "method": {
+      "name": "sign",
+      "params": [ { "name": "x", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int sign(int x) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [42], "expected": 1 },
+      { "args": [-3], "expected": -1 },
+      { "args": [0], "expected": 0 },
+      { "args": [-2147483648], "expected": -1, "hidden": true, "note": "Integer.MIN_VALUE" }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int sign(int x) {\n        if (x > 0) return 1;\n        if (x < 0) return -1;\n        return 0;\n    }\n}"
+    },
+    "hints": ["Three cases, three returns."]
+  }
+]

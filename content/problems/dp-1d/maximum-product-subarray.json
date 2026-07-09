@@ -1,0 +1,31 @@
+{
+  "id": "maximum-product-subarray",
+  "type": "code-method",
+  "title": "Maximum Product Subarray",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/maximum-product-subarray/",
+  "prompt": "Return the largest product of any contiguous subarray (at least one element).\n\n**Example**: `[2,3,-2,4]` → `6` (the subarray `[2,3]`).\n\nUnlike max-sum, a negative flips big and small — so track BOTH the running max and running min product.",
+  "method": {
+    "name": "maxProduct",
+    "params": [ { "name": "nums", "type": "int[]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int maxProduct(int[] nums) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[2, 3, -2, 4]], "expected": 6 },
+    { "args": [[-2, 0, -1]], "expected": 0 },
+    { "args": [[-2, 3, -4]], "expected": 24 },
+    { "args": [[-3]], "expected": -3, "note": "single negative" },
+    { "args": [[0, 2]], "expected": 2, "hidden": true },
+    { "args": [[2, -5, -2, -4, 3]], "expected": 24, "hidden": true }
+  ],
+  "hints": [
+    "Keep both `max` and `min` products ending at the current element.",
+    "A negative number swaps their roles — swap max and min before updating when nums[i] < 0.",
+    "max = max(nums[i], max*nums[i]); min = min(nums[i], min*nums[i]); track the best max."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int maxProduct(int[] nums) {\n        int max = nums[0], min = nums[0], res = nums[0];\n        for (int i = 1; i < nums.length; i++) {\n            int n = nums[i];\n            if (n < 0) {\n                int t = max; max = min; min = t;   // negative flips extremes\n            }\n            max = Math.max(n, max * n);\n            min = Math.min(n, min * n);\n            res = Math.max(res, max);\n        }\n        return res;\n    }\n}",
+    "explanation": "A large negative min can become the new max after multiplying by another negative, so both extremes must be carried. Swapping max/min on a negative input, then extending or restarting the subarray at each step, is Kadane's adapted for products. O(n)/O(1)."
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "reverse-integer",
+  "type": "code-method",
+  "title": "Reverse Integer",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/reverse-integer/",
+  "prompt": "Reverse the digits of a signed 32-bit integer `x`. If the result overflows the int range, return `0`.\n\n**Example**: `123` → `321`; `-123` → `-321`; `1534236469` → `0` (reversed exceeds Integer.MAX_VALUE).\n\nDigit peeling plus a genuine overflow guard — the gotchas unit made real.",
+  "method": {
+    "name": "reverse",
+    "params": [ { "name": "x", "type": "int" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int reverse(int x) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [123], "expected": 321 },
+    { "args": [-123], "expected": -321 },
+    { "args": [120], "expected": 21, "note": "trailing zero drops" },
+    { "args": [1534236469], "expected": 0, "note": "overflows on reverse" },
+    { "args": [0], "expected": 0, "hidden": true },
+    { "args": [-2147483648], "expected": 0, "hidden": true, "note": "Integer.MIN_VALUE" },
+    { "args": [1463847412], "expected": 2147483641, "hidden": true, "note": "barely fits" }
+  ],
+  "hints": [
+    "Peel with `x % 10` and `x /= 10` — in Java this handles negatives symmetrically (remainders are negative), so no sign special-casing.",
+    "Build the reverse in a `long`; after the loop, range-check against Integer.MIN/MAX_VALUE before casting.",
+    "(The no-long variant checks `reversed > (Integer.MAX_VALUE - digit) / 10` before each multiply.)"
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int reverse(int x) {\n        long reversed = 0;\n        while (x != 0) {\n            reversed = reversed * 10 + x % 10;\n            x /= 10;\n        }\n        if (reversed > Integer.MAX_VALUE || reversed < Integer.MIN_VALUE) return 0;\n        return (int) reversed;\n    }\n}",
+    "explanation": "Java's negative remainders (`-123 % 10 == -3`) build a negative reverse naturally — no abs needed (which would itself overflow on MIN_VALUE!). The long accumulator can't overflow for any 32-bit input, making the final range check trustworthy."
+  }
+}

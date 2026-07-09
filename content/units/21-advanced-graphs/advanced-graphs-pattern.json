@@ -1,0 +1,258 @@
+[
+  {
+    "id": "pat-ag-mcq-uf",
+    "type": "mcq",
+    "title": "Union-Find's cycle test",
+    "prompt": "Processing edges one by one with Union-Find, `union(a, b)` returns false. What did you just learn?",
+    "options": [
+      "a and b were already connected — this edge closes a cycle",
+      "a and b are in different components",
+      "The graph is disconnected",
+      "b is a's parent"
+    ],
+    "answer": 0,
+    "explanation": "union returns false when both endpoints share a root — a path between them already exists, so this edge is redundant/cycle-forming. That's the entire solution to Redundant Connection."
+  },
+  {
+    "id": "pat-ag-drill-uf",
+    "type": "code-design",
+    "title": "Drill: Union-Find from memory",
+    "prompt": "Implement Union-Find with path compression:\n\n- `UnionFind(int n)` — n elements, each its own component\n- `int find(int x)` — the root of x's component\n- `boolean union(int a, int b)` — merge; return false if already connected\n- `boolean connected(int a, int b)` — same component?\n\nRank/size balancing is optional here (path compression alone passes) — but write it if you can.",
+    "drill": true,
+    "className": "UnionFind",
+    "methods": {
+      "UnionFind": {
+        "params": [
+          "int"
+        ],
+        "returns": "void"
+      },
+      "find": {
+        "params": [
+          "int"
+        ],
+        "returns": "int"
+      },
+      "union": {
+        "params": [
+          "int",
+          "int"
+        ],
+        "returns": "boolean"
+      },
+      "connected": {
+        "params": [
+          "int",
+          "int"
+        ],
+        "returns": "boolean"
+      }
+    },
+    "starter": "class UnionFind {\n\n    public UnionFind(int n) {\n\n    }\n\n    public int find(int x) {\n\n    }\n\n    public boolean union(int a, int b) {\n\n    }\n\n    public boolean connected(int a, int b) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "ops": [
+          "UnionFind",
+          "connected",
+          "union",
+          "connected",
+          "union",
+          "union",
+          "connected"
+        ],
+        "args": [
+          [
+            5
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "expected": [
+          null,
+          false,
+          true,
+          true,
+          true,
+          false,
+          false
+        ],
+        "note": "union(0,2) is false: already connected via 1"
+      },
+      {
+        "ops": [
+          "UnionFind",
+          "union",
+          "union",
+          "union",
+          "connected",
+          "connected"
+        ],
+        "args": [
+          [
+            6
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          null,
+          true,
+          true,
+          true,
+          false,
+          true
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class UnionFind {\n    private int[] parent;\n\n    public UnionFind(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    public int find(int x) {\n        if (parent[x] != x) parent[x] = find(parent[x]);\n        return parent[x];\n    }\n\n    public boolean union(int a, int b) {\n        int ra = find(a), rb = find(b);\n        if (ra == rb) return false;\n        parent[rb] = ra;\n        return true;\n    }\n\n    public boolean connected(int a, int b) {\n        return find(a) == find(b);\n    }\n}",
+      "explanation": "Path compression (`parent[x] = find(parent[x])`) flattens chains on every find, keeping operations near O(1) amortized."
+    },
+    "hints": [
+      "Constructor: `parent[i] = i` for all i.",
+      "find: recurse to the root, assigning on the way back (compression).",
+      "union: find both roots; equal → false, else point one at the other."
+    ]
+  },
+  {
+    "id": "pat-ag-drill-topo",
+    "type": "code-method",
+    "title": "Drill: is it a DAG? (Kahn's topo sort)",
+    "prompt": "From memory (Kahn's algorithm): given `n` nodes and directed `edges` (`[u, v]` = u before v), return whether a valid topological order exists (i.e. no cycle).",
+    "drill": true,
+    "method": {
+      "name": "canOrder",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "edges",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "boolean"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public boolean canOrder(int n, int[][] edges) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          3,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          2,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              0
+            ]
+          ]
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          4,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          3,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              0
+            ]
+          ]
+        ],
+        "expected": false,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean canOrder(int n, int[][] edges) {\n        Map<Integer, List<Integer>> adj = new HashMap<>();\n        int[] indeg = new int[n];\n        for (int[] e : edges) {\n            adj.computeIfAbsent(e[0], k -> new ArrayList<>()).add(e[1]);\n            indeg[e[1]]++;\n        }\n        Queue<Integer> q = new LinkedList<>();\n        for (int i = 0; i < n; i++) if (indeg[i] == 0) q.offer(i);\n        int seen = 0;\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            seen++;\n            for (int v : adj.getOrDefault(u, new ArrayList<>())) {\n                if (--indeg[v] == 0) q.offer(v);\n            }\n        }\n        return seen == n;\n    }\n}"
+    },
+    "hints": [
+      "Queue the indegree-0 nodes, peel them, decrement neighbors.",
+      "If you process all n, there's no cycle."
+    ]
+  }
+]

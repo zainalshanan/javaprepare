@@ -1,0 +1,30 @@
+{
+  "id": "remove-nth-node-from-end-of-list",
+  "type": "code-method",
+  "title": "Remove Nth Node From End of List",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+  "prompt": "Remove the `n`-th node from the **end** of the list and return the head.\n\n**Example**: `[1,2,3,4,5]`, `n = 2` → `[1,2,3,5]`.\n\nOne pass with a gap: advance a `fast` pointer `n` nodes ahead, then move both until fast reaches the end — `slow` now sits just before the target.",
+  "method": {
+    "name": "removeNthFromEnd",
+    "params": [ { "name": "head", "type": "ListNode" }, { "name": "n", "type": "int" } ],
+    "returns": "ListNode"
+  },
+  "starter": "class Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3, 4, 5], 2], "expected": [1, 2, 3, 5] },
+    { "args": [[1], 1], "expected": [] },
+    { "args": [[1, 2], 1], "expected": [1] },
+    { "args": [[1, 2], 2], "expected": [2], "hidden": true, "note": "removing the head" },
+    { "args": [[1, 2, 3], 3], "expected": [2, 3], "hidden": true }
+  ],
+  "hints": [
+    "A dummy node before the head removes the special case of deleting the first node.",
+    "Move `fast` n steps ahead of `slow`, then advance both until `fast.next == null`.",
+    "`slow` is now right before the node to delete: `slow.next = slow.next.next`."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public ListNode removeNthFromEnd(ListNode head, int n) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode fast = dummy, slow = dummy;\n        for (int i = 0; i < n; i++) fast = fast.next;\n        while (fast.next != null) {\n            fast = fast.next;\n            slow = slow.next;\n        }\n        slow.next = slow.next.next;\n        return dummy.next;\n    }\n}",
+    "explanation": "O(n), single pass. The fixed n-node gap means when fast hits the last node, slow is exactly n+1 from the end — i.e. just before the target. Returning `dummy.next` handles the case where the head itself is removed."
+  }
+}

@@ -1,0 +1,101 @@
+[
+  {
+    "id": "cmp-mcq-direction",
+    "type": "mcq",
+    "title": "Which way does it sort?",
+    "prompt": "`Arrays.sort(pairs, (a, b) -> Integer.compare(b[1], a[1]));` sorts the pairs…",
+    "options": [
+      "descending by their second element",
+      "ascending by their second element",
+      "descending by their first element",
+      "It doesn't compile"
+    ],
+    "answer": 0,
+    "explanation": "`Integer.compare(b[1], a[1])` — b before a — reverses the order; index [1] picks the second element."
+  },
+  {
+    "id": "cmp-fill-sort",
+    "type": "fill-blank",
+    "title": "Sort by start, tie on end",
+    "prompt": "Sort intervals ascending by start; equal starts break ties by smaller end first.",
+    "code": "Arrays.sort(intervals, (a, b) -> a[0] != b[0]\n        ? Integer.compare({{1}}, {{2}})\n        : Integer.compare(a[1], b[1]));",
+    "blanks": {
+      "1": ["a[0]"],
+      "2": ["b[0]"]
+    },
+    "explanation": "Primary key in (a, b) order = ascending. This exact sort opens Merge Intervals."
+  },
+  {
+    "id": "cmp-sort-strings",
+    "type": "code-method",
+    "title": "Sort by length, then alphabet",
+    "prompt": "Return `words` sorted by length ascending; equal lengths alphabetically. Sort the input array with a comparator and return it.",
+    "method": {
+      "name": "sortWords",
+      "params": [ { "name": "words", "type": "String[]" } ],
+      "returns": "String[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public String[] sortWords(String[] words) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [["banana", "kiwi", "fig", "apple"]], "expected": ["fig", "kiwi", "apple", "banana"] },
+      { "args": [["bb", "aa", "cc"]], "expected": ["aa", "bb", "cc"], "note": "all same length" },
+      { "args": [[]], "expected": [] },
+      { "args": [["z", "yy", "a"]], "expected": ["a", "z", "yy"], "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public String[] sortWords(String[] words) {\n        Arrays.sort(words, (a, b) -> a.length() != b.length()\n                ? Integer.compare(a.length(), b.length())\n                : a.compareTo(b));\n        return words;\n    }\n}",
+      "explanation": "Object arrays (String[]) accept comparators directly in Arrays.sort."
+    },
+    "hints": ["Compare lengths first; only fall back to `compareTo` on a tie."]
+  },
+  {
+    "id": "cmp-drill-intervals",
+    "type": "code-method",
+    "title": "Drill: sort intervals by start",
+    "prompt": "From memory: sort the `int[][] intervals` in place ascending by start value and return it — the one-liner that begins every intervals problem.",
+    "drill": true,
+    "method": {
+      "name": "sortIntervals",
+      "params": [ { "name": "intervals", "type": "int[][]" } ],
+      "returns": "int[][]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[][] sortIntervals(int[][] intervals) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[[5, 6], [1, 3], [2, 4]]], "expected": [[1, 3], [2, 4], [5, 6]] },
+      { "args": [[[1, 2]]], "expected": [[1, 2]] },
+      { "args": [[[3, 9], [1, 10], [2, 5]]], "expected": [[1, 10], [2, 5], [3, 9]], "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] sortIntervals(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        return intervals;\n    }\n}"
+    },
+    "hints": ["`Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));`"]
+  },
+  {
+    "id": "cmp-ref-fill",
+    "type": "fill-blank",
+    "title": "Recall: comparator forms",
+    "prompt": "Fill in the ascending and descending comparator lambdas.",
+    "drill": true,
+    "code": "Arrays.sort(arr, (a, b) -> Integer.{{1}}(a, b));       // ascending\nArrays.sort(arr, (a, b) -> Integer.compare({{2}}, {{3}})); // descending",
+    "blanks": { "1": ["compare"], "2": ["b"], "3": ["a"] },
+    "explanation": "`Integer.compare(a, b)` sorts ascending; swap the arguments to `(b, a)` for descending. Prefer this over `a - b`, which can overflow."
+  },
+  {
+    "id": "cmp-ref-code",
+    "type": "code-method",
+    "title": "Drill: sort rows by first element (desc)",
+    "prompt": "From memory: sort `pairs` (each an `int[]`) by their first element in DESCENDING order, in place, and return it.",
+    "drill": true,
+    "method": { "name": "sortDesc", "params": [ { "name": "pairs", "type": "int[][]" } ], "returns": "int[][]" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[][] sortDesc(int[][] pairs) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[[1, 2], [3, 4], [2, 1]]], "expected": [[3, 4], [2, 1], [1, 2]] },
+      { "args": [[[5, 0]]], "expected": [[5, 0]] },
+      { "args": [[[1, 9], [1, 8], [4, 0]]], "expected": [[4, 0], [1, 9], [1, 8]], "hidden": true, "note": "stable on ties" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] sortDesc(int[][] pairs) {\n        Arrays.sort(pairs, (a, b) -> Integer.compare(b[0], a[0]));\n        return pairs;\n    }\n}"
+    },
+    "hints": ["Descending on the first element: `(a, b) -> Integer.compare(b[0], a[0])`."]
+  }
+]

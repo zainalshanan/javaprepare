@@ -1,0 +1,37 @@
+{
+  "id": "detect-squares",
+  "type": "code-design",
+  "title": "Detect Squares",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/detect-squares/",
+  "prompt": "Design a structure over a stream of 2D points:\n\n- `DetectSquares()`\n- `void add(int[] point)` — add a point (duplicates allowed)\n- `int count(int[] point)` — number of axis-aligned squares (positive area) with the query point as one corner and three previously-added points as the others\n\nFor a query, iterate candidate diagonal corners and multiply the counts of the two other corners.",
+  "className": "DetectSquares",
+  "methods": {
+    "DetectSquares": { "params": [], "returns": "void" },
+    "add": { "params": ["int[]"], "returns": "void" },
+    "count": { "params": ["int[]"], "returns": "int" }
+  },
+  "starter": "import java.util.*;\n\nclass DetectSquares {\n\n    public DetectSquares() {\n\n    }\n\n    public void add(int[] point) {\n\n    }\n\n    public int count(int[] point) {\n\n    }\n}\n",
+  "tests": [
+    {
+      "ops": ["DetectSquares", "add", "add", "add", "count", "count", "add", "count"],
+      "args": [[], [[3, 10]], [[11, 2]], [[3, 2]], [[11, 10]], [[14, 8]], [[11, 2]], [[11, 10]]],
+      "expected": [null, null, null, null, 1, 0, null, 2]
+    },
+    {
+      "ops": ["DetectSquares", "add", "add", "add", "count"],
+      "args": [[], [[0, 0]], [[0, 2]], [[2, 0]], [[2, 2]]],
+      "expected": [null, null, null, null, 1],
+      "hidden": true
+    }
+  ],
+  "hints": [
+    "Store a frequency map keyed by (x, y), plus the raw list of points.",
+    "For a query (px, py), scan stored points for a diagonal corner (x, y) where |x - px| == |y - py| and x != px.",
+    "The square's other two corners are (px, y) and (x, py); multiply their stored counts and sum over all diagonals."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass DetectSquares {\n    private Map<Integer, Map<Integer, Integer>> countByX = new HashMap<>();\n    private List<int[]> points = new ArrayList<>();\n\n    public DetectSquares() {\n    }\n\n    public void add(int[] point) {\n        points.add(point);\n        countByX.computeIfAbsent(point[0], k -> new HashMap<>()).merge(point[1], 1, Integer::sum);\n    }\n\n    public int count(int[] point) {\n        int px = point[0], py = point[1];\n        int total = 0;\n        for (int[] p : points) {\n            int x = p[0], y = p[1];\n            if (x == px || y == py || Math.abs(x - px) != Math.abs(y - py)) continue;\n            int c1 = countByX.getOrDefault(px, Collections.emptyMap()).getOrDefault(y, 0);\n            int c2 = countByX.getOrDefault(x, Collections.emptyMap()).getOrDefault(py, 0);\n            total += c1 * c2;\n        }\n        return total;\n    }\n}",
+    "explanation": "Fixing the query and a diagonally-opposite point determines the square entirely — the other two corners are forced. Multiplying their stored frequencies counts every combination (respecting duplicates). The `|dx| == |dy|` and `x != px` checks ensure a real, positive-area axis-aligned square. count is O(points)."
+  }
+}

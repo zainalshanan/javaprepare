@@ -1,0 +1,30 @@
+{
+  "id": "longest-common-subsequence",
+  "type": "code-method",
+  "title": "Longest Common Subsequence",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/longest-common-subsequence/",
+  "prompt": "Return the length of the longest subsequence (characters in order, not necessarily contiguous) common to `text1` and `text2`.\n\n**Example**: `\"abcde\"`, `\"ace\"` → `3`.\n\nThe canonical 2-D DP — the pattern lesson's template code IS this problem.",
+  "method": {
+    "name": "longestCommonSubsequence",
+    "params": [ { "name": "text1", "type": "String" }, { "name": "text2", "type": "String" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int longestCommonSubsequence(String text1, String text2) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["abcde", "ace"], "expected": 3 },
+    { "args": ["abc", "abc"], "expected": 3 },
+    { "args": ["abc", "def"], "expected": 0 },
+    { "args": ["bsbininm", "jmjkbkjkv"], "expected": 1, "hidden": true },
+    { "args": ["oxcpqrsvwf", "shmtulqrypy"], "expected": 2, "hidden": true }
+  ],
+  "hints": [
+    "(m+1) x (n+1) table; dp[i][j] = LCS of the first i chars of text1 and first j of text2.",
+    "Chars match (`text1.charAt(i-1) == text2.charAt(j-1)`) → extend the diagonal: dp[i-1][j-1] + 1.",
+    "No match → best of dropping one char from either side: max(dp[i-1][j], dp[i][j-1])."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int longestCommonSubsequence(String text1, String text2) {\n        int m = text1.length(), n = text2.length();\n        int[][] dp = new int[m + 1][n + 1];\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (text1.charAt(i - 1) == text2.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1] + 1;\n                } else {\n                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
+    "explanation": "O(m·n). Row/column 0 stay 0 (LCS with an empty string), which the +1 sizing gives for free. This table is the parent of Edit Distance and many other string DPs — same skeleton, different cell rule."
+  }
+}

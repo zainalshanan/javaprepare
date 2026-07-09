@@ -1,0 +1,29 @@
+{
+  "id": "reconstruct-itinerary",
+  "type": "code-method",
+  "title": "Reconstruct Itinerary",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/reconstruct-itinerary/",
+  "prompt": "Given a list of airline `tickets` `[from, to]`, reconstruct the itinerary that uses **all** tickets exactly once, starting from `\"JFK\"`. If multiple valid itineraries exist, return the one with the smallest lexical order.\n\n**Example**: `[[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]` → `[\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]`.\n\nThis is an Eulerian path — Hierholzer's algorithm, visiting destinations in sorted order.",
+  "method": {
+    "name": "findItinerary",
+    "params": [ { "name": "tickets", "type": "List<List<String>>" } ],
+    "returns": "List<String>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> findItinerary(List<List<String>> tickets) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]]], "expected": ["JFK", "MUC", "LHR", "SFO", "SJC"] },
+    { "args": [[["JFK", "SFO"], ["JFK", "ATL"], ["SFO", "ATL"], ["ATL", "JFK"], ["ATL", "SFO"]]], "expected": ["JFK", "ATL", "JFK", "SFO", "ATL", "SFO"] },
+    { "args": [[["JFK", "A"], ["A", "JFK"], ["JFK", "B"]]], "expected": ["JFK", "A", "JFK", "B"], "hidden": true },
+    { "args": [[["JFK", "KUL"], ["JFK", "NRT"], ["NRT", "JFK"]]], "expected": ["JFK", "NRT", "JFK", "KUL"], "hidden": true, "note": "greedy-smallest would strand a ticket; Hierholzer handles it" }
+  ],
+  "hints": [
+    "Build adjacency as a min-heap (or sorted list) of destinations per airport, so you always try the smallest first.",
+    "Hierholzer: DFS/iterative — keep going to the smallest unused destination; when stuck, prepend the dead-end airport to the route.",
+    "Prepending on the way back builds the Eulerian path in reverse, correctly handling airports you must return through."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public List<String> findItinerary(List<List<String>> tickets) {\n        Map<String, PriorityQueue<String>> adj = new HashMap<>();\n        for (List<String> t : tickets) {\n            adj.computeIfAbsent(t.get(0), k -> new PriorityQueue<>()).add(t.get(1));\n        }\n        LinkedList<String> route = new LinkedList<>();\n        Deque<String> stack = new ArrayDeque<>();\n        stack.push(\"JFK\");\n        while (!stack.isEmpty()) {\n            String node = stack.peek();\n            PriorityQueue<String> dests = adj.get(node);\n            if (dests == null || dests.isEmpty()) {\n                route.addFirst(stack.pop());\n            } else {\n                stack.push(dests.poll());\n            }\n        }\n        return route;\n    }\n}",
+    "explanation": "Greedily taking the smallest destination can strand you at a dead end while tickets remain. Hierholzer's algorithm fixes this: when you get stuck, that airport is finalized as the current end of the route (prepended), and you back up to consume remaining edges — assembling the Eulerian path from the tail forward. Min-heaps enforce lexical order."
+  }
+}

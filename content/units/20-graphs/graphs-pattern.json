@@ -1,0 +1,197 @@
+[
+  {
+    "id": "pat-gr-mcq-visited",
+    "type": "mcq",
+    "title": "Visited timing",
+    "prompt": "In BFS, you should mark a node visited when you OFFER it to the queue, not when you POLL it. Why?",
+    "options": [
+      "Between offer and poll, other nodes could offer it again — the same node enters the queue multiple times",
+      "poll doesn't allow marking",
+      "It changes the traversal order to DFS",
+      "No reason; both are identical"
+    ],
+    "answer": 0,
+    "explanation": "Mark-on-poll still terminates but can blow the queue up exponentially in dense graphs. Mark-on-offer guarantees each node is queued once."
+  },
+  {
+    "id": "pat-gr-drill-adj",
+    "type": "code-method",
+    "title": "Drill: build the adjacency list",
+    "prompt": "From memory: given `n` nodes (0..n-1) and undirected `edges`, return the neighbor count (degree) of each node as an array. Build the adjacency list with computeIfAbsent, then read off sizes. (Yes, you could just count — build the map anyway; that's the drill.)",
+    "drill": true,
+    "method": {
+      "name": "degrees",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "edges",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] degrees(int n, int[][] edges) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          4,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "expected": [
+          2,
+          2,
+          2,
+          0
+        ],
+        "note": "node 3 is isolated"
+      },
+      {
+        "args": [
+          2,
+          [
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": [
+          1,
+          1
+        ]
+      },
+      {
+        "args": [
+          3,
+          []
+        ],
+        "expected": [
+          0,
+          0,
+          0
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] degrees(int n, int[][] edges) {\n        Map<Integer, List<Integer>> adj = new HashMap<>();\n        for (int[] e : edges) {\n            adj.computeIfAbsent(e[0], k -> new ArrayList<>()).add(e[1]);\n            adj.computeIfAbsent(e[1], k -> new ArrayList<>()).add(e[0]);\n        }\n        int[] res = new int[n];\n        for (int i = 0; i < n; i++) {\n            res[i] = adj.getOrDefault(i, new ArrayList<>()).size();\n        }\n        return res;\n    }\n}",
+      "explanation": "Isolated nodes never enter the map — that's why the read side needs getOrDefault. Both lines of the build are pure muscle memory."
+    },
+    "hints": [
+      "Undirected: add the edge in BOTH directions.",
+      "`adj.computeIfAbsent(u, k -> new ArrayList<>()).add(v);`"
+    ]
+  },
+  {
+    "id": "pat-gr-drill-flood",
+    "type": "code-method",
+    "title": "Drill: count regions (grid DFS)",
+    "prompt": "From memory (grid flood-fill): count the groups of connected `1`s in `grid` (4-directional). Scan every cell; each unvisited 1 starts a region you sink with DFS.",
+    "drill": true,
+    "method": {
+      "name": "countRegions",
+      "params": [
+        {
+          "name": "grid",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int countRegions(int[][] grid) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            [
+              1,
+              1,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              0,
+              1
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": 4,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int countRegions(int[][] grid) {\n        int count = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                if (grid[r][c] == 1) {\n                    count++;\n                    dfs(grid, r, c);\n                }\n            }\n        }\n        return count;\n    }\n\n    private void dfs(int[][] g, int r, int c) {\n        if (r < 0 || r >= g.length || c < 0 || c >= g[0].length || g[r][c] != 1) return;\n        g[r][c] = 0;\n        dfs(g, r + 1, c);\n        dfs(g, r - 1, c);\n        dfs(g, r, c + 1);\n        dfs(g, r, c - 1);\n    }\n}"
+    },
+    "hints": [
+      "Each scan-found 1 is a new region; DFS sinks the whole region to 0 so it isn't recounted."
+    ]
+  }
+]

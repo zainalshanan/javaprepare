@@ -1,0 +1,32 @@
+{
+  "id": "regular-expression-matching",
+  "type": "code-method",
+  "title": "Regular Expression Matching",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/regular-expression-matching/",
+  "prompt": "Implement regex matching for `.` (any single char) and `*` (zero or more of the preceding element), matching the ENTIRE string `s` against pattern `p`.\n\n**Example**: `s = \"aab\"`, `p = \"c*a*b\"` → `true`.\n\ndp[i][j] = 'the first i chars of s match the first j chars of p'. The `*` is the tricky case: zero occurrences, or one-more when the preceding element matches.",
+  "method": {
+    "name": "isMatch",
+    "params": [ { "name": "s", "type": "String" }, { "name": "p", "type": "String" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean isMatch(String s, String p) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["aa", "a"], "expected": false },
+    { "args": ["aa", "a*"], "expected": true },
+    { "args": ["ab", ".*"], "expected": true },
+    { "args": ["aab", "c*a*b"], "expected": true },
+    { "args": ["mississippi", "mis*is*p*."], "expected": false },
+    { "args": ["", "a*"], "expected": true, "hidden": true },
+    { "args": ["abc", "a.c"], "expected": true, "hidden": true }
+  ],
+  "hints": [
+    "dp[0][0] = true. Seed dp[0][j] for patterns like `a*b*` that can match the empty string.",
+    "For `x*`: dp[i][j] = dp[i][j-2] (zero of x), OR (x matches s[i-1] AND dp[i-1][j]) (consume one more).",
+    "For a normal char or `.`: dp[i][j] = dp[i-1][j-1] when it matches s[i-1]."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean isMatch(String s, String p) {\n        int m = s.length(), n = p.length();\n        boolean[][] dp = new boolean[m + 1][n + 1];\n        dp[0][0] = true;\n        for (int j = 1; j <= n; j++) {\n            if (p.charAt(j - 1) == '*' && j >= 2) dp[0][j] = dp[0][j - 2];\n        }\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                char pc = p.charAt(j - 1);\n                if (pc == '*') {\n                    dp[i][j] = dp[i][j - 2];   // zero of the preceding element\n                    char prev = p.charAt(j - 2);\n                    if (prev == '.' || prev == s.charAt(i - 1)) {\n                        dp[i][j] = dp[i][j] || dp[i - 1][j];\n                    }\n                } else if (pc == '.' || pc == s.charAt(i - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1];\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
+    "explanation": "`x*` has two meanings: erase it (dp[i][j-2]) or, if `x` matches the current char, absorb that char and stay on the same `*` (dp[i-1][j]) — this is what lets `a*` match any run of a's. Plain chars and `.` advance both indices on a match. The empty-string seeding handles patterns that are entirely erasable. O(m·n)."
+  }
+}

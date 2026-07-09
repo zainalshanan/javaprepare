@@ -1,0 +1,30 @@
+{
+  "id": "rotting-oranges",
+  "type": "code-method",
+  "title": "Rotting Oranges",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/rotting-oranges/",
+  "prompt": "In a grid, `0` = empty, `1` = fresh orange, `2` = rotten. Each minute, a rotten orange rots its 4-directional fresh neighbors. Return the minutes until no fresh orange remains, or `-1` if some can never rot.\n\n**Example**: `[[2,1,1],[1,1,0],[0,1,1]]` → `4`.\n\nMulti-source BFS: start from every rotten orange at once, expanding level by level (each level = one minute).",
+  "method": {
+    "name": "orangesRotting",
+    "params": [ { "name": "grid", "type": "int[][]" } ],
+    "returns": "int"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int orangesRotting(int[][] grid) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[2, 1, 1], [1, 1, 0], [0, 1, 1]]], "expected": 4 },
+    { "args": [[[2, 1, 1], [0, 1, 1], [1, 0, 1]]], "expected": -1, "note": "bottom-left orange is isolated" },
+    { "args": [[[0, 2]]], "expected": 0, "note": "no fresh oranges" },
+    { "args": [[[1]]], "expected": -1, "hidden": true, "note": "a fresh orange with no source" },
+    { "args": [[[2, 2], [1, 1]]], "expected": 1, "hidden": true }
+  ],
+  "hints": [
+    "Enqueue ALL rotten cells first, and count the fresh ones.",
+    "BFS level by level with the frozen-`size` trick; each completed level is one minute.",
+    "After BFS, if any fresh remain it's -1; otherwise the number of minutes elapsed."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int orangesRotting(int[][] grid) {\n        int rows = grid.length, cols = grid[0].length;\n        Queue<int[]> q = new LinkedList<>();\n        int fresh = 0;\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (grid[r][c] == 2) q.offer(new int[]{r, c});\n                else if (grid[r][c] == 1) fresh++;\n            }\n        }\n        if (fresh == 0) return 0;\n        int minutes = 0;\n        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n        while (!q.isEmpty() && fresh > 0) {\n            minutes++;\n            int size = q.size();\n            for (int i = 0; i < size; i++) {\n                int[] cell = q.poll();\n                for (int[] d : dirs) {\n                    int nr = cell[0] + d[0], nc = cell[1] + d[1];\n                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && grid[nr][nc] == 1) {\n                        grid[nr][nc] = 2;\n                        fresh--;\n                        q.offer(new int[]{nr, nc});\n                    }\n                }\n            }\n        }\n        return fresh == 0 ? minutes : -1;\n    }\n}",
+    "explanation": "Because rot spreads simultaneously from all rotten cells, multi-source BFS (seed the queue with every source) computes the true minimum time — the level at which each fresh orange is reached is its rotting minute. Any orange never dequeued stays fresh, giving -1."
+  }
+}

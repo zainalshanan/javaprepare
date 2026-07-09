@@ -1,0 +1,30 @@
+{
+  "id": "climbing-stairs",
+  "type": "code-method",
+  "title": "Climbing Stairs",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/climbing-stairs/",
+  "prompt": "You climb a staircase of `n` steps, taking 1 or 2 steps at a time. How many distinct ways to reach the top? (1 ≤ n ≤ 45.)\n\n**Example**: `n = 3` → `3` (1+1+1, 1+2, 2+1).\n\nThe \"hello world\" of DP: the last move was a 1-step or a 2-step, so `ways(n) = ways(n-1) + ways(n-2)`.",
+  "method": {
+    "name": "climbStairs",
+    "params": [ { "name": "n", "type": "int" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int climbStairs(int n) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [2], "expected": 2 },
+    { "args": [3], "expected": 3 },
+    { "args": [1], "expected": 1 },
+    { "args": [10], "expected": 89, "hidden": true },
+    { "args": [45], "expected": 1836311903, "hidden": true, "note": "recursion without memo would take minutes here" }
+  ],
+  "hints": [
+    "State: dp[i] = number of ways to reach step i. Bases: dp[1] = 1, dp[2] = 2.",
+    "It's Fibonacci in a costume — the two rolling variables from the pattern lesson suffice.",
+    "Plain recursion is O(2ⁿ) and will time out on the n=45 test — that's the whole lesson."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int climbStairs(int n) {\n        if (n <= 2) return n;\n        int prev2 = 1, prev1 = 2;\n        for (int i = 3; i <= n; i++) {\n            int cur = prev1 + prev2;\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+    "explanation": "O(n) time, O(1) space. Every path to step n arrives from n-1 or n-2, and those sets don't overlap — so the counts add. Recognizing \"decisions at each step + count/optimize the total\" as DP is the transferable skill."
+  }
+}

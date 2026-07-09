@@ -1,0 +1,29 @@
+{
+  "id": "maximum-depth-of-binary-tree",
+  "type": "code-method",
+  "title": "Maximum Depth of Binary Tree",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+  "prompt": "Return the maximum depth of a binary tree — the number of nodes on the longest root-to-leaf path.\n\n**Example**: `[3,9,20,null,null,15,7]` → `3`.",
+  "method": {
+    "name": "maxDepth",
+    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int maxDepth(TreeNode root) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[3, 9, 20, null, null, 15, 7]], "expected": 3 },
+    { "args": [[1, null, 2]], "expected": 2 },
+    { "args": [[]], "expected": 0 },
+    { "args": [[1]], "expected": 1, "hidden": true },
+    { "args": [[1, 2, null, 3, null, 4]], "expected": 4, "hidden": true, "note": "left-skewed chain" }
+  ],
+  "hints": [
+    "Empty tree has depth 0 — the base case.",
+    "A tree's depth = 1 + the deeper of its two subtrees."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int maxDepth(TreeNode root) {\n        if (root == null) return 0;\n        return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));\n    }\n}",
+    "explanation": "Two lines — the purest example of \"trust the recursion\": assume maxDepth works on the subtrees, and the combining step is just 1 + max."
+  }
+}

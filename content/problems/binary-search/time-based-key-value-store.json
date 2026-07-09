@@ -1,0 +1,38 @@
+{
+  "id": "time-based-key-value-store",
+  "type": "code-design",
+  "title": "Time Based Key-Value Store",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/time-based-key-value-store/",
+  "prompt": "Design a store where each key maps to values stamped with increasing timestamps:\n\n- `TimeMap()` — construct\n- `void set(String key, String value, int timestamp)`\n- `String get(String key, int timestamp)` — the value set for `key` at the **largest timestamp ≤ the query**, or `\"\"` if none exists\n\nStamps for a key arrive strictly increasing. A `TreeMap` per key gives the floor query directly (see the TreeMap lesson).",
+  "className": "TimeMap",
+  "methods": {
+    "TimeMap": { "params": [], "returns": "void" },
+    "set": { "params": ["String", "String", "int"], "returns": "void" },
+    "get": { "params": ["String", "int"], "returns": "String" }
+  },
+  "starter": "import java.util.*;\n\nclass TimeMap {\n\n    public TimeMap() {\n\n    }\n\n    public void set(String key, String value, int timestamp) {\n\n    }\n\n    public String get(String key, int timestamp) {\n\n    }\n}\n",
+  "tests": [
+    {
+      "ops": ["TimeMap", "set", "get", "get", "set", "get", "get"],
+      "args": [[], ["foo", "bar", 1], ["foo", 1], ["foo", 3], ["foo", "bar2", 4], ["foo", 4], ["foo", 5]],
+      "expected": [null, null, "bar", "bar", null, "bar2", "bar2"]
+    },
+    {
+      "ops": ["TimeMap", "get", "set", "get", "get"],
+      "args": [[], ["x", 5], ["x", "a", 10], ["x", 9], ["x", 10]],
+      "expected": [null, "", null, "", "a"],
+      "hidden": true,
+      "note": "query before any set, and just-below the stamp, both return the earlier/empty value"
+    }
+  ],
+  "hints": [
+    "Map each key to a `TreeMap<Integer, String>` (timestamp → value).",
+    "`get` = `floorKey(timestamp)` on that key's TreeMap, then look up the value.",
+    "Null checks: unknown key, or a query earlier than every stored stamp, both return \"\"."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass TimeMap {\n    private Map<String, TreeMap<Integer, String>> map = new HashMap<>();\n\n    public TimeMap() {\n    }\n\n    public void set(String key, String value, int timestamp) {\n        map.computeIfAbsent(key, k -> new TreeMap<>()).put(timestamp, value);\n    }\n\n    public String get(String key, int timestamp) {\n        TreeMap<Integer, String> tm = map.get(key);\n        if (tm == null) return \"\";\n        Integer floor = tm.floorKey(timestamp);\n        return floor == null ? \"\" : tm.get(floor);\n    }\n}",
+    "explanation": "`floorKey` is exactly 'largest timestamp ≤ query' in O(log n). A TreeMap per key keeps each key's history sorted automatically. (Since stamps arrive increasing, a plain list + binary search also works — but the TreeMap makes the intent obvious.)"
+  }
+}

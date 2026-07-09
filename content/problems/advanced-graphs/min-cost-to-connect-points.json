@@ -1,0 +1,30 @@
+{
+  "id": "min-cost-to-connect-points",
+  "type": "code-method",
+  "title": "Min Cost to Connect All Points",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+  "prompt": "Given points on a plane, connect them all with minimum total cost, where the cost between two points is their Manhattan distance `|x1-x2| + |y1-y2|`. Return the minimum total.\n\n**Example**: `[[0,0],[2,2],[3,10],[5,2],[7,0]]` → `20`.\n\nThis is a Minimum Spanning Tree. Prim's algorithm with a min-heap grows the tree one cheapest edge at a time.",
+  "method": {
+    "name": "minCostConnectPoints",
+    "params": [ { "name": "points", "type": "int[][]" } ],
+    "returns": "int"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int minCostConnectPoints(int[][] points) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[0, 0], [2, 2], [3, 10], [5, 2], [7, 0]]], "expected": 20 },
+    { "args": [[[3, 12], [-2, 5], [-4, 1]]], "expected": 18 },
+    { "args": [[[0, 0]]], "expected": 0, "note": "single point, nothing to connect" },
+    { "args": [[[0, 0], [1, 1]]], "expected": 2, "hidden": true },
+    { "args": [[[2, -3], [-17, -8], [13, 8], [-17, -15]]], "expected": 53, "hidden": true }
+  ],
+  "hints": [
+    "Prim's MST: a min-heap of `{cost, node}`, plus a visited array.",
+    "Start from node 0 at cost 0. Pop the cheapest unvisited node, add its cost, then push edges to all still-unvisited nodes.",
+    "Stop once all n nodes are in the tree."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int minCostConnectPoints(int[][] points) {\n        int n = points.length;\n        boolean[] inMST = new boolean[n];\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0])); // {cost, node}\n        pq.offer(new int[]{0, 0});\n        int total = 0, count = 0;\n        while (count < n && !pq.isEmpty()) {\n            int[] top = pq.poll();\n            int cost = top[0], u = top[1];\n            if (inMST[u]) continue;\n            inMST[u] = true;\n            total += cost;\n            count++;\n            for (int v = 0; v < n; v++) {\n                if (!inMST[v]) {\n                    int d = Math.abs(points[u][0] - points[v][0]) + Math.abs(points[u][1] - points[v][1]);\n                    pq.offer(new int[]{d, v});\n                }\n            }\n        }\n        return total;\n    }\n}",
+    "explanation": "The graph is complete (any two points connectable), so Prim's is natural: repeatedly absorb the nearest point not yet in the tree. The heap always surfaces the cheapest frontier edge; skipping already-in-MST pops handles stale entries. O(n² log n)."
+  }
+}

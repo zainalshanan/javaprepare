@@ -1,0 +1,133 @@
+[
+  {
+    "id": "sq-mcq-stack-trace",
+    "type": "mcq",
+    "title": "Trace the stack",
+    "prompt": "`push(1); push(2); pop(); push(3);` — what does `peek()` return, and what's still inside?",
+    "options": [
+      "peek is 3; the stack holds [1, 3] (bottom to top)",
+      "peek is 2; the stack holds [1, 2, 3]",
+      "peek is 1; the stack holds [1]",
+      "peek is 3; the stack holds [2, 3]"
+    ],
+    "answer": 0,
+    "explanation": "pop removed the 2. LIFO: the most recent push is always what peek/pop see."
+  },
+  {
+    "id": "sq-fill-both",
+    "type": "fill-blank",
+    "title": "Stack and queue vocabulary",
+    "prompt": "Fill in the canonical operations.",
+    "code": "Deque<Integer> stack = new ArrayDeque<>();\nstack.{{1}}(x);              // add to top\nint top = stack.{{2}}();     // remove from top\n\nQueue<Integer> queue = new ArrayDeque<>();\nqueue.{{3}}(x);              // add to back\nint front = queue.{{4}}();   // remove from front",
+    "blanks": {
+      "1": ["push"],
+      "2": ["pop"],
+      "3": ["offer", "add"],
+      "4": ["poll"]
+    },
+    "explanation": "push/pop for stacks, offer/poll for queues. Same ArrayDeque class, different ends."
+  },
+  {
+    "id": "sq-reverse-with-stack",
+    "type": "code-method",
+    "title": "Reverse via stack",
+    "prompt": "Return a new array with the elements of `nums` reversed — by pushing everything onto a stack, then popping into the result. (Deliberately not the two-pointer way: the point is feeling LIFO reverse order.)",
+    "method": {
+      "name": "reverseViaStack",
+      "params": [ { "name": "nums", "type": "int[]" } ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] reverseViaStack(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3]], "expected": [3, 2, 1] },
+      { "args": [[]], "expected": [] },
+      { "args": [[5, 5, 1]], "expected": [1, 5, 5], "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] reverseViaStack(int[] nums) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int x : nums) stack.push(x);\n        int[] res = new int[nums.length];\n        for (int i = 0; i < res.length; i++) {\n            res[i] = stack.pop();\n        }\n        return res;\n    }\n}",
+      "explanation": "Everything that goes through a stack comes out reversed — the property monotonic-stack problems exploit."
+    },
+    "hints": ["Push all, then pop into `res[0], res[1], ...`"]
+  },
+  {
+    "id": "sq-drill-stack",
+    "type": "code-method",
+    "title": "Drill: matching pairs",
+    "prompt": "From memory — a mini Valid Parentheses: given a string of only `(` and `)`, return whether it's balanced. Push `(`; on `)`, if the stack is empty return false, else pop. Balanced = stack empty at the end. (A counter works too, but drill the stack shape — you'll need it for the 3-bracket version.)",
+    "drill": true,
+    "method": {
+      "name": "balanced",
+      "params": [ { "name": "s", "type": "String" } ],
+      "returns": "boolean"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public boolean balanced(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["(())"], "expected": true },
+      { "args": ["())"], "expected": false, "note": "close with nothing open" },
+      { "args": ["(("], "expected": false, "note": "left unclosed" },
+      { "args": [""], "expected": true },
+      { "args": ["()()"], "expected": true, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean balanced(String s) {\n        Deque<Character> stack = new ArrayDeque<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(') {\n                stack.push(c);\n            } else {\n                if (stack.isEmpty()) return false;\n                stack.pop();\n            }\n        }\n        return stack.isEmpty();\n    }\n}",
+      "explanation": "Two failure modes: closing with nothing open (mid-loop check) and opening without closing (final isEmpty check)."
+    },
+    "hints": ["Return false immediately if you see `)` with an empty stack.", "The final answer is `stack.isEmpty()`."]
+  },
+  {
+    "id": "sq-ref-stack-fill",
+    "type": "fill-blank",
+    "title": "Recall: stack (Deque)",
+    "prompt": "Fill in the stack operations on an ArrayDeque.",
+    "drill": true,
+    "code": "Deque<Integer> stack = new ArrayDeque<>();\nstack.{{1}}(5);              // add to top\nint top = stack.{{2}}();     // look at top (don't remove)\nstack.{{3}}();               // remove the top\nboolean e = stack.{{4}}();   // empty?",
+    "blanks": { "1": ["push"], "2": ["peek"], "3": ["pop"], "4": ["isEmpty"] },
+    "explanation": "For a stack, use `push`/`pop`/`peek` on an `ArrayDeque` (not the legacy `Stack` class)."
+  },
+  {
+    "id": "sq-ref-stack-code",
+    "type": "code-method",
+    "title": "Drill: top after pushing all",
+    "prompt": "From memory: push every element of `nums` (non-empty) onto a stack, then return the top with `peek`.",
+    "drill": true,
+    "method": { "name": "topAfterPush", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int topAfterPush(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3]], "expected": 3 },
+      { "args": [[5]], "expected": 5 },
+      { "args": [[-1, -2]], "expected": -2, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int topAfterPush(int[] nums) {\n        Deque<Integer> stack = new ArrayDeque<>();\n        for (int x : nums) stack.push(x);\n        return stack.peek();\n    }\n}"
+    },
+    "hints": ["The last value pushed is what `peek()` returns."]
+  },
+  {
+    "id": "sq-ref-queue-fill",
+    "type": "fill-blank",
+    "title": "Recall: queue",
+    "prompt": "Fill in the queue operations.",
+    "drill": true,
+    "code": "Queue<Integer> q = new LinkedList<>();\nq.{{1}}(5);              // add to back\nint front = q.{{2}}();   // look at front\nq.{{3}}();               // remove the front",
+    "blanks": { "1": ["offer", "add"], "2": ["peek"], "3": ["poll"] },
+    "explanation": "For a queue, `offer` adds to the back and `poll` removes from the front (FIFO); `peek` looks at the front."
+  },
+  {
+    "id": "sq-ref-queue-code",
+    "type": "code-method",
+    "title": "Drill: through the queue",
+    "prompt": "From memory: offer every element of `nums` into a queue, then poll them all into a result array. FIFO means the order is unchanged.",
+    "drill": true,
+    "method": { "name": "throughQueue", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int[]" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] throughQueue(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3]], "expected": [1, 2, 3] },
+      { "args": [[]], "expected": [] },
+      { "args": [[9, 8]], "expected": [9, 8], "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] throughQueue(int[] nums) {\n        Queue<Integer> q = new LinkedList<>();\n        for (int x : nums) q.offer(x);\n        int[] res = new int[nums.length];\n        for (int i = 0; i < res.length; i++) res[i] = q.poll();\n        return res;\n    }\n}"
+    },
+    "hints": ["`offer` all, then `poll` in a loop into `res`."]
+  }
+]

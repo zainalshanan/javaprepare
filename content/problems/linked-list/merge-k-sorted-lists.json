@@ -1,0 +1,30 @@
+{
+  "id": "merge-k-sorted-lists",
+  "type": "code-method",
+  "title": "Merge k Sorted Lists",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/merge-k-sorted-lists/",
+  "prompt": "Merge `k` sorted linked lists into one sorted list and return its head.\n\n**Example**: `[[1,4,5],[1,3,4],[2,6]]` → `[1,1,2,3,4,4,5,6]`.\n\nA min-heap of the current head of each list: repeatedly poll the smallest and push its successor. O(N log k).",
+  "method": {
+    "name": "mergeKLists",
+    "params": [ { "name": "lists", "type": "ListNode[]" } ],
+    "returns": "ListNode"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[1, 4, 5], [1, 3, 4], [2, 6]]], "expected": [1, 1, 2, 3, 4, 4, 5, 6] },
+    { "args": [[]], "expected": [], "note": "no lists" },
+    { "args": [[[]]], "expected": [], "note": "one empty list" },
+    { "args": [[[1], [0]]], "expected": [0, 1], "hidden": true },
+    { "args": [[[2, 6], [], [1, 3]]], "expected": [1, 2, 3, 6], "hidden": true, "note": "empty list among non-empty" }
+  ],
+  "hints": [
+    "Seed a min-heap (ordered by node value) with every non-null list head.",
+    "Poll the smallest node, append it to the result, and if it has a `next`, push that.",
+    "A dummy head keeps the result-building clean."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> Integer.compare(a.val, b.val));\n        for (ListNode node : lists) {\n            if (node != null) pq.offer(node);\n        }\n        ListNode dummy = new ListNode(0), tail = dummy;\n        while (!pq.isEmpty()) {\n            ListNode n = pq.poll();\n            tail.next = n;\n            tail = n;\n            if (n.next != null) pq.offer(n.next);\n        }\n        return dummy.next;\n    }\n}",
+    "explanation": "The heap never holds more than k nodes (one frontier per list), so each of the N total nodes costs O(log k) to insert/extract: O(N log k). Splicing existing nodes (rather than copying values) keeps it O(k) extra space."
+  }
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "boiler-mcq-shape",
+    "type": "mcq",
+    "title": "Which shape does LeetCode use?",
+    "prompt": "On LeetCode, what do you actually write?",
+    "options": [
+      "A method inside a `Solution` class — no `main`",
+      "A full program with `public static void main`",
+      "Just the method body, no class or signature",
+      "A separate file for each test case"
+    ],
+    "answer": 0,
+    "explanation": "LeetCode calls your method for you, so you only fill in the method inside `class Solution`. You write the full `main` scaffold only for standalone programs (this course's 'write a program' exercises)."
+  },
+  {
+    "id": "boiler-fill-main",
+    "type": "fill-blank",
+    "title": "Recall: the runnable scaffold",
+    "prompt": "Fill in the entry-point boilerplate every standalone Java program needs.",
+    "drill": true,
+    "code": "public {{1}} Main {\n    public {{2}} void {{3}}(String[] args) {\n        System.out.println(\"hi\");\n    }\n}",
+    "blanks": {
+      "1": ["class"],
+      "2": ["static"],
+      "3": ["main"]
+    },
+    "explanation": "`class Main`, then `public static void main(String[] args)` — the fixed signature the JVM looks for to start the program."
+  },
+  {
+    "id": "boiler-write-main",
+    "type": "code-output",
+    "title": "Drill: write the scaffold from scratch",
+    "prompt": "From a blank editor, write a complete runnable program that prints exactly `ready`. No starter — reproduce the whole `class` + `main` scaffold yourself.",
+    "drill": true,
+    "starter": "",
+    "expectedOutput": "ready",
+    "solution": {
+      "code": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"ready\");\n    }\n}",
+      "explanation": "The scaffold is always the same — the only thing that changes between programs is what goes inside main."
+    },
+    "hints": ["Start with `public class Main {`", "Inside it: `public static void main(String[] args) { ... }`"]
+  },
+  {
+    "id": "boiler-fill-solution",
+    "type": "fill-blank",
+    "title": "Recall: the LeetCode solution shape",
+    "prompt": "Fill in the import and the class wrapper you write for LeetCode-style problems.",
+    "drill": true,
+    "code": "import java.{{1}}.*;\n\nclass {{2}} {\n    public int firstElement(int[] nums) {\n        {{3}} nums[0];\n    }\n}",
+    "blanks": {
+      "1": ["util"],
+      "2": ["Solution"],
+      "3": ["return"]
+    },
+    "explanation": "`import java.util.*;` for collections, a class named `Solution`, and a method that `return`s its result — no `main` needed."
+  },
+  {
+    "id": "boiler-write-solution",
+    "type": "code-method",
+    "title": "Drill: write a Solution method from scratch",
+    "prompt": "From a blank editor, write a `Solution` class with a method `boolean isPositive(int n)` that returns whether `n` is greater than 0. Reproduce the whole class + method shape yourself.",
+    "drill": true,
+    "method": {
+      "name": "isPositive",
+      "params": [ { "name": "n", "type": "int" } ],
+      "returns": "boolean"
+    },
+    "starter": "",
+    "tests": [
+      { "args": [5], "expected": true },
+      { "args": [-3], "expected": false },
+      { "args": [0], "expected": false },
+      { "args": [2147483647], "expected": true, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public boolean isPositive(int n) {\n        return n > 0;\n    }\n}",
+      "explanation": "`class Solution { public <returnType> <name>(<params>) { return ...; } }` — internalize this frame and every problem is just filling the body."
+    },
+    "hints": ["`class Solution { ... }` with the method inside.", "The method body is a single `return n > 0;`"]
+  }
+]

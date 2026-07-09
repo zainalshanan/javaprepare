@@ -1,0 +1,197 @@
+{
+  "title": "Java for NeetCode 150",
+  "units": [
+    {
+      "id": "00-start",
+      "title": "Getting Started",
+      "description": "How LeetCode Java works and how this course grades you.",
+      "lessons": [
+        { "id": "how-leetcode-java-works", "title": "How LeetCode Java Works" },
+        { "id": "boilerplate-and-syntax", "title": "Boilerplate & Syntax Drills" }
+      ]
+    },
+    {
+      "id": "01-fundamentals",
+      "title": "Java Fundamentals",
+      "description": "Variables, loops, conditionals, methods, arrays, strings, recursion — drilled until automatic.",
+      "lessons": [
+        { "id": "variables-and-types", "title": "Variables, Types & Printing" },
+        { "id": "operators-and-math", "title": "Operators & Math" },
+        { "id": "conditionals", "title": "Conditionals" },
+        { "id": "loops", "title": "Loops" },
+        { "id": "methods", "title": "Methods" },
+        { "id": "arrays", "title": "Arrays" },
+        { "id": "strings", "title": "Strings & StringBuilder" },
+        { "id": "recursion", "title": "Recursion Basics" }
+      ]
+    },
+    {
+      "id": "02-objects",
+      "title": "Objects-Lite",
+      "description": "Just enough OOP to read and write interview code.",
+      "lessons": [
+        { "id": "classes-and-objects", "title": "Classes & Objects" },
+        { "id": "generics-boxing-equality", "title": "Generics, Boxing & Equality" },
+        { "id": "equals-and-hashcode", "title": "equals() & hashCode()" }
+      ]
+    },
+    {
+      "id": "03-collections",
+      "title": "Core Collections",
+      "description": "The workhorses: ArrayList, HashMap, HashSet, Deque, PriorityQueue, TreeMap.",
+      "lessons": [
+        { "id": "arraylist", "title": "ArrayList" },
+        { "id": "hashmap", "title": "HashMap" },
+        { "id": "hashset", "title": "HashSet" },
+        { "id": "stack-and-queue", "title": "Stack & Queue (Deque)" },
+        { "id": "priorityqueue", "title": "PriorityQueue (Heaps)" },
+        { "id": "treemap-treeset", "title": "TreeMap & TreeSet" },
+        { "id": "streams", "title": "Streams for LeetCode" }
+      ]
+    },
+    {
+      "id": "04-sorting-bigo",
+      "title": "Sorting, Comparators & Big-O",
+      "description": "Custom sort orders, and enough complexity analysis to reason about solutions.",
+      "lessons": [
+        { "id": "comparators", "title": "Sorting with Comparators" },
+        { "id": "comparable", "title": "Comparable (Natural Ordering)" },
+        { "id": "big-o", "title": "Big-O Essentials" }
+      ]
+    },
+    {
+      "id": "05-gotchas",
+      "title": "Java Gotchas",
+      "description": "The mistakes that cause Wrong Answers in interviews.",
+      "lessons": [
+        { "id": "gotchas", "title": "Gotchas Quiz Gauntlet" }
+      ]
+    },
+    {
+      "id": "10-arrays-hashing",
+      "title": "Pattern: Arrays & Hashing",
+      "description": "\"Have I seen this / how many times\" — HashMap and HashSet moves.",
+      "lessons": [{ "id": "arrays-hashing-pattern", "title": "The Arrays & Hashing Pattern" }],
+      "problems": ["two-sum", "contains-duplicate", "valid-anagram", "group-anagrams", "top-k-frequent-elements", "product-of-array-except-self", "valid-sudoku", "encode-and-decode-strings", "longest-consecutive-sequence"]
+    },
+    {
+      "id": "11-two-pointers",
+      "title": "Pattern: Two Pointers",
+      "description": "Opposite ends moving inward on sorted data and palindromes.",
+      "lessons": [{ "id": "two-pointers-pattern", "title": "The Two Pointers Pattern" }],
+      "problems": ["valid-palindrome", "two-sum-ii", "3sum", "container-with-most-water", "trapping-rain-water"]
+    },
+    {
+      "id": "12-sliding-window",
+      "title": "Pattern: Sliding Window",
+      "description": "Expand right, shrink left while invalid.",
+      "lessons": [{ "id": "sliding-window-pattern", "title": "The Sliding Window Pattern" }],
+      "problems": ["best-time-to-buy-and-sell-stock", "longest-substring-without-repeating-characters", "longest-repeating-character-replacement", "permutation-in-string", "minimum-window-substring", "sliding-window-maximum"]
+    },
+    {
+      "id": "13-stack",
+      "title": "Pattern: Stack",
+      "description": "Matching pairs and monotonic stacks.",
+      "lessons": [{ "id": "stack-pattern", "title": "The Stack Pattern" }],
+      "problems": ["valid-parentheses", "min-stack", "daily-temperatures", "evaluate-reverse-polish-notation", "generate-parentheses", "car-fleet", "largest-rectangle-in-histogram"]
+    },
+    {
+      "id": "14-binary-search",
+      "title": "Pattern: Binary Search",
+      "description": "Find the target — or binary-search the answer itself.",
+      "lessons": [{ "id": "binary-search-pattern", "title": "The Binary Search Pattern" }],
+      "problems": ["binary-search", "koko-eating-bananas", "search-a-2d-matrix", "find-minimum-in-rotated-sorted-array", "search-in-rotated-sorted-array", "time-based-key-value-store", "median-of-two-sorted-arrays"]
+    },
+    {
+      "id": "15-linked-list",
+      "title": "Pattern: Linked List",
+      "description": "Reverse, dummy head, fast & slow pointers.",
+      "lessons": [{ "id": "linked-list-pattern", "title": "The Linked List Patterns" }],
+      "problems": ["reverse-linked-list", "merge-two-sorted-lists", "linked-list-cycle", "reorder-list", "remove-nth-node-from-end-of-list", "add-two-numbers", "find-the-duplicate-number", "merge-k-sorted-lists", "reverse-nodes-in-k-group", "lru-cache"]
+    },
+    {
+      "id": "16-trees",
+      "title": "Pattern: Trees",
+      "description": "DFS recursion and BFS level-order.",
+      "lessons": [{ "id": "trees-pattern", "title": "The Tree Patterns" }],
+      "problems": ["invert-binary-tree", "maximum-depth-of-binary-tree", "binary-tree-level-order-traversal", "validate-binary-search-tree", "diameter-of-binary-tree", "balanced-binary-tree", "same-tree", "subtree-of-another-tree", "lowest-common-ancestor-of-a-binary-search-tree", "binary-tree-right-side-view", "count-good-nodes-in-binary-tree", "kth-smallest-element-in-a-bst", "construct-binary-tree-from-preorder-and-inorder-traversal", "binary-tree-maximum-path-sum", "serialize-and-deserialize-binary-tree"]
+    },
+    {
+      "id": "17-tries",
+      "title": "Pattern: Tries",
+      "description": "Prefix trees for word lookups.",
+      "lessons": [{ "id": "tries-pattern", "title": "The Trie Pattern" }],
+      "problems": ["implement-trie", "design-add-and-search-words-data-structure", "word-search-ii"]
+    },
+    {
+      "id": "18-heap",
+      "title": "Pattern: Heap / Priority Queue",
+      "description": "Top-K with a size-k heap.",
+      "lessons": [{ "id": "heap-pattern", "title": "The Heap Pattern" }],
+      "problems": ["kth-largest-element-in-a-stream", "k-closest-points-to-origin", "last-stone-weight", "kth-largest-element-in-an-array", "task-scheduler", "find-median-from-data-stream", "design-twitter"]
+    },
+    {
+      "id": "19-backtracking",
+      "title": "Pattern: Backtracking",
+      "description": "Choose → explore → un-choose.",
+      "lessons": [{ "id": "backtracking-pattern", "title": "The Backtracking Pattern" }],
+      "problems": ["subsets", "combination-sum", "permutations", "subsets-ii", "combination-sum-ii", "word-search", "palindrome-partitioning", "letter-combinations-of-a-phone-number", "n-queens"]
+    },
+    {
+      "id": "20-graphs",
+      "title": "Pattern: Graphs",
+      "description": "Adjacency lists, grid DFS/BFS.",
+      "lessons": [{ "id": "graphs-pattern", "title": "The Graph Patterns" }],
+      "problems": ["number-of-islands", "max-area-of-island", "rotting-oranges", "pacific-atlantic-water-flow", "surrounded-regions", "walls-and-gates", "word-ladder"]
+    },
+    {
+      "id": "21-advanced-graphs",
+      "title": "Pattern: Advanced Graphs",
+      "description": "Union-Find, topological sort, Dijkstra.",
+      "lessons": [{ "id": "advanced-graphs-pattern", "title": "Union-Find, Topo Sort & Dijkstra" }],
+      "problems": ["course-schedule", "network-delay-time", "course-schedule-ii", "number-of-connected-components-in-an-undirected-graph", "redundant-connection", "graph-valid-tree", "min-cost-to-connect-points", "cheapest-flights-within-k-stops", "swim-in-rising-water", "reconstruct-itinerary", "alien-dictionary"]
+    },
+    {
+      "id": "22-dp-1d",
+      "title": "Pattern: 1-D Dynamic Programming",
+      "description": "dp[i] from earlier states; space-optimized rolls.",
+      "lessons": [{ "id": "dp-1d-pattern", "title": "The 1-D DP Pattern" }],
+      "problems": ["climbing-stairs", "house-robber", "coin-change", "min-cost-climbing-stairs", "house-robber-ii", "longest-palindromic-substring", "palindromic-substrings", "decode-ways", "maximum-product-subarray", "word-break", "longest-increasing-subsequence", "partition-equal-subset-sum"]
+    },
+    {
+      "id": "23-dp-2d",
+      "title": "Pattern: 2-D Dynamic Programming",
+      "description": "Grid DP and memoized recursion.",
+      "lessons": [{ "id": "dp-2d-pattern", "title": "The 2-D DP Pattern" }],
+      "problems": ["unique-paths", "longest-common-subsequence", "coin-change-ii", "target-sum", "longest-increasing-path-in-a-matrix", "edit-distance", "best-time-to-buy-and-sell-stock-with-cooldown", "interleaving-string", "distinct-subsequences", "burst-balloons", "regular-expression-matching"]
+    },
+    {
+      "id": "24-greedy",
+      "title": "Pattern: Greedy",
+      "description": "Locally optimal choices and running-best scans.",
+      "lessons": [{ "id": "greedy-pattern", "title": "The Greedy Patterns" }],
+      "problems": ["maximum-subarray", "jump-game", "jump-game-ii", "gas-station", "hand-of-straights", "merge-triplets-to-form-target-triplet", "partition-labels", "valid-parenthesis-string"]
+    },
+    {
+      "id": "25-intervals",
+      "title": "Pattern: Intervals",
+      "description": "Sort by start, then sweep.",
+      "lessons": [{ "id": "intervals-pattern", "title": "The Intervals Pattern" }],
+      "problems": ["insert-interval", "merge-intervals", "non-overlapping-intervals", "meeting-rooms", "meeting-rooms-ii", "minimum-interval-to-include-each-query"]
+    },
+    {
+      "id": "26-math-geometry",
+      "title": "Pattern: Math & Geometry",
+      "description": "Digit tricks, matrix rotation, GCD.",
+      "lessons": [{ "id": "math-geometry-pattern", "title": "Math & Geometry Moves" }],
+      "problems": ["rotate-image", "reverse-integer", "spiral-matrix", "set-matrix-zeroes", "happy-number", "plus-one", "pow-x-n", "multiply-strings", "detect-squares"]
+    },
+    {
+      "id": "27-bit-manipulation",
+      "title": "Pattern: Bit Manipulation",
+      "description": "XOR tricks and bit counting.",
+      "lessons": [{ "id": "bit-manipulation-pattern", "title": "The Bit Manipulation Toolkit" }],
+      "problems": ["single-number", "number-of-1-bits", "counting-bits", "reverse-bits", "missing-number", "sum-of-two-integers"]
+    }
+  ]
+}

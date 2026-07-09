@@ -1,0 +1,30 @@
+{
+  "id": "count-good-nodes-in-binary-tree",
+  "type": "code-method",
+  "title": "Count Good Nodes in Binary Tree",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/count-good-nodes-in-binary-tree/",
+  "prompt": "A node is **good** if no node on the path from the root down to it has a strictly greater value. Return the count of good nodes.\n\n**Example**: `[3,1,4,3,null,1,5]` → `4` (the root, both 3s... specifically nodes 3, 4, 3, 5).\n\nDFS carrying the maximum value seen so far on the path.",
+  "method": {
+    "name": "goodNodes",
+    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int goodNodes(TreeNode root) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[3, 1, 4, 3, null, 1, 5]], "expected": 4 },
+    { "args": [[3, 3, null, 4, 2]], "expected": 3 },
+    { "args": [[1]], "expected": 1 },
+    { "args": [[2, null, 4, 10, 8, null, null, 4]], "expected": 4, "hidden": true },
+    { "args": [[9, null, 3, 6]], "expected": 1, "hidden": true, "note": "only the root qualifies on a decreasing path" }
+  ],
+  "hints": [
+    "Pass the running max down the recursion, starting at Integer.MIN_VALUE (so the root always counts).",
+    "A node is good when `node.val >= maxSoFar`.",
+    "Recurse into both children with `max(maxSoFar, node.val)`."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int goodNodes(TreeNode root) {\n        return dfs(root, Integer.MIN_VALUE);\n    }\n\n    private int dfs(TreeNode node, int maxSoFar) {\n        if (node == null) return 0;\n        int count = node.val >= maxSoFar ? 1 : 0;\n        int m = Math.max(maxSoFar, node.val);\n        return count + dfs(node.left, m) + dfs(node.right, m);\n    }\n}",
+    "explanation": "O(n). The path-max flows downward as a parameter (top-down), while the good-node count flows upward as the return value — a clean example of carrying context down and aggregating results up in the same DFS."
+  }
+}

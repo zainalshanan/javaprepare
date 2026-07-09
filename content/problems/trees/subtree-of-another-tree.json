@@ -1,0 +1,30 @@
+{
+  "id": "subtree-of-another-tree",
+  "type": "code-method",
+  "title": "Subtree of Another Tree",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/subtree-of-another-tree/",
+  "prompt": "Return whether `subRoot` appears as a subtree of `root` — some node of `root` together with all its descendants is identical to `subRoot`.\n\n**Example**: `root = [3,4,5,1,2]`, `subRoot = [4,1,2]` → `true`.\n\nAt each node of `root`, test 'is the subtree here identical to subRoot?' using the Same Tree helper.",
+  "method": {
+    "name": "isSubtree",
+    "params": [ { "name": "root", "type": "TreeNode" }, { "name": "subRoot", "type": "TreeNode" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean isSubtree(TreeNode root, TreeNode subRoot) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[3, 4, 5, 1, 2], [4, 1, 2]], "expected": true },
+    { "args": [[3, 4, 5, 1, 2, null, null, null, null, 0], [4, 1, 2]], "expected": false, "note": "extra node breaks the match" },
+    { "args": [[1, 1], [1]], "expected": true },
+    { "args": [[1], [1]], "expected": true },
+    { "args": [[1, 2, 3], []], "expected": true, "hidden": true, "note": "empty subtree matches anywhere" }
+  ],
+  "hints": [
+    "Empty subRoot is trivially a subtree; if root is null but subRoot isn't, it's not.",
+    "At each root node, check `same(root, subRoot)`; if not, recurse into root.left OR root.right.",
+    "Reuse the Same Tree comparison as a helper."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean isSubtree(TreeNode root, TreeNode subRoot) {\n        if (subRoot == null) return true;\n        if (root == null) return false;\n        if (same(root, subRoot)) return true;\n        return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);\n    }\n\n    private boolean same(TreeNode a, TreeNode b) {\n        if (a == null && b == null) return true;\n        if (a == null || b == null || a.val != b.val) return false;\n        return same(a.left, b.left) && same(a.right, b.right);\n    }\n}",
+    "explanation": "O(m·n) worst case (an identity check at each of m root nodes against the n-node pattern). Every candidate anchor in `root` gets a full structural comparison; the first exact match wins."
+  }
+}

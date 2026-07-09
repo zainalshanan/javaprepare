@@ -1,0 +1,74 @@
+[
+  {
+    "id": "obj-mcq-this",
+    "type": "mcq",
+    "title": "What is `this`?",
+    "prompt": "In `Point(int x, int y) { this.x = x; }`, why is `this.` required?",
+    "options": [
+      "The parameter `x` shadows the field `x`; `this.x` names the field explicitly",
+      "All field access always requires `this.`",
+      "It's optional decoration",
+      "`this.x` creates a new field"
+    ],
+    "answer": 0,
+    "explanation": "When a parameter and a field share a name, the bare name means the parameter. `this` is the current object, so `this.x` is its field. If names don't clash, `this.` is optional."
+  },
+  {
+    "id": "obj-fill-node",
+    "type": "fill-blank",
+    "title": "Walk a linked list",
+    "prompt": "Complete the standard list-walking loop that counts nodes.",
+    "code": "int count = 0;\nListNode curr = head;\nwhile (curr != {{1}}) {\n    count++;\n    curr = curr.{{2}};\n}",
+    "blanks": {
+      "1": ["null"],
+      "2": ["next"]
+    },
+    "explanation": "`curr = curr.next` steps to the following node; `null` marks the end. This exact loop opens nearly every linked-list problem."
+  },
+  {
+    "id": "obj-mcq-static",
+    "type": "mcq",
+    "title": "static semantics",
+    "prompt": "`static int created` in class `Counter` — after `new Counter(); new Counter(); new Counter();`, what is `Counter.created`?",
+    "options": [
+      "`3` — one shared counter incremented by each constructor",
+      "`1` — each object has its own copy",
+      "`0` — constructors can't modify static fields",
+      "Compile error"
+    ],
+    "answer": 0,
+    "explanation": "`static` means one copy shared across all instances — that's why it can count how many objects were made."
+  },
+  {
+    "id": "obj-build-counter",
+    "type": "code-design",
+    "title": "Build a class: RunningMax",
+    "prompt": "Implement a `RunningMax` class:\n\n- `RunningMax()` — starts empty\n- `void add(int x)` — record a value\n- `int max()` — return the largest value recorded so far (always called after at least one add)\n\nYou need one field to remember the max seen so far. Initialize it to `Integer.MIN_VALUE`.",
+    "className": "RunningMax",
+    "methods": {
+      "RunningMax": { "params": [], "returns": "void" },
+      "add": { "params": ["int"], "returns": "void" },
+      "max": { "params": [], "returns": "int" }
+    },
+    "starter": "class RunningMax {\n\n    public RunningMax() {\n\n    }\n\n    public void add(int x) {\n\n    }\n\n    public int max() {\n\n    }\n}\n",
+    "tests": [
+      {
+        "ops": ["RunningMax", "add", "add", "max", "add", "max"],
+        "args": [[], [3], [7], [], [5], []],
+        "expected": [null, null, null, 7, null, 7]
+      },
+      {
+        "ops": ["RunningMax", "add", "max", "add", "max"],
+        "args": [[], [-10], [], [-2], []],
+        "expected": [null, null, -10, null, -2],
+        "hidden": true,
+        "note": "negative values"
+      }
+    ],
+    "solution": {
+      "code": "class RunningMax {\n    private int best;\n\n    public RunningMax() {\n        best = Integer.MIN_VALUE;\n    }\n\n    public void add(int x) {\n        best = Math.max(best, x);\n    }\n\n    public int max() {\n        return best;\n    }\n}",
+      "explanation": "State lives in a field; methods read and update it. This is exactly the shape of MinStack and other design problems."
+    },
+    "hints": ["One `int` field is enough — update it in `add`.", "Initialize to `Integer.MIN_VALUE` so negative inputs work."]
+  }
+]

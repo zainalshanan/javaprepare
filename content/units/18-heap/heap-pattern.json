@@ -1,0 +1,173 @@
+[
+  {
+    "id": "pat-hp-mcq-which",
+    "type": "mcq",
+    "title": "Which heap?",
+    "prompt": "\"Return the k points closest to the origin.\" To keep memory at O(k), you maintain…",
+    "options": [
+      "A MAX-heap of size k ordered by distance — evict the farthest whenever size exceeds k",
+      "A min-heap of size k — evict the closest",
+      "A max-heap of all n points",
+      "Two heaps"
+    ],
+    "answer": 0,
+    "explanation": "Mirror image of k-th largest: to KEEP the smallest k, the heap's top must be the current worst (largest distance) so it can be evicted. Keep-smallest → max-heap; keep-largest → min-heap."
+  },
+  {
+    "id": "pat-hp-drill-stream",
+    "type": "code-method",
+    "title": "Drill: heap-sort descending",
+    "prompt": "From memory: return `nums` sorted DESCENDING by pushing everything into a max-heap and polling into the result. (Drills the comparator flip + drain loop.)",
+    "drill": true,
+    "method": {
+      "name": "sortDescending",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] sortDescending(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            3,
+            1,
+            4,
+            1,
+            5
+          ]
+        ],
+        "expected": [
+          5,
+          4,
+          3,
+          1,
+          1
+        ]
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": []
+      },
+      {
+        "args": [
+          [
+            -1,
+            -5,
+            0
+          ]
+        ],
+        "expected": [
+          0,
+          -1,
+          -5
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] sortDescending(int[] nums) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));\n        for (int x : nums) maxHeap.offer(x);\n        int[] res = new int[nums.length];\n        for (int i = 0; i < res.length; i++) {\n            res[i] = maxHeap.poll();\n        }\n        return res;\n    }\n}"
+    },
+    "hints": [
+      "Max-heap comparator: `(a, b) -> Integer.compare(b, a)`."
+    ]
+  },
+  {
+    "id": "pat-hp-drill-klargest",
+    "type": "code-method",
+    "title": "Drill: k largest (size-k min-heap)",
+    "prompt": "From memory (size-k min-heap): return the `k` largest values of `nums` in any order. Offer everything, evict the smallest whenever the heap exceeds k, then drain it.",
+    "drill": true,
+    "method": {
+      "name": "kLargest",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "k",
+          "type": "int"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] kLargest(int[] nums, int k) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            3,
+            1,
+            4,
+            1,
+            5
+          ],
+          2
+        ],
+        "expected": [
+          4,
+          5
+        ],
+        "compare": "unordered"
+      },
+      {
+        "args": [
+          [
+            7
+          ],
+          1
+        ],
+        "expected": [
+          7
+        ],
+        "compare": "unordered"
+      },
+      {
+        "args": [
+          [
+            2,
+            2,
+            2
+          ],
+          2
+        ],
+        "expected": [
+          2,
+          2
+        ],
+        "compare": "unordered"
+      },
+      {
+        "args": [
+          [
+            9,
+            3,
+            6,
+            1
+          ],
+          3
+        ],
+        "expected": [
+          3,
+          6,
+          9
+        ],
+        "compare": "unordered",
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] kLargest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) {\n            heap.offer(x);\n            if (heap.size() > k) heap.poll();\n        }\n        int[] res = new int[k];\n        for (int i = 0; i < k; i++) res[i] = heap.poll();\n        return res;\n    }\n}"
+    },
+    "hints": [
+      "Min-heap capped at k holds exactly the k largest; drain it into the result."
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "id": "daily-temperatures",
+  "type": "code-method",
+  "title": "Daily Temperatures",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/daily-temperatures/",
+  "prompt": "Given daily temperatures, return an array `answer` where `answer[i]` is the number of days you have to wait after day `i` for a warmer temperature (0 if it never comes).\n\n**Example**: `[73,74,75,71,69,72,76,73]` → `[1,1,4,2,1,1,0,0]`.\n\nA textbook monotonic stack: each day pops all the cooler days it answers.",
+  "method": {
+    "name": "dailyTemperatures",
+    "params": [ { "name": "temperatures", "type": "int[]" } ],
+    "returns": "int[]"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[73, 74, 75, 71, 69, 72, 76, 73]], "expected": [1, 1, 4, 2, 1, 1, 0, 0] },
+    { "args": [[30, 40, 50, 60]], "expected": [1, 1, 1, 0] },
+    { "args": [[30, 60, 90]], "expected": [1, 1, 0] },
+    { "args": [[90, 60, 30]], "expected": [0, 0, 0], "hidden": true, "note": "strictly cooling" },
+    { "args": [[70, 70, 70]], "expected": [0, 0, 0], "hidden": true, "note": "equal temps don't count as warmer" }
+  ],
+  "hints": [
+    "Stack holds INDICES of days still waiting for a warmer day (temperatures decreasing from bottom to top).",
+    "When day i is warmer than the day at the top: pop it — its answer is `i - poppedIndex`.",
+    "Days never popped keep their default 0 (int arrays start zero-filled)."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] res = new int[n];\n        Deque<Integer> stack = new ArrayDeque<>();   // indices, temps decreasing\n        for (int i = 0; i < n; i++) {\n            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {\n                int idx = stack.pop();\n                res[idx] = i - idx;\n            }\n            stack.push(i);\n        }\n        return res;\n    }\n}",
+    "explanation": "O(n) amortized — each index pushes once, pops at most once. The strict `>` handles the equal-temperature case: 70 is not warmer than 70."
+  }
+}

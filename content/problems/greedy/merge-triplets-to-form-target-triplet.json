@@ -1,0 +1,30 @@
+{
+  "id": "merge-triplets-to-form-target-triplet",
+  "type": "code-method",
+  "title": "Merge Triplets to Form Target Triplet",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/merge-triplets-to-form-target-triplet/",
+  "prompt": "You may repeatedly pick two triplets and replace them with their element-wise max. Return whether the `target` triplet can be formed.\n\n**Example**: `triplets = [[2,5,3],[1,8,4],[1,7,5]]`, `target = [2,7,5]` → `true`.\n\nA triplet is usable only if no component exceeds the target. Among usable triplets, check each target component is hit exactly by some triplet.",
+  "method": {
+    "name": "mergeTriplets",
+    "params": [ { "name": "triplets", "type": "int[][]" }, { "name": "target", "type": "int[]" } ],
+    "returns": "boolean"
+  },
+  "starter": "class Solution {\n    public boolean mergeTriplets(int[][] triplets, int[] target) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[2, 5, 3], [1, 8, 4], [1, 7, 5]], [2, 7, 5]], "expected": true },
+    { "args": [[[3, 4, 5], [4, 5, 6]], [3, 2, 5]], "expected": false },
+    { "args": [[[1, 3, 4], [2, 5, 8]], [3, 5, 8]], "expected": false, "note": "no triplet reaches 3 in the first slot" },
+    { "args": [[[1, 3, 4], [2, 5, 8]], [2, 5, 8]], "expected": true, "hidden": true },
+    { "args": [[[1, 2, 3]], [1, 2, 3]], "expected": true, "hidden": true }
+  ],
+  "hints": [
+    "Any triplet with a component GREATER than the target is poison (max would overshoot) — ignore it.",
+    "Among the safe triplets, you need each of the three target values to appear in the matching position.",
+    "Track three booleans: did some safe triplet match target[0], target[1], target[2] exactly?"
+  ],
+  "solution": {
+    "code": "class Solution {\n    public boolean mergeTriplets(int[][] triplets, int[] target) {\n        boolean a = false, b = false, c = false;\n        for (int[] t : triplets) {\n            if (t[0] <= target[0] && t[1] <= target[1] && t[2] <= target[2]) {\n                if (t[0] == target[0]) a = true;\n                if (t[1] == target[1]) b = true;\n                if (t[2] == target[2]) c = true;\n            }\n        }\n        return a && b && c;\n    }\n}",
+    "explanation": "Element-wise max never decreases a value, so any triplet exceeding the target in any slot can never be used. Restricting to safe triplets, merging them all is optimal — if each target component is matched by some safe triplet, their combined max is exactly the target. O(n)."
+  }
+}

@@ -1,0 +1,216 @@
+[
+  {
+    "id": "pat-iv-mcq-overlap",
+    "type": "mcq",
+    "title": "Touching intervals",
+    "prompt": "Do `[1, 3]` and `[3, 5]` overlap under `cur[0] <= prev[1]`?",
+    "options": [
+      "Yes — 3 <= 3, they share the point 3 and merge to [1, 5]",
+      "No — they only touch",
+      "Depends on the sort order",
+      "They can't both exist"
+    ],
+    "answer": 0,
+    "explanation": "With <= the shared endpoint counts as overlap (LeetCode's Merge Intervals wants this). Meeting-room problems sometimes want strict < — read the problem's definition every time."
+  },
+  {
+    "id": "pat-iv-drill-overlap",
+    "type": "code-method",
+    "title": "Drill: can attend all meetings?",
+    "prompt": "From memory: given meeting intervals, return whether one person can attend them all (no two overlap; touching endpoints like [1,3],[3,5] are OK). Sort by start, then check each consecutive pair.",
+    "drill": true,
+    "method": {
+      "name": "canAttendAll",
+      "params": [
+        {
+          "name": "intervals",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "boolean"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public boolean canAttendAll(int[][] intervals) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            [
+              0,
+              30
+            ],
+            [
+              5,
+              10
+            ],
+            [
+              15,
+              20
+            ]
+          ]
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          [
+            [
+              7,
+              10
+            ],
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              3
+            ],
+            [
+              3,
+              5
+            ]
+          ]
+        ],
+        "expected": true,
+        "note": "touching is fine"
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              5
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              6,
+              8
+            ]
+          ]
+        ],
+        "expected": false,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean canAttendAll(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        for (int i = 1; i < intervals.length; i++) {\n            if (intervals[i][0] < intervals[i - 1][1]) return false;\n        }\n        return true;\n    }\n}",
+      "explanation": "After sorting, only NEIGHBORS can conflict — that's the entire power of sort-then-sweep. (This is LeetCode's Meeting Rooms.)"
+    },
+    "hints": [
+      "Sort by start first.",
+      "Conflict: this meeting starts before the previous one ends — strict `<` here since touching is allowed."
+    ]
+  },
+  {
+    "id": "pat-iv-drill-merge",
+    "type": "code-method",
+    "title": "Drill: count merged intervals",
+    "prompt": "From memory (sort then sweep): return how many intervals remain after merging all overlaps. Sort by start, then sweep tracking the current merged end.",
+    "drill": true,
+    "method": {
+      "name": "mergedCount",
+      "params": [
+        {
+          "name": "intervals",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int mergedCount(int[][] intervals) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              8,
+              10
+            ],
+            [
+              15,
+              18
+            ]
+          ]
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              4
+            ],
+            [
+              4,
+              5
+            ]
+          ]
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              4,
+              5
+            ]
+          ]
+        ],
+        "expected": 1,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int mergedCount(int[][] intervals) {\n        if (intervals.length == 0) return 0;\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        int count = 1, end = intervals[0][1];\n        for (int i = 1; i < intervals.length; i++) {\n            if (intervals[i][0] > end) {\n                count++;\n                end = intervals[i][1];\n            } else {\n                end = Math.max(end, intervals[i][1]);\n            }\n        }\n        return count;\n    }\n}"
+    },
+    "hints": [
+      "Sort by start. A new merged interval begins when the next start is beyond the current end.",
+      "Otherwise extend the end with max."
+    ]
+  }
+]

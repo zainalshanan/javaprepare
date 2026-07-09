@@ -1,0 +1,30 @@
+{
+  "id": "longest-repeating-character-replacement",
+  "type": "code-method",
+  "title": "Longest Repeating Character Replacement",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+  "prompt": "Given a string `s` (uppercase letters) and an integer `k`, you may change at most `k` characters. Return the length of the longest substring you can make consist of a single repeated letter.\n\n**Example**: `s = \"AABABBA\"`, `k = 1` → `4` (change one B in `\"AABA\"` → `\"AAAA\"`, or one A in `\"ABBA\"`).\n\nWindow validity: `windowLength - countOfMostFrequentChar <= k` (the others get replaced).",
+  "method": {
+    "name": "characterReplacement",
+    "params": [ { "name": "s", "type": "String" }, { "name": "k", "type": "int" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int characterReplacement(String s, int k) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["ABAB", 2], "expected": 4 },
+    { "args": ["AABABBA", 1], "expected": 4 },
+    { "args": ["AAAA", 0], "expected": 4 },
+    { "args": ["ABCDE", 1], "expected": 2, "hidden": true },
+    { "args": ["B", 2], "expected": 1, "hidden": true }
+  ],
+  "hints": [
+    "Keep an `int[26]` of counts inside the window; track `maxCount` = highest single-letter count seen in the window.",
+    "Window invalid when `(r - l + 1) - maxCount > k` → remove s.charAt(l), l++.",
+    "maxCount can be left stale after shrinking — the answer only grows when a genuinely better window appears, so it still works (a subtle, famous detail)."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int characterReplacement(String s, int k) {\n        int[] counts = new int[26];\n        int l = 0, maxCount = 0, best = 0;\n        for (int r = 0; r < s.length(); r++) {\n            counts[s.charAt(r) - 'A']++;\n            maxCount = Math.max(maxCount, counts[s.charAt(r) - 'A']);\n            while ((r - l + 1) - maxCount > k) {\n                counts[s.charAt(l) - 'A']--;\n                l++;\n            }\n            best = Math.max(best, r - l + 1);\n        }\n        return best;\n    }\n}",
+    "explanation": "O(n). A window is fixable when its minority characters number ≤ k. `maxCount` is allowed to go stale on shrink: a stale (too-high) maxCount only makes the window look better than it is, and the recorded best from when it was genuinely valid still stands — the answer is never overstated beyond a previously achieved size."
+  }
+}

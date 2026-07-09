@@ -1,0 +1,30 @@
+{
+  "id": "non-overlapping-intervals",
+  "type": "code-method",
+  "title": "Non-overlapping Intervals",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/non-overlapping-intervals/",
+  "prompt": "Return the minimum number of intervals to remove so the rest don't overlap.\n\n**Example**: `[[1,2],[2,3],[3,4],[1,3]]` → `1` (remove `[1,3]`).\n\nGreedy: sort by END, always keep the interval that finishes earliest — it leaves the most room for the rest.",
+  "method": {
+    "name": "eraseOverlapIntervals",
+    "params": [ { "name": "intervals", "type": "int[][]" } ],
+    "returns": "int"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int eraseOverlapIntervals(int[][] intervals) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[1, 2], [2, 3], [3, 4], [1, 3]]], "expected": 1 },
+    { "args": [[[1, 2], [1, 2], [1, 2]]], "expected": 2 },
+    { "args": [[[1, 2], [2, 3]]], "expected": 0 },
+    { "args": [[[1, 100], [11, 22], [1, 11], [2, 12]]], "expected": 2, "hidden": true },
+    { "args": [[[1, 2]]], "expected": 0, "hidden": true }
+  ],
+  "hints": [
+    "Sort by end value. Keep a running `prevEnd`.",
+    "If an interval starts at or after prevEnd, keep it (update prevEnd); otherwise it overlaps → count a removal.",
+    "Keeping the earliest-ending interval is the greedy choice that maximizes survivors."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int eraseOverlapIntervals(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));\n        int count = 0, prevEnd = Integer.MIN_VALUE;\n        for (int[] it : intervals) {\n            if (it[0] >= prevEnd) prevEnd = it[1];   // keep it\n            else count++;                             // overlaps → remove\n        }\n        return count;\n    }\n}",
+    "explanation": "This is the classic activity-selection greedy: sorting by finish time and always keeping the earliest-finishing compatible interval provably retains the maximum number, so the removals counted are minimal. O(n log n)."
+  }
+}

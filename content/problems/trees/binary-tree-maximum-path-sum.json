@@ -1,0 +1,30 @@
+{
+  "id": "binary-tree-maximum-path-sum",
+  "type": "code-method",
+  "title": "Binary Tree Maximum Path Sum",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/binary-tree-maximum-path-sum/",
+  "prompt": "A path is any sequence of connected nodes (each adjacent pair shares an edge); it need not pass through the root. Return the maximum sum of node values along any path.\n\n**Example**: `[-10,9,20,null,null,15,7]` → `42` (15 → 20 → 7).\n\nDFS returns the best downward 'arm' from each node; a shared best considers the full path that bends through the node (left arm + node + right arm).",
+  "method": {
+    "name": "maxPathSum",
+    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    private int best = Integer.MIN_VALUE;\n\n    public int maxPathSum(TreeNode root) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3]], "expected": 6 },
+    { "args": [[-10, 9, 20, null, null, 15, 7]], "expected": 42 },
+    { "args": [[-3]], "expected": -3, "note": "a single negative node — must take it" },
+    { "args": [[2, -1]], "expected": 2, "hidden": true, "note": "drop the negative child" },
+    { "args": [[-2, -1]], "expected": -1, "hidden": true }
+  ],
+  "hints": [
+    "Helper returns the best sum of a path going DOWN from a node (node + one child arm), clamping negatives to 0.",
+    "At each node, the best path bending here is `node.val + leftArm + rightArm` — update the shared best with it.",
+    "Return `node.val + max(leftArm, rightArm)` upward (you can only extend one arm to the parent)."
+  ],
+  "solution": {
+    "code": "class Solution {\n    private int best = Integer.MIN_VALUE;\n\n    public int maxPathSum(TreeNode root) {\n        gain(root);\n        return best;\n    }\n\n    private int gain(TreeNode node) {\n        if (node == null) return 0;\n        int l = Math.max(0, gain(node.left));    // drop arms that hurt\n        int r = Math.max(0, gain(node.right));\n        best = Math.max(best, node.val + l + r); // path bending through node\n        return node.val + Math.max(l, r);        // extendable arm for the parent\n    }\n}",
+    "explanation": "O(n). Two distinct quantities again: the full through-node path (recorded in `best`) can use both arms, but the value returned to the parent can use only one (a path can't fork). Clamping negative arms to 0 means 'don't include this subtree if it only subtracts' — except the node itself, which is always taken, handling all-negative trees."
+  }
+}

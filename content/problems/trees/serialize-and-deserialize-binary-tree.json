@@ -1,0 +1,30 @@
+{
+  "id": "serialize-and-deserialize-binary-tree",
+  "type": "code-method",
+  "title": "Serialize and Deserialize Binary Tree",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+  "prompt": "Design serialization: turn a tree into a string, and rebuild the exact tree from that string.\n\nTo make this testable here, implement private `serialize(TreeNode)` and `deserialize(String)` helpers; the graded method returns `deserialize(serialize(root))`, which must reproduce the tree exactly (including shape and negatives).\n\nThe clean approach: pre-order DFS writing `N` for nulls, e.g. `1,2,N,N,3,N,N`.",
+  "method": {
+    "name": "roundTrip",
+    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "returns": "TreeNode"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public TreeNode roundTrip(TreeNode root) {\n        return deserialize(serialize(root));\n    }\n\n    private String serialize(TreeNode root) {\n\n    }\n\n    private TreeNode deserialize(String data) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3, null, null, 4, 5]], "expected": [1, 2, 3, null, null, 4, 5] },
+    { "args": [[]], "expected": [] },
+    { "args": [[1]], "expected": [1] },
+    { "args": [[-1, -2, -3]], "expected": [-1, -2, -3], "note": "negatives must survive" },
+    { "args": [[5, 4, 7, 3, null, 2, null, -1, null, 9]], "expected": [5, 4, 7, 3, null, 2, null, -1, null, 9], "hidden": true }
+  ],
+  "hints": [
+    "Serialize with pre-order DFS, writing a sentinel (like `N`) for null children, comma-separated.",
+    "Deserialize by consuming tokens in the same pre-order: a token is a node (recurse for its two children) or `N` (return null).",
+    "A shared index into the token array drives the reconstruction."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public TreeNode roundTrip(TreeNode root) {\n        return deserialize(serialize(root));\n    }\n\n    private String serialize(TreeNode root) {\n        StringBuilder sb = new StringBuilder();\n        ser(root, sb);\n        return sb.toString();\n    }\n\n    private void ser(TreeNode node, StringBuilder sb) {\n        if (node == null) { sb.append(\"N,\"); return; }\n        sb.append(node.val).append(',');\n        ser(node.left, sb);\n        ser(node.right, sb);\n    }\n\n    private int di;\n\n    private TreeNode deserialize(String data) {\n        di = 0;\n        return des(data.split(\",\"));\n    }\n\n    private TreeNode des(String[] tokens) {\n        String t = tokens[di++];\n        if (t.equals(\"N\")) return null;\n        TreeNode node = new TreeNode(Integer.parseInt(t));\n        node.left = des(tokens);\n        node.right = des(tokens);\n        return node;\n    }\n}",
+    "explanation": "O(n) both ways. Pre-order with explicit null markers is self-delimiting: reading a value means 'build a node and its two subtrees come next', reading `N` means 'empty' — so the same left-then-right recursion that wrote the string reads it back into the identical shape."
+  }
+}

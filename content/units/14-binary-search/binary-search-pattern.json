@@ -1,0 +1,169 @@
+[
+  {
+    "id": "pat-bs-mcq-form2",
+    "type": "mcq",
+    "title": "Recognize the form",
+    "prompt": "\"Find the minimum ship capacity that delivers all packages within D days.\" Why does binary-search-on-answer apply?",
+    "options": [
+      "Feasibility is monotonic: if capacity c works, every capacity > c also works — so the answer space splits cleanly",
+      "The packages are sorted",
+      "Capacity is an integer",
+      "It doesn't — this needs DP"
+    ],
+    "answer": 0,
+    "explanation": "Monotonic feasibility (fail...fail, work...work) means binary search finds the boundary. You write a `canShip(capacity)` simulator and search capacities."
+  },
+  {
+    "id": "pat-bs-drill-classic",
+    "type": "code-method",
+    "title": "Drill: lower bound",
+    "prompt": "From memory: return the index of the FIRST element ≥ `target` in sorted `nums` (or `nums.length` if none). This is form 2 on indices: `lo = 0, hi = nums.length`, feasible(mid) = `nums[mid] >= target`.",
+    "drill": true,
+    "method": {
+      "name": "lowerBound",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "target",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int lowerBound(int[] nums, int target) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          5
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          4
+        ],
+        "expected": 2,
+        "note": "not present — first element >= 4"
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          8
+        ],
+        "expected": 4,
+        "note": "past the end"
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          0
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            2,
+            2,
+            2
+          ],
+          2
+        ],
+        "expected": 0,
+        "hidden": true,
+        "note": "duplicates — FIRST one"
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int lowerBound(int[] nums, int target) {\n        int lo = 0, hi = nums.length;\n        while (lo < hi) {\n            int mid = lo + (hi - lo) / 2;\n            if (nums[mid] >= target) hi = mid;\n            else lo = mid + 1;\n        }\n        return lo;\n    }\n}",
+      "explanation": "The workhorse variant: it handles duplicates, missing targets, and insert positions in one shape. Java's Arrays.binarySearch does NOT give you this cleanly."
+    },
+    "hints": [
+      "`hi` starts at nums.length (a valid answer: \"none qualify\").",
+      "Feasible → `hi = mid` (keep mid as a candidate); infeasible → `lo = mid + 1`."
+    ]
+  },
+  {
+    "id": "pat-bs-drill-sqrt",
+    "type": "code-method",
+    "title": "Drill: integer square root (search on answer)",
+    "prompt": "From memory (binary search on the answer): return floor(sqrt(x)) for x >= 0, without Math.sqrt. Search the answer space 1..x/2; feasibility is `mid*mid <= x` (use long to avoid overflow).",
+    "drill": true,
+    "method": {
+      "name": "mySqrt",
+      "params": [
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int mySqrt(int x) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          4
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          8
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          0
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          1
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          2147395599
+        ],
+        "expected": 46339,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int mySqrt(int x) {\n        if (x < 2) return x;\n        int lo = 1, hi = x / 2, ans = 1;\n        while (lo <= hi) {\n            int mid = lo + (hi - lo) / 2;\n            if ((long) mid * mid <= x) {\n                ans = mid;\n                lo = mid + 1;\n            } else {\n                hi = mid - 1;\n            }\n        }\n        return ans;\n    }\n}"
+    },
+    "hints": [
+      "Record the largest mid whose square is <= x.",
+      "Cast to long before squaring: `(long) mid * mid`."
+    ]
+  }
+]

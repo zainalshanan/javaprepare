@@ -1,0 +1,30 @@
+{
+  "id": "alien-dictionary",
+  "type": "code-method",
+  "title": "Alien Dictionary",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/alien-dictionary/",
+  "prompt": "An alien language uses lowercase letters but an unknown alphabet order. Given a list of `words` sorted by that order, return a possible ordering of its letters as a string, or `\"\"` if the ordering is invalid.\n\n**Example**: `[\"wrt\",\"wrf\",\"er\",\"ett\",\"rftt\"]` → `\"wertf\"`.\n\nEach adjacent pair of words reveals one ordering constraint (the first differing letter). Topologically sort the letters. *(Tests here have a unique valid order.)*",
+  "method": {
+    "name": "alienOrder",
+    "params": [ { "name": "words", "type": "String[]" } ],
+    "returns": "String"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public String alienOrder(String[] words) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [["wrt", "wrf", "er", "ett", "rftt"]], "expected": "wertf" },
+    { "args": [["z", "x"]], "expected": "zx" },
+    { "args": [["z", "x", "z"]], "expected": "", "note": "z<x and x<z is a contradiction" },
+    { "args": [["abc", "ab"]], "expected": "", "hidden": true, "note": "a longer word can't precede its own prefix" },
+    { "args": [["a", "b", "c"]], "expected": "abc", "hidden": true }
+  ],
+  "hints": [
+    "Collect all letters as nodes. For each adjacent word pair, the first position where they differ gives an edge (earlier letter → later letter).",
+    "Invalid case: a word is a prefix of the previous, longer word (e.g. \"abc\" then \"ab\").",
+    "Topologically sort (Kahn's). If not all letters get ordered, there's a cycle → return \"\"."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public String alienOrder(String[] words) {\n        Map<Character, Set<Character>> adj = new HashMap<>();\n        Map<Character, Integer> indeg = new HashMap<>();\n        for (String w : words) {\n            for (char c : w.toCharArray()) {\n                adj.putIfAbsent(c, new HashSet<>());\n                indeg.putIfAbsent(c, 0);\n            }\n        }\n        for (int i = 0; i < words.length - 1; i++) {\n            String a = words[i], b = words[i + 1];\n            if (a.length() > b.length() && a.startsWith(b)) return \"\";\n            int len = Math.min(a.length(), b.length());\n            for (int j = 0; j < len; j++) {\n                char ca = a.charAt(j), cb = b.charAt(j);\n                if (ca != cb) {\n                    if (adj.get(ca).add(cb)) indeg.put(cb, indeg.get(cb) + 1);\n                    break;\n                }\n            }\n        }\n        Queue<Character> q = new LinkedList<>();\n        for (char c : indeg.keySet()) if (indeg.get(c) == 0) q.offer(c);\n        StringBuilder sb = new StringBuilder();\n        while (!q.isEmpty()) {\n            char c = q.poll();\n            sb.append(c);\n            for (char next : adj.get(c)) {\n                indeg.put(next, indeg.get(next) - 1);\n                if (indeg.get(next) == 0) q.offer(next);\n            }\n        }\n        return sb.length() == indeg.size() ? sb.toString() : \"\";\n    }\n}",
+    "explanation": "Sorted words encode a partial order: comparing neighbors, the first mismatched letter says one comes before the other. Building that DAG and topologically sorting yields a full order; a leftover (unsortable) letter means a cycle contradiction. The prefix check catches the one impossible input shape."
+  }
+}

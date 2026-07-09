@@ -1,0 +1,30 @@
+{
+  "id": "two-sum",
+  "type": "code-method",
+  "title": "Two Sum",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/two-sum/",
+  "prompt": "Given an array of integers `nums` and an integer `target`, return the **indices** of the two numbers that add up to `target`.\n\nExactly one solution exists, and you may not use the same element twice. Return the indices in any order.\n\n**Example**: `nums = [2,7,11,15]`, `target = 9` → `[0,1]` because `nums[0] + nums[1] == 9`.\n\nAim for one pass with a HashMap — the Arrays & Hashing template verbatim.",
+  "method": {
+    "name": "twoSum",
+    "params": [ { "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" } ],
+    "returns": "int[]"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int[] twoSum(int[] nums, int target) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[2, 7, 11, 15], 9], "expected": [0, 1], "compare": "unordered" },
+    { "args": [[3, 2, 4], 6], "expected": [1, 2], "compare": "unordered" },
+    { "args": [[3, 3], 6], "expected": [0, 1], "compare": "unordered", "note": "duplicate values, different indices" },
+    { "args": [[-1, -2, -3, -4, -5], -8], "expected": [2, 4], "compare": "unordered", "hidden": true },
+    { "args": [[0, 4, 3, 0], 0], "expected": [0, 3], "compare": "unordered", "hidden": true }
+  ],
+  "hints": [
+    "For each element, what single value would complete the pair? That's `target - nums[i]`.",
+    "Store value → index in a HashMap as you scan; check for the complement BEFORE inserting the current element.",
+    "Checking before inserting is what prevents matching an element with itself."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> seen = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int need = target - nums[i];\n            if (seen.containsKey(need)) {\n                return new int[]{seen.get(need), i};\n            }\n            seen.put(nums[i], i);\n        }\n        return new int[]{};\n    }\n}",
+    "explanation": "One pass, O(n) time, O(n) space. At each element we ask \"has my complement already appeared?\" — an O(1) map lookup instead of an O(n) rescan. Check-then-insert ordering handles duplicates like `[3,3]` correctly: the second 3 finds the first."
+  }
+}

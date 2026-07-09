@@ -1,0 +1,101 @@
+[
+  {
+    "id": "loops-fill-for",
+    "type": "fill-blank",
+    "title": "Anatomy of a for loop",
+    "prompt": "Complete a loop that prints 0 through 9.",
+    "code": "for (int i = {{1}}; i {{2}} 10; i{{3}}) {\n    System.out.println(i);\n}",
+    "blanks": {
+      "1": ["0"],
+      "2": ["<"],
+      "3": ["++", " = i + 1", "+=1", "+= 1"]
+    },
+    "explanation": "Start at 0, continue while `< 10`, step by one. `i < 10` (not `<=`) gives exactly 10 iterations: 0..9."
+  },
+  {
+    "id": "loops-mcq-trace",
+    "type": "mcq",
+    "title": "Trace the loop",
+    "prompt": "What does this print?\n`for (int i = 0; i < 5; i++) { if (i == 2) continue; if (i == 4) break; System.out.print(i); }`",
+    "options": [
+      "`013` — 2 is skipped by continue, the loop exits at 4 before printing",
+      "`0123` — continue and break do nothing here",
+      "`01` — break exits at 2",
+      "`0134` — only 2 is skipped"
+    ],
+    "answer": 0,
+    "explanation": "i=0 prints, i=1 prints, i=2 hits `continue` (skip print), i=3 prints, i=4 hits `break` (exit before print)."
+  },
+  {
+    "id": "loops-countdown",
+    "type": "code-output",
+    "title": "Countdown",
+    "prompt": "Print the numbers 5 down to 1, one per line, then `liftoff`. Use a reverse for loop.",
+    "starter": "public class Main {\n    public static void main(String[] args) {\n        // countdown here\n    }\n}\n",
+    "expectedOutput": "5\n4\n3\n2\n1\nliftoff",
+    "solution": {
+      "code": "public class Main {\n    public static void main(String[] args) {\n        for (int i = 5; i >= 1; i--) {\n            System.out.println(i);\n        }\n        System.out.println(\"liftoff\");\n    }\n}",
+      "explanation": "Reverse loops start high, run while `>= low`, and step with `i--`."
+    },
+    "hints": ["`for (int i = 5; i >= 1; i--)`"]
+  },
+  {
+    "id": "loops-sum-evens",
+    "type": "code-method",
+    "title": "Sum the evens",
+    "prompt": "Return the sum of all even numbers from `1` to `n` inclusive. (`x % 2 == 0` tests evenness.)",
+    "method": {
+      "name": "sumEvens",
+      "params": [ { "name": "n", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int sumEvens(int n) {\n        int sum = 0;\n\n        return sum;\n    }\n}\n",
+    "tests": [
+      { "args": [10], "expected": 30, "note": "2+4+6+8+10" },
+      { "args": [1], "expected": 0 },
+      { "args": [7], "expected": 12, "hidden": true },
+      { "args": [100], "expected": 2550, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int sumEvens(int n) {\n        int sum = 0;\n        for (int i = 2; i <= n; i += 2) {\n            sum += i;\n        }\n        return sum;\n    }\n}",
+      "explanation": "Stepping by 2 from 2 visits only evens. Looping all numbers and checking `i % 2 == 0` also works."
+    },
+    "hints": ["Accumulate into a variable declared before the loop.", "Either loop everything and test `i % 2 == 0`, or step by 2."]
+  },
+  {
+    "id": "loops-drill-basic",
+    "type": "code-output",
+    "title": "Drill: the canonical loop",
+    "prompt": "From a blank editor: a full program that prints 0 through 4, one per line, using the classic `for (int i = 0; i < n; i++)` shape.",
+    "drill": true,
+    "starter": "",
+    "expectedOutput": "0\n1\n2\n3\n4",
+    "solution": {
+      "code": "public class Main {\n    public static void main(String[] args) {\n        for (int i = 0; i < 5; i++) {\n            System.out.println(i);\n        }\n    }\n}"
+    },
+    "hints": ["Boilerplate first: `public class Main { public static void main(String[] args) { ... } }`"]
+  },
+  {
+    "id": "loops-drill-reverse",
+    "type": "code-method",
+    "title": "Drill: reversed range sum",
+    "prompt": "From memory: using a REVERSE loop (`i` from `n` down to `1`), build and return the string of numbers concatenated, e.g. n=4 → \"4321\". Start with `String s = \"\";` and append with `s += i;`.",
+    "drill": true,
+    "method": {
+      "name": "countdownString",
+      "params": [ { "name": "n", "type": "int" } ],
+      "returns": "String"
+    },
+    "starter": "class Solution {\n    public String countdownString(int n) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [4], "expected": "4321" },
+      { "args": [1], "expected": "1" },
+      { "args": [10], "expected": "10987654321", "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public String countdownString(int n) {\n        String s = \"\";\n        for (int i = n; i >= 1; i--) {\n            s += i;\n        }\n        return s;\n    }\n}",
+      "explanation": "`s += i` converts the int and appends. (For big strings you'd use StringBuilder — coming in the Strings lesson.)"
+    },
+    "hints": ["`for (int i = n; i >= 1; i--)`"]
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "id": "longest-palindromic-substring",
+  "type": "code-method",
+  "title": "Longest Palindromic Substring",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/longest-palindromic-substring/",
+  "prompt": "Return the longest substring of `s` that is a palindrome. *(If several tie, the tests here expect the first one encountered scanning left to right.)*\n\n**Example**: `\"babad\"` → `\"bab\"`.\n\nExpand around each center: every palindrome has a center (a character, or the gap between two characters), so try all 2n-1 centers and grow outward.",
+  "method": {
+    "name": "longestPalindrome",
+    "params": [ { "name": "s", "type": "String" } ],
+    "returns": "String"
+  },
+  "starter": "class Solution {\n    public String longestPalindrome(String s) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["babad"], "expected": "bab" },
+    { "args": ["cbbd"], "expected": "bb" },
+    { "args": ["a"], "expected": "a" },
+    { "args": ["ac"], "expected": "a" },
+    { "args": ["forgeeksskeegfor"], "expected": "geeksskeeg", "hidden": true },
+    { "args": ["abba"], "expected": "abba", "hidden": true }
+  ],
+  "hints": [
+    "Try each index as an odd-length center, and each gap as an even-length center.",
+    "A helper expands `(l, r)` while the characters match and returns the palindrome length.",
+    "Track the best center/length and slice the substring at the end."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public String longestPalindrome(String s) {\n        if (s.length() < 1) return \"\";\n        int start = 0, end = 0;\n        for (int i = 0; i < s.length(); i++) {\n            int len1 = expand(s, i, i);       // odd length\n            int len2 = expand(s, i, i + 1);   // even length\n            int len = Math.max(len1, len2);\n            if (len > end - start + 1) {\n                start = i - (len - 1) / 2;\n                end = i + len / 2;\n            }\n        }\n        return s.substring(start, end + 1);\n    }\n\n    private int expand(String s, int l, int r) {\n        while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {\n            l--;\n            r++;\n        }\n        return r - l - 1;\n    }\n}",
+    "explanation": "Every palindrome is symmetric about a center, and there are only 2n-1 possible centers. Expanding each outward is O(n) per center, O(n²) total — simpler than the O(n²) DP table and with O(1) space. The first-wins tie-break comes from only updating on a strictly longer find."
+  }
+}

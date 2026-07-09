@@ -1,0 +1,136 @@
+[
+  {
+    "id": "pat-mg-drill-gcd",
+    "type": "code-method",
+    "title": "Drill: Euclid's GCD",
+    "prompt": "From memory: return the greatest common divisor of `a` and `b` (both ≥ 0, not both 0) using Euclid's algorithm — recursive or iterative.",
+    "drill": true,
+    "method": {
+      "name": "gcd",
+      "params": [
+        {
+          "name": "a",
+          "type": "int"
+        },
+        {
+          "name": "b",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int gcd(int a, int b) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          12,
+          18
+        ],
+        "expected": 6
+      },
+      {
+        "args": [
+          7,
+          13
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          0,
+          5
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          48,
+          0
+        ],
+        "expected": 48,
+        "hidden": true
+      },
+      {
+        "args": [
+          1071,
+          462
+        ],
+        "expected": 21,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int gcd(int a, int b) {\n        return b == 0 ? a : gcd(b, a % b);\n    }\n}",
+      "explanation": "gcd(a, b) = gcd(b, a mod b), bottoming out when b reaches 0. Runs in O(log min(a,b))."
+    },
+    "hints": [
+      "Base case: `b == 0` → answer is `a`.",
+      "Recurse with `(b, a % b)`."
+    ]
+  },
+  {
+    "id": "pat-mg-mcq-rotate",
+    "type": "mcq",
+    "title": "Transpose bounds",
+    "prompt": "In the transpose loop, why does `j` start at `i + 1` instead of 0?",
+    "options": [
+      "Starting at 0 would swap every pair twice, undoing the transpose entirely",
+      "To skip the diagonal for speed",
+      "Java arrays require it",
+      "It handles non-square matrices"
+    ],
+    "answer": 0,
+    "explanation": "Each (i,j)/(j,i) pair must swap exactly once — iterating only the upper triangle guarantees that. j from 0 visits both (1,2) and (2,1), swapping back to the original."
+  },
+  {
+    "id": "pat-mg-drill-rev",
+    "type": "code-method",
+    "title": "Drill: reverse the digits",
+    "prompt": "From memory (digit peel/build): return the digits of `x` reversed (x >= 0, result fits in int). Peel with `% 10` / `/= 10`, build with `r = r * 10 + digit`.",
+    "drill": true,
+    "method": {
+      "name": "reverseDigits",
+      "params": [
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int reverseDigits(int x) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          123
+        ],
+        "expected": 321
+      },
+      {
+        "args": [
+          100
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          0
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          7
+        ],
+        "expected": 7,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int reverseDigits(int x) {\n        int r = 0;\n        while (x > 0) {\n            r = r * 10 + x % 10;\n            x /= 10;\n        }\n        return r;\n    }\n}"
+    },
+    "hints": [
+      "`x % 10` is the last digit; `r = r * 10 + digit` appends it; `x /= 10` drops it."
+    ]
+  }
+]

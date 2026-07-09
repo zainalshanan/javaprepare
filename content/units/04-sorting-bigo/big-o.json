@@ -1,0 +1,58 @@
+[
+  {
+    "id": "bigo-mcq-constraints",
+    "type": "mcq",
+    "title": "Read the constraints",
+    "prompt": "A problem says `1 <= nums.length <= 10^5`. Which complexity is the SLOWEST that will comfortably pass?",
+    "options": [
+      "O(n log n) — about 1.7 million steps",
+      "O(n²) — about 10 billion steps",
+      "O(2ⁿ)",
+      "Constraints don't relate to complexity"
+    ],
+    "answer": 0,
+    "explanation": "Rule of thumb: ~10⁸ simple operations per second. n² at n=10⁵ is 10¹⁰ — far too slow. The constraint is a hint: find the O(n) or O(n log n) approach."
+  },
+  {
+    "id": "bigo-mcq-classify",
+    "type": "mcq",
+    "title": "Classify the loop",
+    "prompt": "What's the time complexity?\n`for (int i = n; i > 0; i /= 2) { ... }`",
+    "options": [
+      "O(log n) — i halves every iteration",
+      "O(n) — it's one loop",
+      "O(n/2), which is different from O(n)",
+      "O(n²)"
+    ],
+    "answer": 0,
+    "explanation": "Halving until 0 takes log₂(n) steps — the signature of binary search. And O(n/2) IS O(n): constants drop."
+  },
+  {
+    "id": "bigo-mcq-space",
+    "type": "mcq",
+    "title": "Space of recursion",
+    "prompt": "A DFS recurses down a balanced binary tree of n nodes. Its space complexity is…",
+    "options": [
+      "O(log n) — the call stack holds one path, and a balanced tree is log n deep",
+      "O(1) — recursion is free",
+      "O(n²)",
+      "O(2ⁿ) — each call branches twice"
+    ],
+    "answer": 0,
+    "explanation": "Only the current root-to-node path lives on the stack at once. Worst case (a degenerate, linked-list-shaped tree) is O(n) — worth mentioning in interviews."
+  },
+  {
+    "id": "bigo-mcq-trade",
+    "type": "mcq",
+    "title": "The time-space trade",
+    "prompt": "Your solution has nested loops: for each element, an inner loop searches for its complement. The standard optimization is…",
+    "options": [
+      "Replace the inner search with a HashMap lookup: O(n²) time becomes O(n) time + O(n) space",
+      "Unroll the outer loop",
+      "Use a faster programming language",
+      "Convert the loops to recursion"
+    ],
+    "answer": 0,
+    "explanation": "\"What lookup makes the inner loop O(1)?\" is the most valuable question in array problems — it's exactly the Two Sum insight."
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "id": "word-break",
+  "type": "code-method",
+  "title": "Word Break",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/word-break/",
+  "prompt": "Given a string `s` and a dictionary `wordDict`, return whether `s` can be segmented into a sequence of dictionary words (words reusable).\n\n**Example**: `s = \"leetcode\"`, dict `[\"leet\",\"code\"]` → `true`.\n\ndp[i] = 'the first i characters can be segmented' — true if some split point j has dp[j] true and s[j..i] is a word.",
+  "method": {
+    "name": "wordBreak",
+    "params": [ { "name": "s", "type": "String" }, { "name": "wordDict", "type": "List<String>" } ],
+    "returns": "boolean"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public boolean wordBreak(String s, List<String> wordDict) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["leetcode", ["leet", "code"]], "expected": true },
+    { "args": ["applepenapple", ["apple", "pen"]], "expected": true },
+    { "args": ["catsandog", ["cats", "dog", "sand", "and", "cat"]], "expected": false },
+    { "args": ["a", ["a"]], "expected": true, "hidden": true },
+    { "args": ["ab", ["a"]], "expected": false, "hidden": true }
+  ],
+  "hints": [
+    "Put the dictionary in a HashSet. dp[0] = true (empty string).",
+    "For each end i, look for a split j where dp[j] is true and s.substring(j, i) is a word.",
+    "dp[n] is the answer."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public boolean wordBreak(String s, List<String> wordDict) {\n        Set<String> words = new HashSet<>(wordDict);\n        int n = s.length();\n        boolean[] dp = new boolean[n + 1];\n        dp[0] = true;\n        for (int i = 1; i <= n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (dp[j] && words.contains(s.substring(j, i))) {\n                    dp[i] = true;\n                    break;\n                }\n            }\n        }\n        return dp[n];\n    }\n}",
+    "explanation": "dp[i] asks 'is the prefix of length i segmentable?' — true when a reachable earlier boundary j is followed by a dictionary word ending at i. Building left to right, dp[n] answers the whole string. O(n²) substrings × set lookup."
+  }
+}

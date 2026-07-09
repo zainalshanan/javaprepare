@@ -1,0 +1,30 @@
+{
+  "id": "number-of-connected-components-in-an-undirected-graph",
+  "type": "code-method",
+  "title": "Number of Connected Components in an Undirected Graph",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/",
+  "prompt": "Given `n` nodes labeled `0..n-1` and an `edges` list, return the number of connected components.\n\n**Example**: `n = 5`, `edges = [[0,1],[1,2],[3,4]]` → `2`.\n\nUnion-Find: start with `n` components and decrement each time an edge unites two previously-separate ones.",
+  "method": {
+    "name": "countComponents",
+    "params": [ { "name": "n", "type": "int" }, { "name": "edges", "type": "int[][]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int countComponents(int n, int[][] edges) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [5, [[0, 1], [1, 2], [3, 4]]], "expected": 2 },
+    { "args": [5, [[0, 1], [1, 2], [2, 3], [3, 4]]], "expected": 1 },
+    { "args": [4, []], "expected": 4, "note": "no edges → every node is its own component" },
+    { "args": [1, []], "expected": 1, "hidden": true },
+    { "args": [6, [[0, 1], [2, 3], [4, 5]]], "expected": 3, "hidden": true }
+  ],
+  "hints": [
+    "parent[i] = i initially; a components counter starts at n.",
+    "For each edge, find both roots; if different, union them and decrement the counter.",
+    "Path compression in find keeps it near O(1) per operation."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int countComponents(int n, int[][] edges) {\n        int[] parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n        int components = n;\n        for (int[] e : edges) {\n            int ra = find(parent, e[0]), rb = find(parent, e[1]);\n            if (ra != rb) {\n                parent[ra] = rb;\n                components--;\n            }\n        }\n        return components;\n    }\n\n    private int find(int[] parent, int x) {\n        while (parent[x] != x) {\n            parent[x] = parent[parent[x]];   // path compression\n            x = parent[x];\n        }\n        return x;\n    }\n}",
+    "explanation": "Every successful union merges two components into one, so counting down from n gives the total. An edge between already-connected nodes changes nothing. O(E · α(n)) ≈ linear."
+  }
+}

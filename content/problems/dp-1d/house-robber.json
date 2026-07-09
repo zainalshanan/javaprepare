@@ -1,0 +1,31 @@
+{
+  "id": "house-robber",
+  "type": "code-method",
+  "title": "House Robber",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/house-robber/",
+  "prompt": "`nums[i]` is the cash in house `i`. You can't rob two **adjacent** houses. Return the maximum you can rob.\n\n**Example**: `[2,7,9,3,1]` → `12` (rob 2 + 9 + 1).\n\nThe pattern lesson's exact recurrence: at each house, skip it or rob it.",
+  "method": {
+    "name": "rob",
+    "params": [ { "name": "nums", "type": "int[]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int rob(int[] nums) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3, 1]], "expected": 4 },
+    { "args": [[2, 7, 9, 3, 1]], "expected": 12 },
+    { "args": [[5]], "expected": 5 },
+    { "args": [[2, 1]], "expected": 2, "hidden": true },
+    { "args": [[100, 1, 1, 100]], "expected": 200, "hidden": true },
+    { "args": [[0, 0, 0]], "expected": 0, "hidden": true }
+  ],
+  "hints": [
+    "dp[i] = best loot from houses 0..i = max(dp[i-1], dp[i-2] + nums[i]).",
+    "Rolling variables: `prev1` (best through the previous house) and `prev2` (best through two back).",
+    "Initialize both to 0 and loop over every house — no index special-casing needed."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int rob(int[] nums) {\n        int prev2 = 0, prev1 = 0;\n        for (int x : nums) {\n            int cur = Math.max(prev1, prev2 + x);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+    "explanation": "O(n)/O(1). Starting both variables at 0 (\"no houses yet\") makes the first two iterations compute the bases automatically — a cleaner start than special-casing nums[0] and nums[1]."
+  }
+}

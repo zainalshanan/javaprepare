@@ -1,0 +1,197 @@
+[
+  {
+    "id": "str-mcq-substring",
+    "type": "mcq",
+    "title": "substring bounds",
+    "prompt": "What does `\"leetcode\".substring(1, 4)` return?",
+    "options": [
+      "`\"eet\"` — start inclusive, end exclusive",
+      "`\"eetc\"` — both inclusive",
+      "`\"leet\"` — first 4 characters",
+      "`\"etc\"` — starts after index 1"
+    ],
+    "answer": 0,
+    "explanation": "Half-open ranges [start, end) are everywhere in Java: substring, copyOfRange, subList. The length is always `end - start`."
+  },
+  {
+    "id": "str-fill-charmath",
+    "type": "fill-blank",
+    "title": "Letter index",
+    "prompt": "Complete the classic count-array idiom for lowercase letters.",
+    "code": "int[] counts = new int[{{1}}];\nfor (int i = 0; i < s.length(); i++) {\n    char c = s.{{2}}(i);\n    counts[c - {{3}}]++;\n}",
+    "blanks": {
+      "1": ["26"],
+      "2": ["charAt"],
+      "3": ["'a'"]
+    },
+    "explanation": "26 slots for a-z; `c - 'a'` maps 'a'→0 ... 'z'→25. This exact loop opens Valid Anagram and many others."
+  },
+  {
+    "id": "str-mcq-sbwhy",
+    "type": "mcq",
+    "title": "Why StringBuilder",
+    "prompt": "Building an n-character string with `result += c` in a loop is O(n²). Why?",
+    "options": [
+      "Strings are immutable, so each += copies the entire string built so far",
+      "The += operator is slow for all types",
+      "The garbage collector runs after every +=",
+      "It isn't — the compiler optimizes it to O(n)"
+    ],
+    "answer": 0,
+    "explanation": "Each concatenation allocates a fresh string and copies 1+2+...+n ≈ n²/2 characters total. StringBuilder appends into a growable buffer: O(n) overall."
+  },
+  {
+    "id": "str-count-vowels",
+    "type": "code-method",
+    "title": "Count the vowels",
+    "prompt": "Return how many characters of `s` are vowels (`a e i o u`, lowercase input). Loop with `charAt`, or `toCharArray()` with an enhanced for.",
+    "method": {
+      "name": "countVowels",
+      "params": [ { "name": "s", "type": "String" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int countVowels(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["leetcode"], "expected": 4 },
+      { "args": ["xyz"], "expected": 0 },
+      { "args": [""], "expected": 0, "note": "empty string" },
+      { "args": ["aeiou"], "expected": 5, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int countVowels(String s) {\n        int count = 0;\n        for (char c : s.toCharArray()) {\n            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {\n                count++;\n            }\n        }\n        return count;\n    }\n}",
+      "explanation": "`\"aeiou\".indexOf(c) >= 0` is a compact alternative to the chain of ==."
+    },
+    "hints": ["chars compare with `==` (they're primitives): `c == 'a'`."]
+  },
+  {
+    "id": "str-drill-reverse",
+    "type": "code-method",
+    "title": "Drill: reverse a string",
+    "prompt": "From memory, two idioms in one: convert to `char[]`, two-pointer swap in place, return `new String(chars)`. (Yes, `new StringBuilder(s).reverse().toString()` also works — know both; write the manual one here.)",
+    "drill": true,
+    "method": {
+      "name": "reverseString",
+      "params": [ { "name": "s", "type": "String" } ],
+      "returns": "String"
+    },
+    "starter": "class Solution {\n    public String reverseString(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["hello"], "expected": "olleh" },
+      { "args": ["ab"], "expected": "ba" },
+      { "args": [""], "expected": "" },
+      { "args": ["racecar"], "expected": "racecar", "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public String reverseString(String s) {\n        char[] chars = s.toCharArray();\n        for (int l = 0, r = chars.length - 1; l < r; l++, r--) {\n            char t = chars[l];\n            chars[l] = chars[r];\n            chars[r] = t;\n        }\n        return new String(chars);\n    }\n}"
+    },
+    "hints": ["`s.toCharArray()` gives you a mutable copy; `new String(chars)` converts back."]
+  },
+  {
+    "id": "str-drill-counts",
+    "type": "code-method",
+    "title": "Drill: letter frequency array",
+    "prompt": "From memory: return the count of the most frequent character in `s` (lowercase letters only, non-empty). Build the `int[26]` count array, then scan it for the max.",
+    "drill": true,
+    "method": {
+      "name": "maxFrequency",
+      "params": [ { "name": "s", "type": "String" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int maxFrequency(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["banana"], "expected": 3, "note": "three a's" },
+      { "args": ["abc"], "expected": 1 },
+      { "args": ["zzzz"], "expected": 4, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int maxFrequency(String s) {\n        int[] counts = new int[26];\n        for (char c : s.toCharArray()) {\n            counts[c - 'a']++;\n        }\n        int max = 0;\n        for (int count : counts) {\n            max = Math.max(max, count);\n        }\n        return max;\n    }\n}",
+      "explanation": "Count array + scan: the two-pass shape you'll reuse in Valid Anagram, Longest Repeating Character Replacement, and more."
+    },
+    "hints": ["First loop fills `counts[c - 'a']++`, second loop finds the max."]
+  },
+  {
+    "id": "str-ref-access-fill",
+    "type": "fill-blank",
+    "title": "Recall: string access",
+    "prompt": "Fill in the length, character, and substring operations.",
+    "drill": true,
+    "code": "int n = s.{{1}}();          // string length (WITH parentheses)\nchar c = s.{{2}}(0);        // first character\nString pre = s.{{3}}(0, 3); // first 3 chars, [0, 3)",
+    "blanks": { "1": ["length"], "2": ["charAt"], "3": ["substring"] },
+    "explanation": "Strings use `length()` (a method, unlike arrays); `charAt(i)` reads one char; `substring(start, end)` takes the half-open range."
+  },
+  {
+    "id": "str-ref-access-code",
+    "type": "code-method",
+    "title": "Drill: last character",
+    "prompt": "From memory: return the last character of `s` (non-empty) as a String. Use `charAt` and `length()`.",
+    "drill": true,
+    "method": { "name": "lastChar", "params": [ { "name": "s", "type": "String" } ], "returns": "String" },
+    "starter": "class Solution {\n    public String lastChar(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["abc"], "expected": "c" },
+      { "args": ["x"], "expected": "x" },
+      { "args": ["hello"], "expected": "o", "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public String lastChar(String s) {\n        return String.valueOf(s.charAt(s.length() - 1));\n    }\n}"
+    },
+    "hints": ["The last index is `s.length() - 1`.", "`String.valueOf(char)` turns a char into a String."]
+  },
+  {
+    "id": "str-ref-search-fill",
+    "type": "fill-blank",
+    "title": "Recall: search & split",
+    "prompt": "Fill in the search and split operations.",
+    "drill": true,
+    "code": "int i = s.{{1}}(\"b\");         // first index of \"b\", or -1\nboolean has = s.{{2}}(\"ab\");  // is \"ab\" a substring?\nString[] parts = s.{{3}}(\" \"); // break on spaces",
+    "blanks": { "1": ["indexOf"], "2": ["contains"], "3": ["split"] },
+    "explanation": "`indexOf` returns the first position (or -1), `contains` gives a boolean, `split` breaks the string into a `String[]`."
+  },
+  {
+    "id": "str-ref-search-code",
+    "type": "code-method",
+    "title": "Drill: count words",
+    "prompt": "From memory: return the number of space-separated words in `s` (0 if empty). Use `split(\" \")`.",
+    "drill": true,
+    "method": { "name": "wordCount", "params": [ { "name": "s", "type": "String" } ], "returns": "int" },
+    "starter": "class Solution {\n    public int wordCount(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["a b c"], "expected": 3 },
+      { "args": ["hello"], "expected": 1 },
+      { "args": [""], "expected": 0, "note": "empty string has no words" },
+      { "args": ["the quick brown fox"], "expected": 4, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int wordCount(String s) {\n        if (s.isEmpty()) return 0;\n        return s.split(\" \").length;\n    }\n}"
+    },
+    "hints": ["Guard the empty string (split would give `[\"\"]`, length 1).", "`s.split(\" \").length`"]
+  },
+  {
+    "id": "str-ref-sb-fill",
+    "type": "fill-blank",
+    "title": "Recall: StringBuilder",
+    "prompt": "Fill in the StringBuilder operations.",
+    "drill": true,
+    "code": "StringBuilder sb = new StringBuilder();\nsb.{{1}}(\"ab\");                 // add text\nsb.{{2}}(sb.length() - 1);      // remove the last char\nString out = sb.{{3}}();        // final String",
+    "blanks": { "1": ["append"], "2": ["deleteCharAt"], "3": ["toString"] },
+    "explanation": "`append` adds, `deleteCharAt(length-1)` pops the last char (key for backtracking), `toString` produces the final String."
+  },
+  {
+    "id": "str-ref-sb-code",
+    "type": "code-method",
+    "title": "Drill: build with StringBuilder",
+    "prompt": "From memory: return the string `\"ab\"` repeated `n` times, built with a StringBuilder in a loop (never `+=` in a loop!).",
+    "drill": true,
+    "method": { "name": "repeat", "params": [ { "name": "n", "type": "int" } ], "returns": "String" },
+    "starter": "class Solution {\n    public String repeat(int n) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [3], "expected": "ababab" },
+      { "args": [0], "expected": "" },
+      { "args": [1], "expected": "ab", "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public String repeat(int n) {\n        StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < n; i++) sb.append(\"ab\");\n        return sb.toString();\n    }\n}"
+    },
+    "hints": ["Create the builder before the loop, `append` inside, `toString` after."]
+  }
+]

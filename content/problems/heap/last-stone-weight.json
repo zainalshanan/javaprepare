@@ -1,0 +1,30 @@
+{
+  "id": "last-stone-weight",
+  "type": "code-method",
+  "title": "Last Stone Weight",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/last-stone-weight/",
+  "prompt": "Each turn, smash the two heaviest stones together: if unequal, the difference becomes a new stone. Return the weight of the last remaining stone (0 if none remain).\n\n**Example**: `[2,7,4,1,8,1]` → `1`.\n\nA max-heap gives you the two heaviest in O(log n) each turn.",
+  "method": {
+    "name": "lastStoneWeight",
+    "params": [ { "name": "stones", "type": "int[]" } ],
+    "returns": "int"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int lastStoneWeight(int[] stones) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[2, 7, 4, 1, 8, 1]], "expected": 1 },
+    { "args": [[1]], "expected": 1 },
+    { "args": [[2, 2]], "expected": 0, "note": "equal stones destroy each other" },
+    { "args": [[10, 4, 2, 10]], "expected": 2, "hidden": true },
+    { "args": [[3, 7, 2]], "expected": 2, "hidden": true }
+  ],
+  "hints": [
+    "Max-heap: `new PriorityQueue<>((a, b) -> Integer.compare(b, a))`.",
+    "While at least two stones remain, poll two; if they differ, offer the difference.",
+    "Return the last stone, or 0 if the heap emptied."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int lastStoneWeight(int[] stones) {\n        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> Integer.compare(b, a));\n        for (int s : stones) pq.offer(s);\n        while (pq.size() > 1) {\n            int a = pq.poll(), b = pq.poll();\n            if (a != b) pq.offer(a - b);\n        }\n        return pq.isEmpty() ? 0 : pq.peek();\n    }\n}",
+    "explanation": "O(n log n). The simulation needs the two largest each round, which is exactly what a max-heap serves in O(log n); equal stones vanish (offer nothing), unequal leave a remainder stone."
+  }
+}

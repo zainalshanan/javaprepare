@@ -1,0 +1,40 @@
+{
+  "id": "design-twitter",
+  "type": "code-design",
+  "title": "Design Twitter",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/design-twitter/",
+  "prompt": "Design a tiny Twitter:\n\n- `Twitter()`\n- `void postTweet(int userId, int tweetId)`\n- `List<Integer> getNewsFeed(int userId)` — the 10 most recent tweet ids from the user and everyone they follow, newest first\n- `void follow(int followerId, int followeeId)`\n- `void unfollow(int followerId, int followeeId)`\n\nStamp each tweet with a global time; a max-heap over the relevant users' recent tweets pulls the newest 10.",
+  "className": "Twitter",
+  "methods": {
+    "Twitter": { "params": [], "returns": "void" },
+    "postTweet": { "params": ["int", "int"], "returns": "void" },
+    "getNewsFeed": { "params": ["int"], "returns": "List<Integer>" },
+    "follow": { "params": ["int", "int"], "returns": "void" },
+    "unfollow": { "params": ["int", "int"], "returns": "void" }
+  },
+  "starter": "import java.util.*;\n\nclass Twitter {\n\n    public Twitter() {\n\n    }\n\n    public void postTweet(int userId, int tweetId) {\n\n    }\n\n    public List<Integer> getNewsFeed(int userId) {\n\n    }\n\n    public void follow(int followerId, int followeeId) {\n\n    }\n\n    public void unfollow(int followerId, int followeeId) {\n\n    }\n}\n",
+  "tests": [
+    {
+      "ops": ["Twitter", "postTweet", "getNewsFeed", "follow", "postTweet", "getNewsFeed", "unfollow", "getNewsFeed"],
+      "args": [[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]],
+      "expected": [null, null, [5], null, null, [6, 5], null, [5]]
+    },
+    {
+      "ops": ["Twitter", "postTweet", "postTweet", "getNewsFeed"],
+      "args": [[], [1, 10], [1, 20], [1]],
+      "expected": [null, null, null, [20, 10]],
+      "hidden": true,
+      "note": "own tweets, newest first"
+    }
+  ],
+  "hints": [
+    "Global counter `time` stamps each tweet so ordering across users is comparable.",
+    "Store per-user tweet lists and a follow set per user.",
+    "getNewsFeed: gather the recent tweets of self + followees into a max-heap keyed by time, pop up to 10."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Twitter {\n    private int time = 0;\n    private Map<Integer, List<int[]>> tweets = new HashMap<>();      // user -> {time, tweetId}\n    private Map<Integer, Set<Integer>> following = new HashMap<>();\n\n    public Twitter() {\n    }\n\n    public void postTweet(int userId, int tweetId) {\n        tweets.computeIfAbsent(userId, k -> new ArrayList<>()).add(new int[]{time++, tweetId});\n    }\n\n    public List<Integer> getNewsFeed(int userId) {\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(b[0], a[0]));\n        Set<Integer> users = new HashSet<>(following.getOrDefault(userId, new HashSet<>()));\n        users.add(userId);\n        for (int u : users) {\n            List<int[]> ts = tweets.get(u);\n            if (ts != null) {\n                for (int i = Math.max(0, ts.size() - 10); i < ts.size(); i++) pq.offer(ts.get(i));\n            }\n        }\n        List<Integer> res = new ArrayList<>();\n        while (!pq.isEmpty() && res.size() < 10) res.add(pq.poll()[1]);\n        return res;\n    }\n\n    public void follow(int followerId, int followeeId) {\n        following.computeIfAbsent(followerId, k -> new HashSet<>()).add(followeeId);\n    }\n\n    public void unfollow(int followerId, int followeeId) {\n        Set<Integer> set = following.get(followerId);\n        if (set != null) set.remove(followeeId);\n    }\n}",
+    "explanation": "A monotonic timestamp gives a global order across all users' tweets. Because each user's own tweets are already time-sorted, only their last 10 can matter, so the heap merges these short frontiers — a k-way merge that yields the 10 newest without sorting everything."
+  }
+}

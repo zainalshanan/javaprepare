@@ -1,0 +1,29 @@
+{
+  "id": "walls-and-gates",
+  "type": "code-method",
+  "title": "Walls and Gates",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/walls-and-gates/",
+  "prompt": "In a grid, `-1` = wall, `0` = gate, `2147483647` (INF) = empty room. Fill each empty room with its distance to the nearest gate (leave INF if unreachable). Modify in place.\n\n**Example**: the standard 4×4 grid → distances radiating from each gate.\n\nMulti-source BFS from all gates at once, so each room is reached by its closest gate first.",
+  "method": {
+    "name": "wallsAndGates",
+    "params": [ { "name": "rooms", "type": "int[][]" } ],
+    "returns": "void"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public void wallsAndGates(int[][] rooms) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[2147483647, -1, 0, 2147483647], [2147483647, 2147483647, 2147483647, -1], [2147483647, -1, 2147483647, -1], [0, -1, 2147483647, 2147483647]]], "expected": [[3, -1, 0, 1], [2, 2, 1, -1], [1, -1, 2, -1], [0, -1, 3, 4]] },
+    { "args": [[[0]]], "expected": [[0]] },
+    { "args": [[[2147483647, 0]]], "expected": [[1, 0]], "note": "one step from the gate" },
+    { "args": [[[2147483647, -1], [0, 2147483647]]], "expected": [[1, -1], [0, 1]], "hidden": true }
+  ],
+  "hints": [
+    "Seed the BFS queue with every gate (cells equal to 0).",
+    "Expand to neighbors that are still INF, setting their distance to current + 1.",
+    "Because all gates start at distance 0 simultaneously, the first time a room is reached is its shortest distance."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public void wallsAndGates(int[][] rooms) {\n        int rows = rooms.length, cols = rooms[0].length;\n        Queue<int[]> q = new LinkedList<>();\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (rooms[r][c] == 0) q.offer(new int[]{r, c});\n            }\n        }\n        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n        while (!q.isEmpty()) {\n            int[] cell = q.poll();\n            for (int[] d : dirs) {\n                int nr = cell[0] + d[0], nc = cell[1] + d[1];\n                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols\n                        && rooms[nr][nc] == Integer.MAX_VALUE) {\n                    rooms[nr][nc] = rooms[cell[0]][cell[1]] + 1;\n                    q.offer(new int[]{nr, nc});\n                }\n            }\n        }\n    }\n}",
+    "explanation": "Running one BFS per gate would be O(gates · cells). Seeding all gates into a single queue makes the wavefronts meet: each room is claimed by whichever gate's wave arrives first — its nearest — in one O(cells) pass."
+  }
+}

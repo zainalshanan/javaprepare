@@ -1,0 +1,69 @@
+[
+  {
+    "id": "vars-mcq-types",
+    "type": "mcq",
+    "title": "Pick the right type",
+    "prompt": "You need to store the sum of an array that can hold 10 million values, each up to 1,000,000. Which type?",
+    "options": [
+      "`long` — the sum can reach 10^13, past int's ~2.1 x 10^9 limit",
+      "`int` — sums are always fine in int",
+      "`double` — decimals are safer",
+      "`String` — numbers of any size fit in text"
+    ],
+    "answer": 0,
+    "explanation": "10,000,000 x 1,000,000 = 10^13, far beyond Integer.MAX_VALUE (~2.1 x 10^9). Overflowing int silently wraps around to garbage values — a classic interview bug."
+  },
+  {
+    "id": "vars-print",
+    "type": "code-output",
+    "title": "Print three values",
+    "prompt": "Declare an `int` named `x` with value `42`, a `String` named `s` with value `\"java\"`, and a `boolean` named `ok` with value `true`. Print each on its own line using `System.out.println`.",
+    "starter": "public class Main {\n    public static void main(String[] args) {\n        // declare x, s, ok — then print each\n    }\n}\n",
+    "expectedOutput": "42\njava\ntrue",
+    "solution": {
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int x = 42;\n        String s = \"java\";\n        boolean ok = true;\n        System.out.println(x);\n        System.out.println(s);\n        System.out.println(ok);\n    }\n}"
+    },
+    "hints": ["Each declaration is `type name = value;` — then `System.out.println(name);`"]
+  },
+  {
+    "id": "vars-fill-declare",
+    "type": "fill-blank",
+    "title": "Complete the declarations",
+    "prompt": "Fill in the missing types and suffix.",
+    "code": "{{1}} count = 0;\n{{2}} ratio = 0.5;\n{{3}} letter = 'k';\nlong big = 5_000_000_000{{4}};",
+    "blanks": {
+      "1": ["int"],
+      "2": ["double"],
+      "3": ["char"],
+      "4": ["L", "l"]
+    },
+    "explanation": "Whole number → `int`, decimal → `double`, single character → `char`. Literals bigger than int's max need the `L` suffix to be read as `long`."
+  },
+  {
+    "id": "vars-mcq-cast",
+    "type": "mcq",
+    "title": "What prints?",
+    "prompt": "What does `System.out.println((int) 7.9);` print?",
+    "options": [
+      "`7` — casting to int truncates toward zero",
+      "`8` — casting rounds to nearest",
+      "`7.9` — the cast is ignored",
+      "Compile error"
+    ],
+    "answer": 0,
+    "explanation": "`(int)` chops off the decimal part. If you want rounding, use `Math.round(7.9)`."
+  },
+  {
+    "id": "vars-drill-declare",
+    "type": "code-output",
+    "title": "Drill: declarations from memory",
+    "prompt": "From a blank editor, write a full program (class `Main` with a `main` method) that declares an `int` `n = 7`, a `double` `d = 2.5`, a `String` `s = \"go\"`, then prints them each on their own line.",
+    "drill": true,
+    "starter": "",
+    "expectedOutput": "7\n2.5\ngo",
+    "solution": {
+      "code": "public class Main {\n    public static void main(String[] args) {\n        int n = 7;\n        double d = 2.5;\n        String s = \"go\";\n        System.out.println(n);\n        System.out.println(d);\n        System.out.println(s);\n    }\n}"
+    },
+    "hints": ["Start with `public class Main { public static void main(String[] args) { ... } }`"]
+  }
+]

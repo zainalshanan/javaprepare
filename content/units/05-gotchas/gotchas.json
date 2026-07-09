@@ -1,0 +1,121 @@
+[
+  {
+    "id": "got-equals",
+    "type": "mcq",
+    "title": "Integer identity",
+    "prompt": "`Integer a = 1000; Integer b = 1000;` — what is `a == b`?",
+    "drill": true,
+    "options": [
+      "`false` (usually) — == compares references, and 1000 is outside the -128..127 cache",
+      "`true` — they're both 1000",
+      "Compile error",
+      "`true` for all Integers"
+    ],
+    "answer": 0,
+    "explanation": "Autoboxing caches -128..127, so `Integer a = 100 == b` happens to be true — and then breaks at 1000. Never == boxed types; use .equals or unbox to int."
+  },
+  {
+    "id": "got-overflow",
+    "type": "mcq",
+    "title": "Silent overflow",
+    "prompt": "`int x = 2_000_000_000; System.out.println(x + x);` prints…",
+    "drill": true,
+    "options": [
+      "A negative number — int overflow wraps around silently",
+      "4000000000",
+      "An ArithmeticException",
+      "Infinity"
+    ],
+    "answer": 0,
+    "explanation": "4×10⁹ exceeds Integer.MAX_VALUE (~2.1×10⁹), wrapping to -294967296. Java throws NOTHING for int overflow. When sums can exceed 2.1 billion, compute in long: `(long) x + x`."
+  },
+  {
+    "id": "got-mid",
+    "type": "mcq",
+    "title": "The midpoint bug",
+    "prompt": "In binary search, why write `int mid = l + (r - l) / 2;` instead of `(l + r) / 2`?",
+    "drill": true,
+    "options": [
+      "`l + r` can overflow int when both are large; `l + (r - l) / 2` cannot",
+      "It's faster",
+      "It rounds differently",
+      "No reason — pure style"
+    ],
+    "answer": 0,
+    "explanation": "With l and r both near 2 billion, l + r wraps negative and mid becomes garbage. This bug lived in the JDK's own binarySearch for nine years."
+  },
+  {
+    "id": "got-mod",
+    "type": "mcq",
+    "title": "Negative modulo",
+    "prompt": "What is `-7 % 3` in Java?",
+    "drill": true,
+    "options": [
+      "`-1` — the result takes the sign of the dividend",
+      "`2` — modulo is always non-negative",
+      "`1`",
+      "ArithmeticException"
+    ],
+    "answer": 0,
+    "explanation": "Java's % is a remainder, not a mathematical modulo. For a guaranteed non-negative result (circular indexing!): `((a % b) + b) % b`."
+  },
+  {
+    "id": "got-length",
+    "type": "fill-blank",
+    "title": "The length gauntlet",
+    "prompt": "Fill in the correct size access for each type — parentheses matter.",
+    "drill": true,
+    "code": "int[] arr = {1, 2, 3};\nString s = \"abc\";\nList<Integer> list = new ArrayList<>();\n\nint a = arr.{{1}};\nint b = s.{{2}};\nint c = list.{{3}};",
+    "blanks": {
+      "1": ["length"],
+      "2": ["length()"],
+      "3": ["size()"]
+    },
+    "explanation": "Array: field `.length`. String: method `.length()`. Collection: method `.size()`. Three APIs, three spellings — thanks, Java."
+  },
+  {
+    "id": "got-comod",
+    "type": "mcq",
+    "title": "Mutating while iterating",
+    "prompt": "`for (Integer x : list) { if (x < 0) list.remove(x); }` — what happens?",
+    "drill": true,
+    "options": [
+      "ConcurrentModificationException (typically) — you can't structurally modify a list inside its own for-each",
+      "Works fine",
+      "Removes only the first negative",
+      "Infinite loop"
+    ],
+    "answer": 0,
+    "explanation": "Collect removals into a second list, use `list.removeIf(x -> x < 0)`, or iterate by index backwards."
+  },
+  {
+    "id": "got-defaults",
+    "type": "mcq",
+    "title": "Array default values",
+    "prompt": "`new int[3]`, `new boolean[3]`, and `new Integer[3]` start filled with…",
+    "drill": true,
+    "options": [
+      "0, false, and null respectively — and reading a null Integer into an int throws NPE",
+      "0, false, and 0",
+      "All null",
+      "Garbage values like C"
+    ],
+    "answer": 0,
+    "explanation": "Primitives get zero-values; object arrays get null. `int x = integerArr[0];` on a fresh Integer[] is a NullPointerException at the unbox."
+  },
+  {
+    "id": "got-concat",
+    "type": "mcq",
+    "title": "Concatenation cost",
+    "prompt": "`String r = \"\"; for (...n times...) r += ch;` — total time?",
+    "drill": true,
+    "options": [
+      "O(n²) — each += copies the whole string so far; use StringBuilder for O(n)",
+      "O(n) — appends are cheap",
+      "O(log n)",
+      "O(1)"
+    ],
+    "answer": 0,
+    "explanation": "1 + 2 + ... + n copies ≈ n²/2. On a 10⁵-char build, that's the difference between instant and TLE."
+  }
+]

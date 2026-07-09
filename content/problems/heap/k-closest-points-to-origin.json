@@ -1,0 +1,29 @@
+{
+  "id": "k-closest-points-to-origin",
+  "type": "code-method",
+  "title": "K Closest Points to Origin",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/k-closest-points-to-origin/",
+  "prompt": "Given `points[i] = [xi, yi]`, return the `k` points closest to the origin, in any order (the answer is guaranteed unique).\n\nDistance comparison never needs the square root — compare `x² + y²` directly.\n\n**Example**: `points = [[1,3],[-2,2]]`, `k = 1` → `[[-2,2]]`.",
+  "method": {
+    "name": "kClosest",
+    "params": [ { "name": "points", "type": "int[][]" }, { "name": "k", "type": "int" } ],
+    "returns": "int[][]"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public int[][] kClosest(int[][] points, int k) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[1, 3], [-2, 2]], 1], "expected": [[-2, 2]], "compare": "unordered" },
+    { "args": [[[3, 3], [5, -1], [-2, 4]], 2], "expected": [[3, 3], [-2, 4]], "compare": "unordered" },
+    { "args": [[[0, 1]], 1], "expected": [[0, 1]], "compare": "unordered" },
+    { "args": [[[10000, 10000], [1, 1], [-10000, 10000]], 1], "expected": [[1, 1]], "compare": "unordered", "hidden": true, "note": "10000² + 10000² fits int, barely — 2×10⁸" }
+  ],
+  "hints": [
+    "Keep-smallest-k → MAX-heap of size k ordered by squared distance.",
+    "`(a, b) -> Integer.compare(b[0]*b[0] + b[1]*b[1], a[0]*a[0] + a[1]*a[1])`",
+    "Offer each point; poll when size exceeds k; drain the heap into the result."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public int[][] kClosest(int[][] points, int k) {\n        PriorityQueue<int[]> maxHeap = new PriorityQueue<>(\n                (a, b) -> Integer.compare(b[0]*b[0] + b[1]*b[1], a[0]*a[0] + a[1]*a[1]));\n        for (int[] p : points) {\n            maxHeap.offer(p);\n            if (maxHeap.size() > k) maxHeap.poll();\n        }\n        int[][] res = new int[k][];\n        for (int i = 0; i < k; i++) {\n            res[i] = maxHeap.poll();\n        }\n        return res;\n    }\n}",
+    "explanation": "O(n log k), O(k) space. Max-heap because we evict the FARTHEST while keeping the closest — the mirror of k-th largest. Squared distance keeps everything in integers."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "group-anagrams",
+  "type": "code-method",
+  "title": "Group Anagrams",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/group-anagrams/",
+  "prompt": "Given an array of strings, group the anagrams together. Return the groups in any order (and words within a group in any order).\n\n**Example**: `[\"eat\",\"tea\",\"tan\",\"ate\",\"nat\",\"bat\"]` → `[[\"bat\"],[\"nat\",\"tan\"],[\"ate\",\"eat\",\"tea\"]]`.\n\nThis is the canonical-key idea from the pattern lesson plus the `computeIfAbsent` grouping idiom.",
+  "method": {
+    "name": "groupAnagrams",
+    "params": [ { "name": "strs", "type": "String[]" } ],
+    "returns": "List<List<String>>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<String>> groupAnagrams(String[] strs) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [["eat", "tea", "tan", "ate", "nat", "bat"]], "expected": [["bat"], ["nat", "tan"], ["ate", "eat", "tea"]], "compare": "unordered-deep" },
+    { "args": [[""]], "expected": [[""]], "compare": "unordered-deep" },
+    { "args": [["a"]], "expected": [["a"]], "compare": "unordered-deep" },
+    { "args": [["abc", "cba", "xyz"]], "expected": [["abc", "cba"], ["xyz"]], "compare": "unordered-deep", "hidden": true },
+    { "args": [["aa", "a"]], "expected": [["aa"], ["a"]], "compare": "unordered-deep", "hidden": true }
+  ],
+  "hints": [
+    "All anagrams share the same canonical form: their letters sorted.",
+    "`char[] c = word.toCharArray(); Arrays.sort(c); String key = new String(c);`",
+    "`map.computeIfAbsent(key, k -> new ArrayList<>()).add(word);` then return `new ArrayList<>(map.values())`."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public List<List<String>> groupAnagrams(String[] strs) {\n        Map<String, List<String>> groups = new HashMap<>();\n        for (String word : strs) {\n            char[] chars = word.toCharArray();\n            Arrays.sort(chars);\n            String key = new String(chars);\n            groups.computeIfAbsent(key, k -> new ArrayList<>()).add(word);\n        }\n        return new ArrayList<>(groups.values());\n    }\n}",
+    "explanation": "O(n · k log k) where k is max word length. The sorted word is a canonical key: equal exactly for anagrams. (Alternative O(n·k) key: a 26-count signature string.)"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "burst-balloons",
+  "type": "code-method",
+  "title": "Burst Balloons",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/burst-balloons/",
+  "prompt": "Balloons have values `nums`. Bursting balloon `i` earns `nums[left] * nums[i] * nums[right]` where left/right are its current neighbors (missing neighbors count as 1). Return the max coins from bursting all balloons.\n\n**Example**: `[3,1,5,8]` → `167`.\n\nInterval DP — but think of the balloon burst **last** in each range, so its neighbors are the fixed range boundaries.",
+  "method": {
+    "name": "maxCoins",
+    "params": [ { "name": "nums", "type": "int[]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int maxCoins(int[] nums) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[3, 1, 5, 8]], "expected": 167 },
+    { "args": [[1, 5]], "expected": 10 },
+    { "args": [[5]], "expected": 5 },
+    { "args": [[1]], "expected": 1, "hidden": true },
+    { "args": [[4, 3]], "expected": 16, "hidden": true }
+  ],
+  "hints": [
+    "Pad the array with 1 on both ends so edge balloons have neighbors.",
+    "dp[left][right] = max coins from bursting all balloons strictly between left and right.",
+    "Pick the balloon k burst LAST in (left, right): its gain is `pad[left]*pad[k]*pad[right]` plus the two sub-intervals dp[left][k] and dp[k][right]."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int maxCoins(int[] nums) {\n        int n = nums.length;\n        int[] balloons = new int[n + 2];\n        balloons[0] = balloons[n + 1] = 1;\n        for (int i = 0; i < n; i++) balloons[i + 1] = nums[i];\n        int[][] dp = new int[n + 2][n + 2];\n        for (int len = 1; len <= n; len++) {\n            for (int left = 1; left + len - 1 <= n; left++) {\n                int right = left + len - 1;\n                for (int k = left; k <= right; k++) {\n                    dp[left][right] = Math.max(dp[left][right],\n                            dp[left][k - 1]\n                            + balloons[left - 1] * balloons[k] * balloons[right + 1]\n                            + dp[k + 1][right]);\n                }\n            }\n        }\n        return dp[1][n];\n    }\n}",
+    "explanation": "Choosing which balloon to burst FIRST is hard because it changes everyone's neighbors. Reversing it — which balloon in a range is burst LAST — fixes that balloon's neighbors to the untouched range boundaries, decoupling the two sub-ranges into independent subproblems. O(n³) over all intervals and split points."
+  }
+}

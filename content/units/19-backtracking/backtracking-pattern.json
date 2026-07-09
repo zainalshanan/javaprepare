@@ -1,0 +1,189 @@
+[
+  {
+    "id": "pat-bt-mcq-undo",
+    "type": "mcq",
+    "title": "The forgotten undo",
+    "prompt": "If you delete `path.remove(path.size() - 1)` from the subsets template, what happens?",
+    "options": [
+      "Choices pile up in `path` across loop iterations — results contain over-long, wrong subsets",
+      "Nothing; the recursion handles it",
+      "It throws ConcurrentModificationException",
+      "Only the empty subset is produced"
+    ],
+    "answer": 0,
+    "explanation": "`path` is ONE shared list threaded through the whole recursion. Every add must be mirrored by a remove on the way back out, or state leaks between branches."
+  },
+  {
+    "id": "pat-bt-drill-binary",
+    "type": "code-method",
+    "title": "Drill: all binary strings",
+    "prompt": "From memory: return all binary strings of length `n` in the order produced by choosing '0' before '1' at each position (e.g. n=2 → [\"00\",\"01\",\"10\",\"11\"]). Backtrack with a StringBuilder: append, recurse, deleteCharAt.",
+    "drill": true,
+    "method": {
+      "name": "binaryStrings",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "returns": "List<String>"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> binaryStrings(int n) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          2
+        ],
+        "expected": [
+          "00",
+          "01",
+          "10",
+          "11"
+        ]
+      },
+      {
+        "args": [
+          1
+        ],
+        "expected": [
+          "0",
+          "1"
+        ]
+      },
+      {
+        "args": [
+          3
+        ],
+        "expected": [
+          "000",
+          "001",
+          "010",
+          "011",
+          "100",
+          "101",
+          "110",
+          "111"
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    private List<String> res = new ArrayList<>();\n\n    public List<String> binaryStrings(int n) {\n        backtrack(n, new StringBuilder());\n        return res;\n    }\n\n    private void backtrack(int n, StringBuilder path) {\n        if (path.length() == n) {\n            res.add(path.toString());\n            return;\n        }\n        for (char c : new char[]{'0', '1'}) {\n            path.append(c);                          // choose\n            backtrack(n, path);                      // explore\n            path.deleteCharAt(path.length() - 1);    // un-choose\n        }\n    }\n}",
+      "explanation": "Same skeleton as subsets, with a length base case instead of record-everywhere. `deleteCharAt(length-1)` is StringBuilder's un-choose."
+    },
+    "hints": [
+      "Base case: `path.length() == n` → record and return.",
+      "Choose/explore/un-choose for '0', then for '1'."
+    ]
+  },
+  {
+    "id": "pat-bt-drill-combos",
+    "type": "code-method",
+    "title": "Drill: combinations C(n, k)",
+    "prompt": "From memory (choose/explore/un-choose with a `start` index): return all combinations of `k` numbers chosen from `1..n`.",
+    "drill": true,
+    "method": {
+      "name": "combine",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "k",
+          "type": "int"
+        }
+      ],
+      "returns": "List<List<Integer>>"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> combine(int n, int k) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          4,
+          2
+        ],
+        "expected": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "compare": "unordered-deep"
+      },
+      {
+        "args": [
+          1,
+          1
+        ],
+        "expected": [
+          [
+            1
+          ]
+        ],
+        "compare": "unordered-deep"
+      },
+      {
+        "args": [
+          3,
+          3
+        ],
+        "expected": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "compare": "unordered-deep"
+      },
+      {
+        "args": [
+          3,
+          1
+        ],
+        "expected": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "compare": "unordered-deep",
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> combine(int n, int k) {\n        backtrack(1, n, k, new ArrayList<>());\n        return res;\n    }\n\n    private void backtrack(int start, int n, int k, List<Integer> path) {\n        if (path.size() == k) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        for (int i = start; i <= n; i++) {\n            path.add(i);\n            backtrack(i + 1, n, k, path);\n            path.remove(path.size() - 1);\n        }\n    }\n}"
+    },
+    "hints": [
+      "Record when `path.size() == k`.",
+      "Loop from `start` to n, recurse with `i + 1`, then un-choose."
+    ]
+  }
+]

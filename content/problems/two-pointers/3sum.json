@@ -1,0 +1,30 @@
+{
+  "id": "3sum",
+  "type": "code-method",
+  "title": "3Sum",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/3sum/",
+  "prompt": "Given an integer array `nums`, return all **unique** triplets `[a, b, c]` with `a + b + c == 0`. No duplicate triplets in the output (order within/among triplets doesn't matter).\n\n**Example**: `[-1,0,1,2,-1,-4]` → `[[-1,-1,2],[-1,0,1]]`.\n\nThe classic composition: sort, fix the first element, then run Two Sum II's two pointers on the rest — with careful duplicate-skipping.",
+  "method": {
+    "name": "threeSum",
+    "params": [ { "name": "nums", "type": "int[]" } ],
+    "returns": "List<List<Integer>>"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> threeSum(int[] nums) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[-1, 0, 1, 2, -1, -4]], "expected": [[-1, -1, 2], [-1, 0, 1]], "compare": "unordered-deep" },
+    { "args": [[0, 1, 1]], "expected": [], "compare": "unordered-deep" },
+    { "args": [[0, 0, 0]], "expected": [[0, 0, 0]], "compare": "unordered-deep" },
+    { "args": [[0, 0, 0, 0]], "expected": [[0, 0, 0]], "compare": "unordered-deep", "hidden": true, "note": "no duplicate triplets" },
+    { "args": [[-2, 0, 1, 1, 2]], "expected": [[-2, 0, 2], [-2, 1, 1]], "compare": "unordered-deep", "hidden": true }
+  ],
+  "hints": [
+    "Sort first. For each index i, solve Two Sum on nums[i+1..] targeting -nums[i].",
+    "Skip duplicate anchors: `if (i > 0 && nums[i] == nums[i - 1]) continue;`",
+    "After recording a triplet, advance l past equal values (`while (l < r && nums[l] == nums[l + 1]) l++;`) before the normal l++."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> threeSum(int[] nums) {\n        Arrays.sort(nums);\n        List<List<Integer>> res = new ArrayList<>();\n        for (int i = 0; i < nums.length - 2; i++) {\n            if (i > 0 && nums[i] == nums[i - 1]) continue;   // skip duplicate anchors\n            if (nums[i] > 0) break;                            // sorted: no zero-sum possible\n            int l = i + 1, r = nums.length - 1;\n            while (l < r) {\n                int sum = nums[i] + nums[l] + nums[r];\n                if (sum < 0) l++;\n                else if (sum > 0) r--;\n                else {\n                    res.add(new ArrayList<>(Arrays.asList(nums[i], nums[l], nums[r])));\n                    while (l < r && nums[l] == nums[l + 1]) l++;   // skip duplicate seconds\n                    l++;\n                    r--;\n                }\n            }\n        }\n        return res;\n    }\n}",
+    "explanation": "O(n²): n anchors × O(n) two-pointer sweep. The three duplicate-skips (anchor, second element, plus the natural r--) are what guarantee uniqueness without a Set. The `nums[i] > 0` break is a free optimization on sorted data."
+  }
+}

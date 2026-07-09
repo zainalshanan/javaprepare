@@ -1,0 +1,32 @@
+{
+  "id": "valid-parentheses",
+  "type": "code-method",
+  "title": "Valid Parentheses",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/valid-parentheses/",
+  "prompt": "Given a string containing only `()[]{}`, determine if it is valid: every opener closes with the matching bracket type, in the correct order.\n\n**Example**: `\"()[]{}\"` → `true`; `\"(]\"` → `false`.\n\nThe matching-stack template with three bracket types.",
+  "method": {
+    "name": "isValid",
+    "params": [ { "name": "s", "type": "String" } ],
+    "returns": "boolean"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public boolean isValid(String s) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["()"], "expected": true },
+    { "args": ["()[]{}"], "expected": true },
+    { "args": ["(]"], "expected": false },
+    { "args": ["([)]"], "expected": false, "note": "interleaved — order matters" },
+    { "args": ["{[]}"], "expected": true },
+    { "args": ["("], "expected": false, "hidden": true },
+    { "args": ["]"], "expected": false, "hidden": true }
+  ],
+  "hints": [
+    "Push openers. On a closer, the stack top must be its matching opener.",
+    "A slick trick: when you see an opener, push its CLOSER — then a closer just needs `pop() == c`.",
+    "Two failure modes: closer with empty/wrong stack, and leftover openers (`return stack.isEmpty()`)."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public boolean isValid(String s) {\n        Deque<Character> stack = new ArrayDeque<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(') stack.push(')');\n            else if (c == '[') stack.push(']');\n            else if (c == '{') stack.push('}');\n            else {\n                if (stack.isEmpty() || stack.pop() != c) return false;\n            }\n        }\n        return stack.isEmpty();\n    }\n}",
+    "explanation": "Pushing the EXPECTED closer collapses the matching logic to one comparison. O(n)/O(n). \"([)]\" fails because the top expectation when `)` arrives is `]`."
+  }
+}

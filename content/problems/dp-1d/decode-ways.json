@@ -1,0 +1,31 @@
+{
+  "id": "decode-ways",
+  "type": "code-method",
+  "title": "Decode Ways",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/decode-ways/",
+  "prompt": "A message of digits is decoded with A=1 … Z=26. Return the number of ways to decode string `s`.\n\n**Example**: `\"226\"` → `3` (`\"BZ\"`=2·26, `\"VF\"`=22·6, `\"BBF\"`=2·2·6).\n\ndp[i] = ways to decode the first i characters, adding one-digit and valid two-digit decodings.",
+  "method": {
+    "name": "numDecodings",
+    "params": [ { "name": "s", "type": "String" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    public int numDecodings(String s) {\n\n    }\n}\n",
+  "tests": [
+    { "args": ["12"], "expected": 2 },
+    { "args": ["226"], "expected": 3 },
+    { "args": ["0"], "expected": 0, "note": "leading zero can't decode" },
+    { "args": ["06"], "expected": 0, "note": "0 can't start a code" },
+    { "args": ["10"], "expected": 1, "hidden": true },
+    { "args": ["2101"], "expected": 1, "hidden": true }
+  ],
+  "hints": [
+    "dp[i] counts decodings of the first i digits. dp[0] = 1 (empty), and a leading '0' is unrecoverable.",
+    "Single digit: if s[i-1] != '0', add dp[i-1].",
+    "Two digits: if s[i-2..i-1] is between 10 and 26, add dp[i-2]."
+  ],
+  "solution": {
+    "code": "class Solution {\n    public int numDecodings(String s) {\n        if (s.charAt(0) == '0') return 0;\n        int n = s.length();\n        int prev2 = 1, prev1 = 1;   // dp[i-2], dp[i-1]\n        for (int i = 1; i < n; i++) {\n            int cur = 0;\n            if (s.charAt(i) != '0') cur += prev1;\n            int two = Integer.parseInt(s.substring(i - 1, i + 1));\n            if (two >= 10 && two <= 26) cur += prev2;\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+    "explanation": "Each new digit either stands alone (valid unless it's '0') or joins the previous digit as a 10–26 pair. Summing those two sources is the recurrence; the '0' checks encode the un-decodable cases (a lone 0, or a pair like 30). O(n)/O(1)."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "happy-number",
+  "type": "code-method",
+  "title": "Happy Number",
+  "difficulty": "Easy",
+  "leetcodeUrl": "https://leetcode.com/problems/happy-number/",
+  "prompt": "Repeatedly replace `n` with the sum of the squares of its digits. `n` is happy if this reaches 1; otherwise it loops forever. Return whether `n` is happy.\n\n**Example**: `19` → `1²+9²=82 → 68 → 100 → 1` → `true`.\n\nDetect the loop with a HashSet (or fast/slow pointers).",
+  "method": {
+    "name": "isHappy",
+    "params": [ { "name": "n", "type": "int" } ],
+    "returns": "boolean"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public boolean isHappy(int n) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [19], "expected": true },
+    { "args": [2], "expected": false },
+    { "args": [1], "expected": true },
+    { "args": [7], "expected": true, "hidden": true },
+    { "args": [4], "expected": false, "hidden": true }
+  ],
+  "hints": [
+    "Compute the digit-square-sum in a helper (peel digits with % 10 and / 10).",
+    "Track seen values in a HashSet; if you revisit one before reaching 1, it's an endless loop → false.",
+    "Reaching 1 → true."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public boolean isHappy(int n) {\n        Set<Integer> seen = new HashSet<>();\n        while (n != 1 && !seen.contains(n)) {\n            seen.add(n);\n            int sum = 0;\n            while (n > 0) {\n                int d = n % 10;\n                sum += d * d;\n                n /= 10;\n            }\n            n = sum;\n        }\n        return n == 1;\n    }\n}",
+    "explanation": "The sequence is deterministic, so it either hits 1 or enters a cycle. A HashSet detects the repeat; seeing a value twice proves we're trapped in a loop that never reaches 1. (Floyd's fast/slow pointers give the same answer in O(1) space.)"
+  }
+}

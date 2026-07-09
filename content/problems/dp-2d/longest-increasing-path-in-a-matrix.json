@@ -1,0 +1,30 @@
+{
+  "id": "longest-increasing-path-in-a-matrix",
+  "type": "code-method",
+  "title": "Longest Increasing Path in a Matrix",
+  "difficulty": "Hard",
+  "leetcodeUrl": "https://leetcode.com/problems/longest-increasing-path-in-a-matrix/",
+  "prompt": "Return the length of the longest strictly increasing path in `matrix`, moving up/down/left/right.\n\n**Example**: `[[9,9,4],[6,6,8],[2,1,1]]` → `4` (`1→2→6→9`).\n\nDFS with memoization: the longest path from a cell depends only on the cell, so cache it.",
+  "method": {
+    "name": "longestIncreasingPath",
+    "params": [ { "name": "matrix", "type": "int[][]" } ],
+    "returns": "int"
+  },
+  "starter": "class Solution {\n    private int[][] memo;\n\n    public int longestIncreasingPath(int[][] matrix) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[[9, 9, 4], [6, 6, 8], [2, 1, 1]]], "expected": 4 },
+    { "args": [[[3, 4, 5], [3, 2, 6], [2, 2, 1]]], "expected": 4 },
+    { "args": [[[1]]], "expected": 1 },
+    { "args": [[[1, 2]]], "expected": 2, "hidden": true },
+    { "args": [[[7, 8, 9], [9, 7, 6], [7, 2, 3]]], "expected": 6, "hidden": true }
+  ],
+  "hints": [
+    "The longest increasing path starting at a cell is fixed — memoize it in a grid.",
+    "dfs(r, c) = 1 + max over strictly-greater neighbors of dfs(neighbor); no visited array is needed (strict increase can't cycle).",
+    "Answer = max dfs over all cells."
+  ],
+  "solution": {
+    "code": "class Solution {\n    private int[][] memo;\n\n    public int longestIncreasingPath(int[][] matrix) {\n        int rows = matrix.length, cols = matrix[0].length;\n        memo = new int[rows][cols];\n        int best = 0;\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                best = Math.max(best, dfs(matrix, r, c));\n            }\n        }\n        return best;\n    }\n\n    private int dfs(int[][] m, int r, int c) {\n        if (memo[r][c] != 0) return memo[r][c];\n        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n        int best = 1;\n        for (int[] d : dirs) {\n            int nr = r + d[0], nc = c + d[1];\n            if (nr >= 0 && nr < m.length && nc >= 0 && nc < m[0].length && m[nr][nc] > m[r][c]) {\n                best = Math.max(best, 1 + dfs(m, nr, nc));\n            }\n        }\n        return memo[r][c] = best;\n    }\n}",
+    "explanation": "Strictly-increasing edges make the grid a DAG (no path can revisit a cell), so plain DFS never cycles and no visited set is needed. Memoizing each cell's answer turns the exponential search into O(rows·cols) — each cell computed once."
+  }
+}

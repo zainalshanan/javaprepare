@@ -1,0 +1,30 @@
+{
+  "id": "hand-of-straights",
+  "type": "code-method",
+  "title": "Hand of Straights",
+  "difficulty": "Medium",
+  "leetcodeUrl": "https://leetcode.com/problems/hand-of-straights/",
+  "prompt": "Given a `hand` of card values and a `groupSize`, return whether the hand can be rearranged into groups of `groupSize` **consecutive** cards.\n\n**Example**: `hand = [1,2,3,6,2,3,4,7,8]`, `groupSize = 3` → `true` (`[1,2,3],[2,3,4],[6,7,8]`).\n\nGreedily start each group from the smallest remaining card; a TreeMap keeps counts sorted.",
+  "method": {
+    "name": "isNStraightHand",
+    "params": [ { "name": "hand", "type": "int[]" }, { "name": "groupSize", "type": "int" } ],
+    "returns": "boolean"
+  },
+  "starter": "import java.util.*;\n\nclass Solution {\n    public boolean isNStraightHand(int[] hand, int groupSize) {\n\n    }\n}\n",
+  "tests": [
+    { "args": [[1, 2, 3, 6, 2, 3, 4, 7, 8], 3], "expected": true },
+    { "args": [[1, 2, 3, 4, 5], 4], "expected": false },
+    { "args": [[1, 2, 3, 4], 4], "expected": true },
+    { "args": [[8, 10, 12], 3], "expected": false, "hidden": true, "note": "not consecutive" },
+    { "args": [[1, 1, 2, 2, 3, 3], 3], "expected": true, "hidden": true }
+  ],
+  "hints": [
+    "If hand size isn't divisible by groupSize, it's false.",
+    "Count values in a TreeMap (sorted). Repeatedly take the smallest value as a group's start.",
+    "Decrement that value and the next groupSize-1 consecutive values; if any is missing, return false."
+  ],
+  "solution": {
+    "code": "import java.util.*;\n\nclass Solution {\n    public boolean isNStraightHand(int[] hand, int groupSize) {\n        if (hand.length % groupSize != 0) return false;\n        TreeMap<Integer, Integer> count = new TreeMap<>();\n        for (int c : hand) count.merge(c, 1, Integer::sum);\n        while (!count.isEmpty()) {\n            int first = count.firstKey();\n            for (int i = first; i < first + groupSize; i++) {\n                Integer cnt = count.get(i);\n                if (cnt == null) return false;\n                if (cnt == 1) count.remove(i);\n                else count.put(i, cnt - 1);\n            }\n        }\n        return true;\n    }\n}",
+    "explanation": "The smallest remaining card must begin a group (nothing smaller can extend to include it), so greedily forming a run of groupSize from it is forced — no other choice can succeed. The TreeMap always surfaces that smallest card in O(log n)."
+  }
+}
