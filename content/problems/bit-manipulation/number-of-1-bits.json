@@ -4,27 +4,68 @@
   "title": "Number of 1 Bits",
   "difficulty": "Easy",
   "leetcodeUrl": "https://leetcode.com/problems/number-of-1-bits/",
-  "prompt": "Return the number of set bits (1s) in the binary representation of `n`. Treat `n` as a 32-bit value — negatives count their two's-complement bits.\n\n**Example**: `11` (binary `1011`) → `3`; `-1` (all 32 bits set) → `32`.\n\nUse the `n & (n - 1)` loop you drilled — it clears one set bit per iteration and handles negatives for free.",
+  "prompt": "Return the number of set bits (1s) in the binary representation of `n`. Treat `n` as a 32-bit value; negatives count their two's-complement bits.\n\n**Example**: `11` (binary `1011`) → `3`; `-1` (all 32 bits set) → `32`.\n\nCareful: a shift loop on a negative `n` needs thought (see the lesson).",
   "method": {
     "name": "hammingWeight",
-    "params": [ { "name": "n", "type": "int" } ],
+    "params": [
+      {
+        "name": "n",
+        "type": "int"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int hammingWeight(int n) {\n\n    }\n}\n",
   "tests": [
-    { "args": [11], "expected": 3 },
-    { "args": [128], "expected": 1 },
-    { "args": [0], "expected": 0 },
-    { "args": [-1], "expected": 32, "hidden": true, "note": "all bits set" },
-    { "args": [2147483647], "expected": 31, "hidden": true },
-    { "args": [-2147483648], "expected": 1, "hidden": true, "note": "only the sign bit" }
+    {
+      "args": [
+        11
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        128
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        -1
+      ],
+      "expected": 32,
+      "hidden": true,
+      "note": "all bits set"
+    },
+    {
+      "args": [
+        2147483647
+      ],
+      "expected": 31,
+      "hidden": true
+    },
+    {
+      "args": [
+        -2147483648
+      ],
+      "expected": 1,
+      "hidden": true,
+      "note": "only the sign bit"
+    }
   ],
   "hints": [
-    "`while (n != 0) { n &= (n - 1); count++; }` — note `!= 0`, NOT `> 0` (negatives!).",
-    "Alternative: check each of 32 positions with `(n >> i) & 1`. Also fine, always 32 iterations."
+    "How can you inspect or remove one bit at a time, and what goes wrong with `n >>= 1` when n is negative?",
+    "`n & (n - 1)` erases the lowest set bit. Count how many times you can do that before n becomes 0. Loop on `n != 0`, not `n > 0`.",
+    "Alternative: check all 32 positions with `(n >>> i) & 1`. That is always 32 iterations with no sign issues."
   ],
   "solution": {
     "code": "class Solution {\n    public int hammingWeight(int n) {\n        int count = 0;\n        while (n != 0) {\n            n &= (n - 1);\n            count++;\n        }\n        return count;\n    }\n}",
-    "explanation": "Brian Kernighan's trick: `n - 1` flips the lowest set bit and everything below it, so AND-ing erases exactly that bit. Loops once per set bit. The `!= 0` condition (not `> 0`) is what makes negative inputs terminate correctly."
+    "explanation": "`n - 1` flips the lowest set bit and everything below it, so AND-ing with n erases exactly that bit. This works on the raw 32-bit pattern, so negatives are fine as long as the loop condition is `!= 0`. O(number of set bits) ≤ 32 iterations, O(1) space."
   }
 }

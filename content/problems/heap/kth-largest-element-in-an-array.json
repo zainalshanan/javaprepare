@@ -4,10 +4,10 @@
   "title": "Kth Largest Element in an Array",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
-  "prompt": "Return the `k`-th largest element in `nums` (the k-th in sorted-descending order, not the k-th distinct).\n\n**Example**: `nums = [3,2,1,5,6,4]`, `k = 2` → `5`.\n\nThe size-k min-heap pattern: keep only the k largest seen; its minimum is the answer.",
+  "prompt": "Return the `k`-th largest element in `nums`. This is the k-th element in sorted descending order, not the k-th distinct value.\n\n**Example**: `nums = [3,2,1,5,6,4]`, `k = 2` → `5`; `nums = [3,2,3,1,2,4,5,5,6]`, `k = 4` → `4`.\n\n**Constraints**: 1 ≤ k ≤ n ≤ 10⁵. Try to beat O(n log n) sorting.",
   "method": {
     "name": "findKthLargest",
-    "params": [ { "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" } ],
+    "params": [{ "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" }],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int findKthLargest(int[] nums, int k) {\n\n    }\n}\n",
@@ -19,12 +19,12 @@
     { "args": [[-1, 2, 0], 3], "expected": -1, "hidden": true }
   ],
   "hints": [
-    "Min-heap capped at size k: offer each number, poll when size exceeds k.",
-    "The heap ends holding the k largest values; its top (minimum of those) is the k-th largest.",
-    "O(n log k). (Quickselect gives O(n) average if you want to go further.)"
+    "Sorting takes O(n log n). If k is small, do you really need to keep all n values ordered?",
+    "Keep a min-heap of at most k elements: offer each number, and poll when the size goes over k.",
+    "After the loop, the heap holds the k largest values and `heap.peek()` (their minimum) is the answer. Quickselect averages O(n) if you want to go further."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int findKthLargest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) {\n            heap.offer(x);\n            if (heap.size() > k) heap.poll();\n        }\n        return heap.peek();\n    }\n}",
-    "explanation": "Evicting the smallest whenever the heap exceeds k means it always contains exactly the k biggest elements seen so far, so its minimum is the k-th largest overall. O(n log k) time, O(k) space."
+    "explanation": "Evicting the smallest value whenever the heap exceeds k leaves exactly the k largest elements seen so far, so the heap's minimum is the k-th largest overall. Duplicates count separately because every copy is offered. O(n log k) time, O(k) space."
   }
 }

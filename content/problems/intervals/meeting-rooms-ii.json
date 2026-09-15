@@ -4,27 +4,119 @@
   "title": "Meeting Rooms II",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/meeting-rooms-ii/",
-  "prompt": "Given meeting `intervals`, return the minimum number of rooms required so no two overlapping meetings share a room.\n\n**Example**: `[[0,30],[5,10],[15,20]]` → `2`.\n\nSort by start; a min-heap of end times tracks rooms in use — reuse a room whose meeting has ended.",
+  "prompt": "Given meeting time `intervals` (`[start, end]`), return the minimum number of conference rooms required so that no two overlapping meetings share a room. A meeting ending at time `t` frees its room for one starting at `t`.\n\n**Example**: `[[0,30],[5,10],[15,20]]` → `2`.\n\n**Constraints**: `0 ≤ intervals.length ≤ 10^4`.",
   "method": {
     "name": "minMeetingRooms",
-    "params": [ { "name": "intervals", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "intervals",
+        "type": "int[][]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int minMeetingRooms(int[][] intervals) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[0, 30], [5, 10], [15, 20]]], "expected": 2 },
-    { "args": [[[7, 10], [2, 4]]], "expected": 1 },
-    { "args": [[]], "expected": 0 },
-    { "args": [[[1, 5], [8, 9], [8, 9]]], "expected": 2, "hidden": true },
-    { "args": [[[1, 10], [2, 7], [3, 19], [8, 12], [10, 20], [11, 30]]], "expected": 4, "hidden": true }
+    {
+      "args": [
+        [
+          [
+            0,
+            30
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            15,
+            20
+          ]
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          [
+            7,
+            10
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            5
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            8,
+            9
+          ]
+        ]
+      ],
+      "expected": 2,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            10
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            3,
+            19
+          ],
+          [
+            8,
+            12
+          ],
+          [
+            10,
+            20
+          ],
+          [
+            11,
+            30
+          ]
+        ]
+      ],
+      "expected": 4,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Sort meetings by start time.",
-    "Min-heap holds end times of ongoing meetings. For each meeting, if the earliest end ≤ its start, that room frees up — poll it.",
-    "Always offer the current meeting's end; the heap size at the end is the room count."
+    "Go through meetings in start order. When a meeting begins, what do you need to know about the rooms already in use?",
+    "Only whether the soonest-ending ongoing meeting is finished. If it is, reuse its room. A min-heap of end times gives you that meeting in O(log n).",
+    "`if (!pq.isEmpty() && pq.peek() <= it[0]) pq.poll(); pq.offer(it[1]);`. The final heap size is the answer."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int minMeetingRooms(int[][] intervals) {\n        if (intervals.length == 0) return 0;\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        PriorityQueue<Integer> pq = new PriorityQueue<>();   // end times\n        for (int[] it : intervals) {\n            if (!pq.isEmpty() && pq.peek() <= it[0]) pq.poll();   // reuse a freed room\n            pq.offer(it[1]);\n        }\n        return pq.size();\n    }\n}",
-    "explanation": "Processing meetings in start order, the heap's minimum end time tells you whether any room has freed up before this meeting begins. Reusing it when possible keeps the heap size equal to the peak number of simultaneous meetings — exactly the rooms needed. O(n log n)."
+    "explanation": "In start order, the heap holds the end times of rooms in use. If the earliest end is ≤ the new start, that room is free and reused. Otherwise no room is free and a new one is needed. The heap only grows when every room is busy, so its size is the peak overlap. O(n log n) time, O(n) space. (Alternative: sort starts and ends separately and sweep with two pointers.)"
   }
 }

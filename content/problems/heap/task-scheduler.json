@@ -4,10 +4,10 @@
   "title": "Task Scheduler",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/task-scheduler/",
-  "prompt": "`tasks` are labeled A–Z; identical tasks must be separated by at least `n` intervals of cooldown (during which the CPU can run a different task or idle). Return the minimum number of intervals to finish all tasks.\n\n**Example**: `tasks = ['A','A','A','B','B','B']`, `n = 2` → `8` (e.g. `A B _ A B _ A B`).\n\nThe most frequent task dictates the schedule's skeleton; a direct formula counts the forced idle slots.",
+  "prompt": "`tasks` are labeled `A`–`Z`. Two identical tasks must be separated by at least `n` time units. During those units the CPU can run a different task or sit idle. Each task takes one unit. Return the minimum number of units needed to finish all tasks.\n\n**Example**: `tasks = ['A','A','A','B','B','B']`, `n = 2` → `8` (e.g. `A B idle A B idle A B`).\n\n**Constraints**: 1 ≤ tasks ≤ 10⁴, 0 ≤ n ≤ 100.",
   "method": {
     "name": "leastInterval",
-    "params": [ { "name": "tasks", "type": "char[]" }, { "name": "n", "type": "int" } ],
+    "params": [{ "name": "tasks", "type": "char[]" }, { "name": "n", "type": "int" }],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int leastInterval(char[] tasks, int n) {\n\n    }\n}\n",
@@ -19,12 +19,12 @@
     { "args": ["A", 5], "expected": 1, "hidden": true }
   ],
   "hints": [
-    "Count frequencies; let `maxCount` be the highest and `maxFreqTasks` how many tasks share it.",
-    "The busiest task lays out `(maxCount - 1)` gaps of length `n`; other max-frequency tasks fill the last column.",
-    "Answer = max(total tasks, `(maxCount - 1) * (n + 1) + maxFreqTasks`)."
+    "Which task forces the CPU to sit idle? Think about the most frequent task and how far apart its copies must be.",
+    "Greedy: at each unit, run the available task with the most copies left (a max-heap), then park it in a cooldown queue until it's allowed again. Or count directly: the most frequent task creates `maxCount - 1` blocks of length `n + 1`.",
+    "Formula: `max(tasks.length, (maxCount - 1) * (n + 1) + tiedCount)`, where `tiedCount` is the number of tasks that appear `maxCount` times."
   ],
   "solution": {
     "code": "class Solution {\n    public int leastInterval(char[] tasks, int n) {\n        int[] counts = new int[26];\n        for (char t : tasks) counts[t - 'A']++;\n        int maxCount = 0, maxFreqTasks = 0;\n        for (int c : counts) {\n            if (c > maxCount) { maxCount = c; maxFreqTasks = 1; }\n            else if (c == maxCount) maxFreqTasks++;\n        }\n        int frame = (maxCount - 1) * (n + 1) + maxFreqTasks;\n        return Math.max(tasks.length, frame);\n    }\n}",
-    "explanation": "Imagine the busiest task pinned every (n+1) slots: that builds a frame of `(maxCount-1)*(n+1)` plus the final row of the tasks tied for most-frequent. If there are enough OTHER tasks to fill every idle gap, no idling is needed — hence the `max` with the raw task count."
+    "explanation": "Place the most frequent task every `n + 1` slots. That creates `(maxCount - 1)` full blocks, plus a last partial block holding the tasks tied for most frequent. Other tasks fill the idle gaps, and if there are more tasks than gaps, no idle time is needed at all, hence the `max` with `tasks.length`. O(n) time, O(1) space. A max-heap plus cooldown-queue simulation gives the same answer in O(total · log 26)."
   }
 }

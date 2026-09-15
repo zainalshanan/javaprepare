@@ -6,9 +6,15 @@
     "prompt": "Complete the declaration and the size check.",
     "code": "List<Integer> list = new {{1}}<>();\nlist.{{2}}(42);                    // append\nint n = list.{{3}}();              // how many elements",
     "blanks": {
-      "1": ["ArrayList"],
-      "2": ["add"],
-      "3": ["size"]
+      "1": [
+        "ArrayList"
+      ],
+      "2": [
+        "add"
+      ],
+      "3": [
+        "size"
+      ]
     },
     "explanation": "Declare as the interface `List`, construct the concrete `ArrayList` — standard Java style. Collections use `.size()`, arrays use `.length`, strings use `.length()`."
   },
@@ -41,26 +47,107 @@
     "explanation": "Lists are references. Adding `path` directly stores a pointer to the still-changing list. `new ArrayList<>(path)` freezes the current contents."
   },
   {
+    "id": "al-mcq-aslist",
+    "type": "mcq",
+    "title": "Fixed-size lists",
+    "prompt": "`List<Integer> list = Arrays.asList(3, 1, 2);` then `list.add(4);` — what happens?",
+    "options": [
+      "`UnsupportedOperationException` — `Arrays.asList` returns a fixed-size list",
+      "list becomes `[3, 1, 2, 4]`",
+      "Compile error",
+      "The 4 replaces the last element"
+    ],
+    "answer": 0,
+    "explanation": "`Arrays.asList` wraps an array, so its size can't change: `set` works but `add`/`remove` throw at runtime. `List.of` is fully immutable (even `set` throws). Wrap either in `new ArrayList<>(...)` to get a growable list."
+  },
+  {
+    "id": "al-fill-remove",
+    "type": "fill-blank",
+    "title": "Remove while iterating",
+    "prompt": "Two safe ways to delete every negative number from `list`.",
+    "drill": true,
+    "code": "Iterator<Integer> it = list.{{1}}();\nwhile (it.hasNext()) {\n    if (it.next() < 0) it.{{2}}();\n}\n\n// or, in one line:\nlist.{{3}}(x -> x < 0);",
+    "blanks": {
+      "1": [
+        "iterator"
+      ],
+      "2": [
+        "remove"
+      ],
+      "3": [
+        "removeIf"
+      ]
+    },
+    "explanation": "`it.remove()` deletes the element `next()` just returned without confusing the iterator. `removeIf` takes a Predicate lambda and does the same loop for you. Calling `list.remove` inside a for-each throws `ConcurrentModificationException`."
+  },
+  {
     "id": "al-evens",
     "type": "code-method",
     "title": "Collect the evens",
     "prompt": "Return a `List<Integer>` of the even values of `nums`, in their original order.",
     "method": {
       "name": "evens",
-      "params": [ { "name": "nums", "type": "int[]" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
       "returns": "List<Integer>"
     },
     "starter": "class Solution {\n    public List<Integer> evens(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 3, 4, 5, 6]], "expected": [2, 4, 6] },
-      { "args": [[1, 3, 5]], "expected": [], "note": "no evens → empty list, not null" },
-      { "args": [[0, -2, 7]], "expected": [0, -2], "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          2,
+          4,
+          6
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            5
+          ]
+        ],
+        "expected": [],
+        "note": "no evens → empty list, not null"
+      },
+      {
+        "args": [
+          [
+            0,
+            -2,
+            7
+          ]
+        ],
+        "expected": [
+          0,
+          -2
+        ],
+        "hidden": true
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> evens(int[] nums) {\n        List<Integer> res = new ArrayList<>();\n        for (int x : nums) {\n            if (x % 2 == 0) res.add(x);\n        }\n        return res;\n    }\n}",
       "explanation": "Create, filter-append, return. Returning an empty list (never null) is the expected convention."
     },
-    "hints": ["Declare the result list first, `add` inside the loop, return it after."]
+    "hints": [
+      "Start with an empty result list before the loop.",
+      "Inside the loop, `add` the value when `x % 2 == 0`; return the list after the loop."
+    ]
   },
   {
     "id": "al-drill-build",
@@ -70,19 +157,159 @@
     "drill": true,
     "method": {
       "name": "pairs",
-      "params": [ { "name": "nums", "type": "int[]" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
       "returns": "List<List<Integer>>"
     },
     "starter": "class Solution {\n    public List<List<Integer>> pairs(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 3, 4]], "expected": [[1, 2], [3, 4]] },
-      { "args": [[]], "expected": [] },
-      { "args": [[5, 6]], "expected": [[5, 6]], "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": []
+      },
+      {
+        "args": [
+          [
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          [
+            5,
+            6
+          ]
+        ],
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> pairs(int[] nums) {\n        List<List<Integer>> res = new ArrayList<>();\n        for (int i = 0; i < nums.length; i += 2) {\n            List<Integer> pair = new ArrayList<>();\n            pair.add(nums[i]);\n            pair.add(nums[i + 1]);\n            res.add(pair);\n        }\n        return res;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> pairs(int[] nums) {\n        List<List<Integer>> res = new ArrayList<>();\n        for (int i = 0; i < nums.length; i += 2) {\n            List<Integer> pair = new ArrayList<>();\n            pair.add(nums[i]);\n            pair.add(nums[i + 1]);\n            res.add(pair);\n        }\n        return res;\n    }\n}",
+      "explanation": "Stepping by 2 lands `i` on the first element of each pair. A fresh inner list per iteration matters: reusing one list would make every entry of `res` the same object. O(n)."
     },
-    "hints": ["Step the loop by 2.", "Build each inner list fresh inside the loop, then add it to the outer."]
+    "hints": [
+      "Step the loop by 2.",
+      "Build each inner list fresh inside the loop, then add it to the outer."
+    ]
+  },
+  {
+    "id": "al-code-strip-reverse",
+    "type": "code-method",
+    "title": "Strip and reverse",
+    "prompt": "Modify `list` in place: remove every negative value, then reverse what's left. Return the same list.\n\nUse `removeIf` and `Collections.reverse`.",
+    "drill": true,
+    "method": {
+      "name": "stripAndReverse",
+      "params": [
+        {
+          "name": "list",
+          "type": "List<Integer>"
+        }
+      ],
+      "returns": "List<Integer>"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> stripAndReverse(List<Integer> list) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            3,
+            -1,
+            2,
+            -5,
+            7
+          ]
+        ],
+        "expected": [
+          7,
+          2,
+          3
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          3,
+          2,
+          1
+        ],
+        "note": "nothing to remove"
+      },
+      {
+        "args": [
+          [
+            -4,
+            -2
+          ]
+        ],
+        "expected": [],
+        "hidden": true,
+        "note": "everything removed"
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            0,
+            -1,
+            0
+          ]
+        ],
+        "expected": [
+          0,
+          0
+        ],
+        "hidden": true,
+        "note": "zero is not negative"
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> stripAndReverse(List<Integer> list) {\n        list.removeIf(x -> x < 0);\n        Collections.reverse(list);\n        return list;\n    }\n}",
+      "explanation": "`removeIf` walks the list once and drops every element matching the predicate, safely. `Collections.reverse` swaps from both ends toward the middle. Both are O(n) and in place."
+    },
+    "hints": [
+      "Two library calls do all the work: one filters, one reverses.",
+      "`list.removeIf(x -> x < 0);` removes the negatives safely.",
+      "Then `Collections.reverse(list);` and return `list`."
+    ]
   },
   {
     "id": "al-ref-build-fill",
@@ -91,7 +318,20 @@
     "prompt": "Fill in the create, append, read, and size operations.",
     "drill": true,
     "code": "List<Integer> list = new {{1}}<>();\nlist.{{2}}(5);            // append\nint x = list.{{3}}(0);    // read index 0\nint n = list.{{4}}();     // element count",
-    "blanks": { "1": ["ArrayList"], "2": ["add"], "3": ["get"], "4": ["size"] },
+    "blanks": {
+      "1": [
+        "ArrayList"
+      ],
+      "2": [
+        "add"
+      ],
+      "3": [
+        "get"
+      ],
+      "4": [
+        "size"
+      ]
+    },
     "explanation": "Declare as `List`, construct `ArrayList`; `add` appends, `get(i)` reads, `size()` counts (not `length`)."
   },
   {
@@ -100,17 +340,60 @@
     "title": "Drill: array to list",
     "prompt": "From memory: copy every element of `nums` into a `List<Integer>` (in order) and return it.",
     "drill": true,
-    "method": { "name": "toList", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "List<Integer>" },
+    "method": {
+      "name": "toList",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "List<Integer>"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 3]], "expected": [1, 2, 3] },
-      { "args": [[]], "expected": [] },
-      { "args": [[-4, 4]], "expected": [-4, 4], "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": []
+      },
+      {
+        "args": [
+          [
+            -4,
+            4
+          ]
+        ],
+        "expected": [
+          -4,
+          4
+        ],
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n        List<Integer> list = new ArrayList<>();\n        for (int x : nums) list.add(x);\n        return list;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n        List<Integer> list = new ArrayList<>();\n        for (int x : nums) list.add(x);\n        return list;\n    }\n}",
+      "explanation": "An enhanced for visits every element in order and `add` appends, so the list mirrors the array. Each `int` is autoboxed. O(n)."
     },
-    "hints": ["Create the list, `add` each element in an enhanced for, return it."]
+    "hints": [
+      "You need an empty list first, then one append per element.",
+      "`for (int x : nums) list.add(x);` — autoboxing turns each `int` into an `Integer`."
+    ]
   },
   {
     "id": "al-ref-modify-fill",
@@ -119,7 +402,20 @@
     "prompt": "Fill in the overwrite, remove-last, contains, and empty-check operations.",
     "drill": true,
     "code": "list.{{1}}(0, 9);                 // overwrite index 0 with 9\nlist.{{2}}(list.size() - 1);      // remove the last element\nboolean has = list.{{3}}(9);      // is 9 present?\nboolean empty = list.{{4}}();     // any elements left?",
-    "blanks": { "1": ["set"], "2": ["remove"], "3": ["contains"], "4": ["isEmpty"] },
+    "blanks": {
+      "1": [
+        "set"
+      ],
+      "2": [
+        "remove"
+      ],
+      "3": [
+        "contains"
+      ],
+      "4": [
+        "isEmpty"
+      ]
+    },
     "explanation": "`set(i, v)` overwrites, `remove(index)` deletes by position, `contains` scans (O(n)), `isEmpty` checks for zero elements."
   },
   {
@@ -128,16 +424,57 @@
     "title": "Drill: overwrite the head",
     "prompt": "From memory: if `list` is non-empty, overwrite its first element with `99` using `set`; return the list either way.",
     "drill": true,
-    "method": { "name": "bumpHead", "params": [ { "name": "list", "type": "List<Integer>" } ], "returns": "List<Integer>" },
+    "method": {
+      "name": "bumpHead",
+      "params": [
+        {
+          "name": "list",
+          "type": "List<Integer>"
+        }
+      ],
+      "returns": "List<Integer>"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> bumpHead(List<Integer> list) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 3]], "expected": [99, 2, 3] },
-      { "args": [[]], "expected": [] },
-      { "args": [[7]], "expected": [99], "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          99,
+          2,
+          3
+        ]
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": []
+      },
+      {
+        "args": [
+          [
+            7
+          ]
+        ],
+        "expected": [
+          99
+        ],
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> bumpHead(List<Integer> list) {\n        if (!list.isEmpty()) list.set(0, 99);\n        return list;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> bumpHead(List<Integer> list) {\n        if (!list.isEmpty()) list.set(0, 99);\n        return list;\n    }\n}",
+      "explanation": "`set(i, v)` overwrites in place in O(1), but throws `IndexOutOfBoundsException` on an empty list, hence the `isEmpty` guard."
     },
-    "hints": ["Guard with `!list.isEmpty()`, then `list.set(0, 99)`."]
+    "hints": [
+      "An empty list has no index 0. What must you check first?",
+      "Guard with `!list.isEmpty()`, then `list.set(0, 99)`."
+    ]
   }
 ]

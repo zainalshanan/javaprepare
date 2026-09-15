@@ -4,10 +4,10 @@
   "title": "Binary Tree Right Side View",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/binary-tree-right-side-view/",
-  "prompt": "Return the values visible from the right side of the tree, top to bottom — i.e. the last node of each level.\n\n**Example**: `[1,2,3,null,5,null,4]` → `[1,3,4]`.\n\nLevel-order BFS: within each level, grab the value of the final node.",
+  "prompt": "Imagine standing to the right of a binary tree. Return the values of the nodes you can see, ordered from top to bottom.\n\n**Example**: `[1,2,3,null,5,null,4]` → `[1,3,4]`.\n\n**Constraints**: 0 ≤ nodes ≤ 100.",
   "method": {
     "name": "rightSideView",
-    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }],
     "returns": "List<Integer>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> rightSideView(TreeNode root) {\n\n    }\n}\n",
@@ -19,12 +19,12 @@
     { "args": [[1, 2]], "expected": [1, 2], "hidden": true }
   ],
   "hints": [
-    "Standard BFS with the frozen-`size` trick per level.",
-    "The right-side value is the node polled when `i == size - 1`.",
-    "Still offer both children left-then-right so the last one polled is genuinely the rightmost."
+    "At each depth, exactly one node is visible from the right. Which one is it?",
+    "Go level by level (BFS with a frozen `size`). The visible node is the last one on each level. It isn't necessarily a right child.",
+    "Inside the level loop: `if (i == size - 1) res.add(node.val);`. Still offer both children, left before right, so the last node polled really is the rightmost."
   ],
   "solution": {
-    "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> rightSideView(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size();\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                if (i == size - 1) res.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n        }\n        return res;\n    }\n}",
-    "explanation": "O(n). Since children are enqueued left→right, the last node dequeued in each level is the rightmost visible one. The `[1,2,3,4]` test proves the answer isn't always the right child — the deepest level's only node comes from the left."
+    "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> rightSideView(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        if (root == null) return res;\n        Deque<TreeNode> q = new ArrayDeque<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size();\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                if (i == size - 1) res.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n        }\n        return res;\n    }\n}",
+    "explanation": "Children are offered left to right, so the last node polled on each level is the rightmost node at that depth, the one you see from the right. The `[1,2,3,4]` test shows that node can come from the left subtree. A DFS alternative visits right children first and records a node when `depth == res.size()`. O(n) time, O(w) queue space."
   }
 }

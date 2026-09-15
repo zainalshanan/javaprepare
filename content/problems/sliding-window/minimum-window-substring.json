@@ -4,7 +4,7 @@
   "title": "Minimum Window Substring",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/minimum-window-substring/",
-  "prompt": "Given strings `s` and `t`, return the shortest substring of `s` that contains **all** of `t`'s characters (including multiplicities). Return `\"\"` if none exists.\n\n**Example**: `s = \"ADOBECODEBANC\"`, `t = \"ABC\"` → `\"BANC\"`.\n\nVariable-size window: expand right until valid, then shrink left as far as still-valid, recording the smallest.",
+  "prompt": "Given strings `s` and `t`, return the shortest substring of `s` that contains **all** of `t`'s characters (including multiplicities). Return `\"\"` if none exists.\n\n**Example**: `s = \"ADOBECODEBANC\"`, `t = \"ABC\"` → `\"BANC\"`. `s = \"a\"`, `t = \"aa\"` → `\"\"`.\n\n**Constraints**: `1 <= s.length, t.length <= 10^5`; English letters. The answer is unique when it exists. Aim for O(|s| + |t|).",
   "method": {
     "name": "minWindow",
     "params": [ { "name": "s", "type": "String" }, { "name": "t", "type": "String" } ],
@@ -16,15 +16,16 @@
     { "args": ["a", "a"], "expected": "a" },
     { "args": ["a", "aa"], "expected": "", "note": "not enough a's" },
     { "args": ["aa", "aa"], "expected": "aa", "hidden": true, "note": "multiplicity matters" },
-    { "args": ["cabwefgewcwaefgcf", "cae"], "expected": "cwae", "hidden": true }
+    { "args": ["cabwefgewcwaefgcf", "cae"], "expected": "cwae", "hidden": true },
+    { "args": ["a", "b"], "expected": "", "hidden": true, "note": "character never appears" }
   ],
   "hints": [
-    "Count what t needs in `int[128]`. Track `required` = number of characters still missing from the window.",
-    "Expand r: if you add a char the window still needed (`need[c]-- > 0`), decrement `required`.",
-    "When required hits 0 the window is valid — record it, then shrink from the left, incrementing `required` when you remove a character the window actually needed."
+    "Once some substring `s[l..r]` contains all of t, extending r further only makes it longer. What's the only way left to find something shorter that ends at r?",
+    "Expand the right edge until the window covers t, then shrink the left edge as long as it still covers t, recording each valid window. Repeat. To check coverage cheaply, keep per-character counts of what t still needs plus one integer: how many needed characters are still missing.",
+    "With `need[]` from t and `required = t.length()`: on add, `if (need[s.charAt(r)]-- > 0) required--;`; on remove, `if (need[s.charAt(l)]++ == 0) required++;`. The window is valid exactly while `required == 0`."
   ],
   "solution": {
     "code": "class Solution {\n    public String minWindow(String s, String t) {\n        if (t.isEmpty() || s.length() < t.length()) return \"\";\n        int[] need = new int[128];\n        for (char c : t.toCharArray()) need[c]++;\n        int required = t.length();\n        int l = 0, bestLen = Integer.MAX_VALUE, bestL = 0;\n        for (int r = 0; r < s.length(); r++) {\n            if (need[s.charAt(r)]-- > 0) required--;\n            while (required == 0) {\n                if (r - l + 1 < bestLen) {\n                    bestLen = r - l + 1;\n                    bestL = l;\n                }\n                if (need[s.charAt(l)]++ == 0) required++;\n                l++;\n            }\n        }\n        return bestLen == Integer.MAX_VALUE ? \"\" : s.substring(bestL, bestL + bestLen);\n    }\n}",
-    "explanation": "O(|s| + |t|). `need[c]` goes negative for characters the window has in surplus, so the `> 0` / `== 0` guards distinguish 'this char was actually needed' from 'this char was extra'. `required` is a single integer standing in for 'is the window valid yet', avoiding a full map comparison each step."
+    "explanation": "Insight: for each right edge, the best window is the one that starts as far right as possible while still covering t. Shrinking while `required == 0` finds exactly that start, so the minimum is always recorded. `need[c]` goes negative when the window has more of c than t needs, so the `> 0` / `== 0` checks tell a needed character apart from an extra one. `required` replaces a full count comparison at each step. Time O(|s| + |t|), space O(1) (128 counts)."
   }
 }

@@ -1,23 +1,9 @@
 [
   {
-    "id": "pat-gr-mcq-visited",
-    "type": "mcq",
-    "title": "Visited timing",
-    "prompt": "In BFS, you should mark a node visited when you OFFER it to the queue, not when you POLL it. Why?",
-    "options": [
-      "Between offer and poll, other nodes could offer it again — the same node enters the queue multiple times",
-      "poll doesn't allow marking",
-      "It changes the traversal order to DFS",
-      "No reason; both are identical"
-    ],
-    "answer": 0,
-    "explanation": "Mark-on-poll still terminates but can blow the queue up exponentially in dense graphs. Mark-on-offer guarantees each node is queued once."
-  },
-  {
     "id": "pat-gr-drill-adj",
     "type": "code-method",
     "title": "Drill: build the adjacency list",
-    "prompt": "From memory: given `n` nodes (0..n-1) and undirected `edges`, return the neighbor count (degree) of each node as an array. Build the adjacency list with computeIfAbsent, then read off sizes. (Yes, you could just count — build the map anyway; that's the drill.)",
+    "prompt": "From memory: given `n` nodes (0..n-1) and undirected `edges`, return each node's degree (neighbor count). Build a real adjacency list first, either `List<List<Integer>>` or a `computeIfAbsent` map, then read off the sizes. (You could just count, but building the list is the point of the drill.)",
     "drill": true,
     "method": {
       "name": "degrees",
@@ -90,19 +76,53 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[] degrees(int n, int[][] edges) {\n        Map<Integer, List<Integer>> adj = new HashMap<>();\n        for (int[] e : edges) {\n            adj.computeIfAbsent(e[0], k -> new ArrayList<>()).add(e[1]);\n            adj.computeIfAbsent(e[1], k -> new ArrayList<>()).add(e[0]);\n        }\n        int[] res = new int[n];\n        for (int i = 0; i < n; i++) {\n            res[i] = adj.getOrDefault(i, new ArrayList<>()).size();\n        }\n        return res;\n    }\n}",
-      "explanation": "Isolated nodes never enter the map — that's why the read side needs getOrDefault. Both lines of the build are pure muscle memory."
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] degrees(int n, int[][] edges) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] e : edges) {\n            adj.get(e[0]).add(e[1]);\n            adj.get(e[1]).add(e[0]);\n        }\n        int[] res = new int[n];\n        for (int i = 0; i < n; i++) res[i] = adj.get(i).size();\n        return res;\n    }\n}",
+      "explanation": "Pre-creating all n lists means isolated nodes need no special case. With a map you'd read through `getOrDefault` instead. Undirected edges go in both lists. O(n + E) time and space."
     },
     "hints": [
-      "Undirected: add the edge in BOTH directions.",
-      "`adj.computeIfAbsent(u, k -> new ArrayList<>()).add(v);`"
+      "Undirected means each edge is visible from both endpoints. How many list entries does one edge create?",
+      "Make n empty lists up front so node 3 (isolated) still has one, then add each edge to both endpoints.",
+      "`adj.get(e[0]).add(e[1]); adj.get(e[1]).add(e[0]);`"
     ]
+  },
+  {
+    "id": "pat-gr-fill-griddfs",
+    "type": "fill-blank",
+    "title": "Recall: grid DFS",
+    "prompt": "Fill in the flood-fill template: bounds check, mark visited, recurse to the four neighbors.",
+    "drill": true,
+    "code": "int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n\nvoid dfs(char[][] grid, int r, int c) {\n    if (r < 0 || r >= {{1}} || c < 0 || c >= {{2}}\n            || grid[r][c] != '1') {\n        return;\n    }\n    grid[r][c] = {{3}};          // mark visited\n    for (int[] d : dirs) {\n        dfs(grid, {{4}}, {{5}});\n    }\n}",
+    "blanks": {
+      "1": [
+        "grid.length"
+      ],
+      "2": [
+        "grid[0].length",
+        "grid[r].length"
+      ],
+      "3": [
+        "'0'",
+        "'#'",
+        "'2'",
+        "'X'",
+        "'v'"
+      ],
+      "4": [
+        "r + d[0]",
+        "d[0] + r"
+      ],
+      "5": [
+        "c + d[1]",
+        "d[1] + c"
+      ]
+    },
+    "explanation": "Rows come from `grid.length` and columns from `grid[0].length`. Writing any non-`'1'` character marks the cell visited, so the guard stops there next time. Neighbors are `(r + d[0], c + d[1])`. Always check first and mark before recursing."
   },
   {
     "id": "pat-gr-drill-flood",
     "type": "code-method",
     "title": "Drill: count regions (grid DFS)",
-    "prompt": "From memory (grid flood-fill): count the groups of connected `1`s in `grid` (4-directional). Scan every cell; each unvisited 1 starts a region you sink with DFS.",
+    "prompt": "From memory (grid flood fill): count the groups of connected `1`s in `grid` (4-directional).",
     "drill": true,
     "method": {
       "name": "countRegions",
@@ -188,10 +208,396 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int countRegions(int[][] grid) {\n        int count = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                if (grid[r][c] == 1) {\n                    count++;\n                    dfs(grid, r, c);\n                }\n            }\n        }\n        return count;\n    }\n\n    private void dfs(int[][] g, int r, int c) {\n        if (r < 0 || r >= g.length || c < 0 || c >= g[0].length || g[r][c] != 1) return;\n        g[r][c] = 0;\n        dfs(g, r + 1, c);\n        dfs(g, r - 1, c);\n        dfs(g, r, c + 1);\n        dfs(g, r, c - 1);\n    }\n}"
+      "code": "class Solution {\n    public int countRegions(int[][] grid) {\n        int count = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                if (grid[r][c] == 1) {\n                    count++;\n                    dfs(grid, r, c);\n                }\n            }\n        }\n        return count;\n    }\n\n    private void dfs(int[][] g, int r, int c) {\n        if (r < 0 || r >= g.length || c < 0 || c >= g[0].length || g[r][c] != 1) return;\n        g[r][c] = 0;\n        dfs(g, r + 1, c);\n        dfs(g, r - 1, c);\n        dfs(g, r, c + 1);\n        dfs(g, r, c - 1);\n    }\n}",
+      "explanation": "Each 1 found by the scan starts a new region. The DFS turns the whole region to 0 so later scanning can't count it again, which means the grid itself is the visited set. Every cell is processed a constant number of times: O(rows·cols) time, O(rows·cols) worst-case recursion depth."
     },
     "hints": [
-      "Each scan-found 1 is a new region; DFS sinks the whole region to 0 so it isn't recounted."
+      "When the scan finds a 1, how do you make sure no other cell of that same group gets counted later?",
+      "Scan every cell. On a 1, add to the count and DFS from it, setting each visited land cell to 0.",
+      "DFS stops first: `if (r < 0 || r >= g.length || c < 0 || c >= g[0].length || g[r][c] != 1) return;`"
     ]
+  },
+  {
+    "id": "pat-gr-drill-iterdfs",
+    "type": "code-method",
+    "title": "Drill: iterative DFS with a stack",
+    "prompt": "From memory: in an undirected graph with `n` nodes and `edges`, return how many nodes are reachable from `start` (including `start`). Use an explicit `ArrayDeque` stack, not recursion.",
+    "drill": true,
+    "method": {
+      "name": "countReachable",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "edges",
+          "type": "int[][]"
+        },
+        {
+          "name": "start",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int countReachable(int n, int[][] edges, int start) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          5,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ],
+          0
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          5,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ],
+          3
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          1,
+          [],
+          0
+        ],
+        "expected": 1,
+        "note": "single node, no edges"
+      },
+      {
+        "args": [
+          4,
+          [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              3
+            ]
+          ],
+          3
+        ],
+        "expected": 4,
+        "hidden": true,
+        "note": "cycle"
+      },
+      {
+        "args": [
+          3,
+          [
+            [
+              0,
+              1
+            ]
+          ],
+          2
+        ],
+        "expected": 1,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int countReachable(int n, int[][] edges, int start) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] e : edges) {\n            adj.get(e[0]).add(e[1]);\n            adj.get(e[1]).add(e[0]);\n        }\n        boolean[] seen = new boolean[n];\n        Deque<Integer> stack = new ArrayDeque<>();\n        stack.push(start);\n        seen[start] = true;\n        int count = 0;\n        while (!stack.isEmpty()) {\n            int node = stack.pop();\n            count++;\n            for (int next : adj.get(node)) {\n                if (!seen[next]) {\n                    seen[next] = true;\n                    stack.push(next);\n                }\n            }\n        }\n        return count;\n    }\n}",
+      "explanation": "Marking when you push guarantees each node enters the stack once, so the pop count equals the number of reachable nodes. Cycles can't loop because `seen` blocks re-entry. O(n + E) time and space, with no recursion depth limit."
+    },
+    "hints": [
+      "Recursion uses the call stack for you. What data structure would you have to manage yourself to do the same thing?",
+      "Build the adjacency list, push `start`, then loop: pop a node, count it, push its unseen neighbors.",
+      "Mark on push: `if (!seen[next]) { seen[next] = true; stack.push(next); }`"
+    ]
+  },
+  {
+    "id": "pat-gr-mcq-visited",
+    "type": "mcq",
+    "title": "Visited timing",
+    "prompt": "In BFS, you should mark a node visited when you OFFER it to the queue, not when you POLL it. Why?",
+    "options": [
+      "Between offer and poll, other nodes could offer it again — the same node enters the queue multiple times",
+      "poll doesn't allow marking",
+      "It changes the traversal order to DFS",
+      "No reason; both are identical"
+    ],
+    "answer": 0,
+    "explanation": "If you mark on poll, a node sitting in the queue still looks unvisited, so every neighbor that sees it adds another copy. It still terminates, but the queue can grow far past V. Marking on offer means each node is enqueued exactly once, which keeps BFS at O(V + E)."
+  },
+  {
+    "id": "pat-gr-fill-bfs",
+    "type": "fill-blank",
+    "title": "Recall: layered BFS",
+    "prompt": "Fill in the BFS template that returns the fewest edges from `start` to `target`.",
+    "drill": true,
+    "code": "Deque<Integer> q = new ArrayDeque<>();\nboolean[] seen = new boolean[n];\nq.offer(start);\nseen[start] = {{1}};\nint steps = 0;\nwhile (!q.isEmpty()) {\n    int size = q.{{2}}();\n    for (int i = 0; i < size; i++) {\n        int node = q.{{3}}();\n        if (node == target) return steps;\n        for (int next : adj.get(node)) {\n            if (!seen[next]) {\n                seen[next] = true;\n                q.{{4}}(next);\n            }\n        }\n    }\n    {{5}};\n}\nreturn -1;",
+    "blanks": {
+      "1": [
+        "true"
+      ],
+      "2": [
+        "size"
+      ],
+      "3": [
+        "poll",
+        "pollFirst",
+        "remove",
+        "removeFirst"
+      ],
+      "4": [
+        "offer",
+        "add",
+        "offerLast",
+        "addLast"
+      ],
+      "5": [
+        "steps++",
+        "++steps",
+        "steps += 1",
+        "steps = steps + 1"
+      ]
+    },
+    "explanation": "Mark the start as seen, then freeze `q.size()` so the inner loop handles exactly one layer. Take from the front with `poll` and add to the back with `offer`. Add one to `steps` only after a whole layer is done, so `steps` equals the distance of the nodes being polled."
+  },
+  {
+    "id": "pat-gr-drill-nearest",
+    "type": "code-method",
+    "title": "Drill: distance to nearest zero (multi-source BFS)",
+    "prompt": "From memory: `grid` holds 0s and 1s (at least one 0). Return a same-shaped grid where each cell holds its distance (4-directional steps) to the nearest 0.\n\n```\n0 0 0        0 0 0\n0 1 0   →    0 1 0\n1 1 1        1 2 1\n```",
+    "drill": true,
+    "method": {
+      "name": "nearestZero",
+      "params": [
+        {
+          "name": "grid",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "int[][]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[][] nearestZero(int[][] grid) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              1,
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            2,
+            1
+          ]
+        ]
+      },
+      {
+        "args": [
+          [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              0,
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            0,
+            1,
+            2
+          ]
+        ]
+      },
+      {
+        "args": [
+          [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": [
+          [
+            0
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
+              1
+            ],
+            [
+              1,
+              1,
+              0
+            ]
+          ]
+        ],
+        "expected": [
+          [
+            4,
+            3,
+            2
+          ],
+          [
+            3,
+            2,
+            1
+          ],
+          [
+            2,
+            1,
+            0
+          ]
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] nearestZero(int[][] grid) {\n        int rows = grid.length, cols = grid[0].length;\n        int[][] dist = new int[rows][cols];\n        Deque<int[]> q = new ArrayDeque<>();\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (grid[r][c] == 0) q.offer(new int[]{r, c});\n                else dist[r][c] = -1;          // unvisited\n            }\n        }\n        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n        while (!q.isEmpty()) {\n            int[] cell = q.poll();\n            for (int[] d : dirs) {\n                int nr = cell[0] + d[0], nc = cell[1] + d[1];\n                if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && dist[nr][nc] == -1) {\n                    dist[nr][nc] = dist[cell[0]][cell[1]] + 1;\n                    q.offer(new int[]{nr, nc});\n                }\n            }\n        }\n        return dist;\n    }\n}",
+      "explanation": "Every 0 goes into the queue at distance 0 before the loop starts, so the waves from all zeros grow together. The first wave to reach a cell comes from its nearest zero, and that distance never needs to change. One pass: O(rows·cols) time and space."
+    },
+    "hints": [
+      "Running a BFS from each 1 repeats a lot of work. Which cells could all start the search at once?",
+      "Put every 0 in the queue first (distance 0) and mark every 1 as unvisited (-1). Then run an ordinary BFS.",
+      "When you reach an unvisited neighbor: `dist[nr][nc] = dist[r][c] + 1;` then offer it."
+    ]
+  },
+  {
+    "id": "pat-gr-mcq-reverse",
+    "type": "mcq",
+    "title": "Why search from the border?",
+    "prompt": "In Surrounded Regions, you flood-fill from the border `O`s first instead of testing each `O` region for \"is it enclosed?\". What does that buy you?",
+    "options": [
+      "A region is safe exactly when it touches the border, so one border-seeded flood marks every survivor in O(rows·cols). Everything left unmarked must be enclosed.",
+      "It changes the traversal from DFS to BFS, which is required for correctness",
+      "Border cells have fewer neighbors, so recursion is shallower",
+      "Nothing; testing each region separately has the same simplicity and cost"
+    ],
+    "answer": 0,
+    "explanation": "Testing a region for enclosure means exploring all of it while tracking whether it ever hit an edge, and you might re-explore regions. The reversed question ('what can reach the border?') is a single flood from the border that visits each cell at most once. Pacific Atlantic uses the same idea: search uphill from the oceans instead of downhill from every cell."
   }
 ]

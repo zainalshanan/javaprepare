@@ -4,10 +4,10 @@
   "title": "Same Tree",
   "difficulty": "Easy",
   "leetcodeUrl": "https://leetcode.com/problems/same-tree/",
-  "prompt": "Return whether two binary trees are identical in both structure and values.\n\n**Example**: `[1,2,3]` and `[1,2,3]` → `true`; `[1,2]` and `[1,null,2]` → `false`.\n\nParallel recursion: compare the two roots, then recurse on left-pair and right-pair together.",
+  "prompt": "Return whether two binary trees are identical in both structure and values.\n\n**Example**: `[1,2,3]` and `[1,2,3]` → `true`; `[1,2]` and `[1,null,2]` → `false`.\n\nWalk both trees at the same time.",
   "method": {
     "name": "isSameTree",
-    "params": [ { "name": "p", "type": "TreeNode" }, { "name": "q", "type": "TreeNode" } ],
+    "params": [{ "name": "p", "type": "TreeNode" }, { "name": "q", "type": "TreeNode" }],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean isSameTree(TreeNode p, TreeNode q) {\n\n    }\n}\n",
@@ -19,11 +19,12 @@
     { "args": [[1], []], "expected": false, "hidden": true }
   ],
   "hints": [
-    "Both null → equal. Exactly one null, or differing values → not equal.",
-    "Otherwise recurse: left subtrees must match AND right subtrees must match."
+    "Two trees are the same when their roots match, their left subtrees are the same, and their right subtrees are the same. In what ways can two roots fail to match?",
+    "Handle nulls first: both null → `true`; exactly one null → `false`. Then compare `p.val` with `q.val`.",
+    "Recurse on both pairs: `return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);`"
   ],
   "solution": {
     "code": "class Solution {\n    public boolean isSameTree(TreeNode p, TreeNode q) {\n        if (p == null && q == null) return true;\n        if (p == null || q == null || p.val != q.val) return false;\n        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);\n    }\n}",
-    "explanation": "O(n), walking both trees in lockstep. The three-line base case covers all mismatches (structure via the null checks, values via `p.val != q.val`); the recursion just demands both sides agree. This `same` check is the building block of Subtree of Another Tree."
+    "explanation": "The base cases catch every possible mismatch: the null checks catch a difference in shape, and `p.val != q.val` catches a difference in value. The recursion then requires both subtree pairs to agree. O(n) time for the smaller tree, O(h) stack. This helper is reused directly in Subtree of Another Tree."
   }
 }

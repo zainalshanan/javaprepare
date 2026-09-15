@@ -1,4 +1,4 @@
-Streams give you concise one-liners for aggregating and converting collections. They're **optional** — every stream has a plain-loop equivalent, and in an interview a clear loop is never wrong — but the conversions especially save real keystrokes on LeetCode.
+Streams give you concise one-liners for aggregating and converting collections. They're **optional** — every stream has a plain-loop equivalent, and in an interview a clear loop is never wrong — but the conversions especially save real keystrokes on LeetCode. Every step takes a lambda or method reference, exactly the forms from the Lambdas lesson.
 
 ## Aggregating an int[]
 
@@ -35,8 +35,15 @@ int[] arr = list.stream().mapToInt(i -> i).toArray();
 List<Integer> boxed = Arrays.stream(nums).boxed().collect(Collectors.toList());
 ```
 
-`mapToInt(i -> i)` unboxes `Integer` → `int`; `boxed()` does the reverse. `Collectors.toList()` needs `import java.util.stream.*;`.
+`mapToInt(i -> i)` unboxes `Integer` → `int` (you'll also see `mapToInt(Integer::intValue)`); `boxed()` does the reverse. `Collectors.toList()` needs `import java.util.stream.*;`.
 
 @exercise streams-fill-convert
 
 @exercise streams-code-tolist
+
+## Recap
+
+- `Arrays.stream(nums).sum()`, `.max().getAsInt()`, `.filter(x -> x > 0).count()` (a `long`).
+- `List<Integer>` → `int[]`: `list.stream().mapToInt(i -> i).toArray()`.
+- `int[]` → `List<Integer>`: `Arrays.stream(nums).boxed().collect(Collectors.toList())`.
+- Needs `import java.util.stream.*;` for `Collectors`. A plain loop is always acceptable.

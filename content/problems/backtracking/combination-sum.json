@@ -4,10 +4,10 @@
   "title": "Combination Sum",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/combination-sum/",
-  "prompt": "Given distinct positive `candidates` and a `target`, return all unique combinations that sum to target. The **same number may be reused** unlimited times.\n\n**Example**: `candidates = [2,3,6,7]`, `target = 7` → `[[2,2,3],[7]]`.\n\nBacktracking where recursing with `i` (not `i + 1`) grants reuse.",
+  "prompt": "Given **distinct** positive `candidates` and a `target`, return all unique combinations whose values sum to `target`. The **same number may be used any number of times**. Two combinations are the same if they use each number the same number of times.\n\n**Example**: `candidates = [2,3,6,7]`, `target = 7` → `[[2,2,3],[7]]`.\n\n**Constraints**: 1 ≤ candidates ≤ 30, 2 ≤ candidates[i] ≤ 40, 1 ≤ target ≤ 40.",
   "method": {
     "name": "combinationSum",
-    "params": [ { "name": "candidates", "type": "int[]" }, { "name": "target", "type": "int" } ],
+    "params": [{ "name": "candidates", "type": "int[]" }, { "name": "target", "type": "int" }],
     "returns": "List<List<Integer>>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> combinationSum(int[] candidates, int target) {\n\n    }\n}\n",
@@ -18,12 +18,12 @@
     { "args": [[7, 3, 2], 18], "expected": [[2, 2, 2, 2, 2, 2, 2, 2, 2], [2, 2, 2, 2, 2, 2, 3, 3], [2, 2, 2, 3, 3, 3, 3], [2, 2, 7, 7], [2, 3, 3, 3, 7], [3, 3, 3, 3, 3, 3], [2, 2, 2, 2, 3, 7]], "compare": "unordered-deep", "hidden": true }
   ],
   "hints": [
-    "Track the REMAINING target; base cases: 0 → record a copy, negative → dead end, return.",
-    "Loop from `start`; recurse with `i` (same index!) to allow reuse — `i + 1` would forbid it.",
-    "Keeping `start` still matters: it prevents [2,3] and [3,2] both appearing."
+    "Build a combination one number at a time while tracking how much of the target is left. How do you allow a number to be picked again, without also producing [2,3,2] alongside [2,2,3]?",
+    "Backtrack with `(start, remaining)`: record a copy when `remaining == 0`; stop when it goes negative; loop `i` from `start`.",
+    "Recurse with `i`, not `i + 1`, so `candidates[i]` can repeat: `backtrack(i, remaining - candidates[i], ...)`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> combinationSum(int[] candidates, int target) {\n        backtrack(0, target, new ArrayList<>(), candidates);\n        return res;\n    }\n\n    private void backtrack(int start, int remaining, List<Integer> path, int[] candidates) {\n        if (remaining == 0) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        if (remaining < 0) return;\n        for (int i = start; i < candidates.length; i++) {\n            path.add(candidates[i]);\n            backtrack(i, remaining - candidates[i], path, candidates);\n            path.remove(path.size() - 1);\n        }\n    }\n}",
-    "explanation": "The one-character difference from Subsets — recursing on `i` instead of `i + 1` — is exactly \"this element may be chosen again.\" `start` still imposes non-decreasing index order, which is what deduplicates permuted copies."
+    "explanation": "Recursing on `i` means \"this number may be chosen again,\" while `start` keeps choices in non-decreasing index order, so reordered duplicates never appear. Negative remainders end a branch right away. Time is exponential, roughly O(n^(target/min)) branches in the worst case; the recursion depth is at most target/min."
   }
 }

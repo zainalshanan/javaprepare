@@ -1,23 +1,9 @@
 [
   {
-    "id": "pat-dp2-mcq-offbyone",
-    "type": "mcq",
-    "title": "The +1 table",
-    "prompt": "In the (m+1) x (n+1) LCS table, why does comparing `dp[i][j]` use `s1.charAt(i - 1)`?",
-    "options": [
-      "dp[i][j] covers the first i characters — a prefix of LENGTH i — whose last character sits at index i-1",
-      "Strings are 1-indexed in Java",
-      "To skip the first character",
-      "It's a bug that happens to work"
-    ],
-    "answer": 0,
-    "explanation": "Row/column 0 represent EMPTY prefixes so bases need no special-casing; the price is the persistent i-1/j-1 shift when touching the actual strings."
-  },
-  {
     "id": "pat-dp2-drill-paths",
     "type": "code-method",
     "title": "Drill: grid path count",
-    "prompt": "From memory: count paths from the top-left to bottom-right of an m x n grid moving only right or down — but build the dp table yourself: `dp[i][j] = dp[i-1][j] + dp[i][j-1]`, first row and column all 1.",
+    "prompt": "From memory: count the paths from the top-left to the bottom-right of an `m x n` grid, moving only right or down. Build the 2-D table yourself.",
     "drill": true,
     "method": {
       "name": "countPaths",
@@ -68,10 +54,137 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int countPaths(int m, int n) {\n        int[][] dp = new int[m][n];\n        for (int i = 0; i < m; i++) dp[i][0] = 1;\n        for (int j = 0; j < n; j++) dp[0][j] = 1;\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = dp[i - 1][j] + dp[i][j - 1];\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n}",
-      "explanation": "Every cell is reached from above or from the left, so the counts add. Edge cells have exactly one approach — the base cases."
+      "explanation": "Every cell is entered from above or from the left, and those paths are all different, so the counts add. Cells in the first row or column have only one way in. O(m·n) time and space, or O(n) with a single rolling row."
     },
     "hints": [
-      "Fill the first row and first column with 1 before the double loop."
+      "To enter a cell, where must the robot have been one move earlier?",
+      "dp[i][j] = dp[i-1][j] + dp[i][j-1]. What are the values along the top row and the left column?",
+      "Set `dp[i][0] = 1` and `dp[0][j] = 1`, then fill `i` and `j` from 1."
+    ]
+  },
+  {
+    "id": "pat-dp2-drill-obstacles",
+    "type": "code-method",
+    "title": "Drill: grid paths with obstacles",
+    "prompt": "From memory: `grid[i][j] == 1` is an obstacle. Moving only right or down, count the paths from the top-left to the bottom-right that avoid obstacles. The start or end cell itself may be blocked.",
+    "drill": true,
+    "method": {
+      "name": "pathsWithObstacles",
+      "params": [
+        {
+          "name": "grid",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int pathsWithObstacles(int[][] grid) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": 0,
+        "note": "start is blocked"
+      },
+      {
+        "args": [
+          [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ]
+        ],
+        "expected": 0,
+        "hidden": true,
+        "note": "end is blocked"
+      },
+      {
+        "args": [
+          [
+            [
+              0,
+              0,
+              0,
+              0
+            ]
+          ]
+        ],
+        "expected": 1,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            [
+              0
+            ],
+            [
+              1
+            ],
+            [
+              0
+            ]
+          ]
+        ],
+        "expected": 0,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int pathsWithObstacles(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        int[] dp = new int[n];                   // dp[j] = paths into (current row, j)\n        dp[0] = grid[0][0] == 1 ? 0 : 1;\n        for (int i = 0; i < m; i++) {\n            for (int j = 0; j < n; j++) {\n                if (grid[i][j] == 1) dp[j] = 0;          // blocked: no paths in\n                else if (j > 0) dp[j] += dp[j - 1];      // above (old dp[j]) + left\n            }\n        }\n        return dp[n - 1];\n    }\n}",
+      "explanation": "It's the Unique Paths recurrence, except a blocked cell gets 0 paths. That automatically cuts off everything that could only be reached through it, including the rest of the first row or column. The rolling row holds the value from above until it's overwritten. O(m·n) time, O(n) space."
+    },
+    "hints": [
+      "Unique Paths adds the counts from above and from the left. How many paths can go *through* an obstacle?",
+      "Same recurrence, but an obstacle cell is forced to 0. Don't pre-fill the first row and column with 1s, since an obstacle there blocks everything after it.",
+      "Rolling row: `if (grid[i][j] == 1) dp[j] = 0; else if (j > 0) dp[j] += dp[j - 1];`, starting from `dp[0] = grid[0][0] == 1 ? 0 : 1`."
     ]
   },
   {
@@ -159,11 +272,93 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int minPathSum(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        int[][] dp = new int[m][n];\n        dp[0][0] = grid[0][0];\n        for (int j = 1; j < n; j++) dp[0][j] = dp[0][j - 1] + grid[0][j];\n        for (int i = 1; i < m; i++) dp[i][0] = dp[i - 1][0] + grid[i][0];\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n}"
+      "code": "class Solution {\n    public int minPathSum(int[][] grid) {\n        int m = grid.length, n = grid[0].length;\n        int[][] dp = new int[m][n];\n        dp[0][0] = grid[0][0];\n        for (int j = 1; j < n; j++) dp[0][j] = dp[0][j - 1] + grid[0][j];\n        for (int i = 1; i < m; i++) dp[i][0] = dp[i - 1][0] + grid[i][0];\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);\n            }\n        }\n        return dp[m - 1][n - 1];\n    }\n}",
+      "explanation": "The cheapest path into a cell must arrive through the cheaper of its two predecessors, the cell above or the cell to the left, since there's no other way in. The first row and column can only be reached one way, so they're running sums. O(m·n) time and space."
     },
     "hints": [
-      "Fill the first row/column as running sums.",
-      "dp[i][j] = grid[i][j] + min(from above, from left)."
+      "The best path into a cell arrives from one of just two cells. Which ones?",
+      "dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1]). The top row and left column have only one way in.",
+      "Fill the first row and column as running sums (`dp[0][j] = dp[0][j-1] + grid[0][j]`) before the double loop."
     ]
+  },
+  {
+    "id": "pat-dp2-mcq-offbyone",
+    "type": "mcq",
+    "title": "The +1 table",
+    "prompt": "In the (m+1) x (n+1) LCS table, why does comparing `dp[i][j]` use `s1.charAt(i - 1)`?",
+    "options": [
+      "dp[i][j] covers the first i characters — a prefix of LENGTH i — whose last character sits at index i-1",
+      "Strings are 1-indexed in Java",
+      "To skip the first character",
+      "It's a bug that happens to work"
+    ],
+    "answer": 0,
+    "explanation": "Row and column 0 stand for EMPTY prefixes, so base cases like 'LCS with an empty string is 0' are already in the table. The cost is a constant shift: `dp[i][j]` covers a prefix of length i, whose last character is at index i-1."
+  },
+  {
+    "id": "pat-dp2-fill-lcs",
+    "type": "fill-blank",
+    "title": "Recall: LCS table",
+    "prompt": "Fill in the longest common subsequence table for strings `a` (length m) and `b` (length n).",
+    "drill": true,
+    "code": "int[][] dp = new int[m + 1][n + 1];\nfor (int i = 1; i <= m; i++) {\n    for (int j = 1; j <= n; j++) {\n        if (a.charAt({{1}}) == b.charAt({{2}})) {\n            dp[i][j] = {{3}};\n        } else {\n            dp[i][j] = {{4}};\n        }\n    }\n}\nreturn dp[m][n];",
+    "blanks": {
+      "1": [
+        "i - 1"
+      ],
+      "2": [
+        "j - 1"
+      ],
+      "3": [
+        "dp[i - 1][j - 1] + 1",
+        "1 + dp[i - 1][j - 1]"
+      ],
+      "4": [
+        "Math.max(dp[i - 1][j], dp[i][j - 1])",
+        "Math.max(dp[i][j - 1], dp[i - 1][j])"
+      ]
+    },
+    "explanation": "`dp[i][j]` covers prefixes of length i and j, so the last characters are at `i - 1` and `j - 1`. A match extends the LCS of both shorter prefixes (the diagonal) by 1. A mismatch means one of those two characters isn't in the LCS, so take the better of dropping it from `a` (up) or from `b` (left)."
+  },
+  {
+    "id": "pat-dp2-mcq-looporder",
+    "type": "mcq",
+    "title": "Which loop goes outside?",
+    "prompt": "Coin Change II counts the **combinations** of `coins` that sum to `amount` (so 1+2 and 2+1 are the same). With `dp[0] = 1` and the update `dp[a] += dp[a - c]`, which loop order is correct, and what does the other order count?",
+    "options": [
+      "Coins outer, amounts inner. Amounts outer counts ordered sequences (permutations), so for coins [1,2] and amount 3 it returns 3 instead of 2",
+      "Amounts outer, coins inner. Coins outer would miss some combinations",
+      "Either order gives the same result, because addition is commutative",
+      "Coins outer, but the amount loop has to run downwards"
+    ],
+    "answer": 0,
+    "explanation": "With coins outer, each coin's contributions are added before the next coin is considered, so every combination is built in one fixed coin order and counted once. With amounts outer, any coin can be the last one added at any amount, so 1+2 and 2+1 are counted as different sequences. The amount loop goes upwards here because coins are unlimited. Going downwards would be the 0/1 version."
+  },
+  {
+    "id": "pat-dp2-fill-interval",
+    "type": "fill-blank",
+    "title": "Recall: interval DP (Burst Balloons)",
+    "prompt": "`pad` is `nums` with a 1 added on each end (real balloons are at 1..n). `dp[l][r]` = most coins from bursting every balloon in `[l..r]`. Fill in the loops and the \"burst k last\" transition.",
+    "drill": true,
+    "code": "for (int len = 1; len <= n; len++) {\n    for (int l = 1; l + len - 1 <= n; l++) {\n        int r = {{1}};\n        for (int k = l; k <= r; k++) {\n            int coins = pad[{{2}}] * pad[k] * pad[{{3}}];\n            dp[l][r] = Math.max(dp[l][r], dp[l][{{4}}] + coins + dp[{{5}}][r]);\n        }\n    }\n}\nreturn dp[1][n];",
+    "blanks": {
+      "1": [
+        "l + len - 1",
+        "len + l - 1"
+      ],
+      "2": [
+        "l - 1"
+      ],
+      "3": [
+        "r + 1"
+      ],
+      "4": [
+        "k - 1"
+      ],
+      "5": [
+        "k + 1"
+      ]
+    },
+    "explanation": "The interval `[l..r]` has length `len`, so `r = l + len - 1`. If k is burst last, everything else in the range is already gone, so its neighbors are the walls just outside, `pad[l - 1]` and `pad[r + 1]`. The balloons left and right of k were burst independently: `dp[l][k - 1]` and `dp[k + 1][r]`. Those are shorter intervals, which is why the outer loop goes over length."
   }
 ]

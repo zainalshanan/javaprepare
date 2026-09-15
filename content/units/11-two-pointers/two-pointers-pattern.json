@@ -82,10 +82,13 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public boolean isArrayPalindrome(int[] nums) {\n        int l = 0, r = nums.length - 1;\n        while (l < r) {\n            if (nums[l] != nums[r]) return false;\n            l++;\n            r--;\n        }\n        return true;\n    }\n}"
+      "code": "class Solution {\n    public boolean isArrayPalindrome(int[] nums) {\n        int l = 0, r = nums.length - 1;\n        while (l < r) {\n            if (nums[l] != nums[r]) return false;\n            l++;\n            r--;\n        }\n        return true;\n    }\n}",
+      "explanation": "Position i must equal position n-1-i; converging pointers check every mirrored pair once and stop at the centre (l < r, so odd lengths skip the middle). O(n) time, O(1) space."
     },
     "hints": [
-      "`while (l < r)` — mismatched pair → return false immediately."
+      "A palindrome mirrors around its centre. Which pairs of positions must match?",
+      "Start one index at each end and walk them toward each other.",
+      "`while (l < r) { if (nums[l] != nums[r]) return false; l++; r--; }`"
     ]
   },
   {
@@ -149,11 +152,56 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int dedup(int[] nums) {\n        if (nums.length == 0) return 0;\n        int slow = 0;\n        for (int fast = 1; fast < nums.length; fast++) {\n            if (nums[fast] != nums[slow]) {\n                slow++;\n                nums[slow] = nums[fast];\n            }\n        }\n        return slow + 1;\n    }\n}"
+      "code": "class Solution {\n    public int dedup(int[] nums) {\n        if (nums.length == 0) return 0;\n        int slow = 0;\n        for (int fast = 1; fast < nums.length; fast++) {\n            if (nums[fast] != nums[slow]) {\n                slow++;\n                nums[slow] = nums[fast];\n            }\n        }\n        return slow + 1;\n    }\n}",
+      "explanation": "In a sorted array a value is new exactly when it differs from the last kept value, so `nums[0..slow]` is always the deduplicated prefix. Each element is visited once by `fast`. O(n) time, O(1) space."
     },
     "hints": [
-      "`slow` marks the last unique slot; advance it only when `nums[fast]` differs.",
-      "New length is `slow + 1`."
+      "Because the array is sorted, duplicates sit next to each other. How do you know a value is new?",
+      "Keep a `slow` index at the last unique value; scan with `fast` and copy only values that differ from `nums[slow]`.",
+      "On a new value: `slow++; nums[slow] = nums[fast];` — return `slow + 1`."
     ]
+  },
+  {
+    "id": "pat-tp-fill-converge",
+    "type": "fill-blank",
+    "title": "Template recall: converging pointers",
+    "prompt": "From memory: the Two Sum II template on a sorted array.",
+    "drill": true,
+    "code": "int l = 0, r = {{1}};\nwhile ({{2}}) {\n    int sum = numbers[l] + numbers[r];\n    if (sum == target) return new int[]{l + 1, r + 1};\n    else if (sum < target) {{3}};\n    else {{4}};\n}",
+    "blanks": {
+      "1": [
+        "numbers.length - 1"
+      ],
+      "2": [
+        "l < r"
+      ],
+      "3": [
+        "l++",
+        "++l",
+        "l += 1",
+        "l = l + 1"
+      ],
+      "4": [
+        "r--",
+        "--r",
+        "r -= 1",
+        "r = r - 1"
+      ]
+    },
+    "explanation": "Start at both ends and loop while the pointers are distinct. A sum that is too small can only grow by moving `l` right; a sum that is too large can only shrink by moving `r` left. Each move discards one index for good: O(n)."
+  },
+  {
+    "id": "pat-tp-mcq-water",
+    "type": "mcq",
+    "title": "Which wall moves?",
+    "prompt": "Container With Most Water: `height[l] = 2`, `height[r] = 7`, width `r - l = 5` (area 10). Why is `l++` the right move?",
+    "options": [
+      "Every other container using `l` is narrower and still capped at height 2, so none beats 10 — `l` can be discarded",
+      "Moving the taller wall could find a taller one, which always increases the area",
+      "We always move the left pointer first",
+      "Because 2 < 7 means the answer is on the right half"
+    ],
+    "answer": 0,
+    "explanation": "The shorter wall caps the height of any container that uses it, and every remaining partner is closer (narrower). So the container just measured is the best `l` will ever be part of. Moving the taller wall instead keeps the cap at 2 while shrinking width — it can never help."
   }
 ]

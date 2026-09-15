@@ -4,6 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JavaPrepare — Java for NeetCode 150</title>
+    <script>
+      // Set the theme before first paint to avoid a flash. Key must match src/theme.ts.
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('javaprepare-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

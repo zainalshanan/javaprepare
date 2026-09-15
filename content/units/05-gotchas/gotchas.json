@@ -12,7 +12,34 @@
       "`true` for all Integers"
     ],
     "answer": 0,
-    "explanation": "Autoboxing caches -128..127, so `Integer a = 100 == b` happens to be true — and then breaks at 1000. Never == boxed types; use .equals or unbox to int."
+    "explanation": "Autoboxing caches -128..127, so with `Integer a = 100, b = 100;` the check `a == b` happens to be true — and then it breaks at 1000. Never `==` boxed types; use `.equals` or unbox to `int`."
+  },
+  {
+    "id": "got-fill-cache",
+    "type": "fill-blank",
+    "title": "Predict: the cache boundary",
+    "prompt": "Predict what each line prints.",
+    "drill": true,
+    "code": "Integer a = 127, b = 127;\nSystem.out.println(a == b);       // prints: {{1}}\n\nInteger c = 128, d = 128;\nSystem.out.println(c == d);       // prints: {{2}}\nSystem.out.println(c.equals(d));  // prints: {{3}}",
+    "blanks": {
+      "1": ["true"],
+      "2": ["false"],
+      "3": ["true"]
+    },
+    "explanation": "127 is the top of the Integer cache, so `a` and `b` are the same object. 128 is boxed into two separate objects, so `==` (reference comparison) is false while `.equals` (value comparison) is true."
+  },
+  {
+    "id": "got-fill-array-key",
+    "type": "fill-blank",
+    "title": "Predict: arrays in a HashSet",
+    "prompt": "Predict what each line prints.",
+    "drill": true,
+    "code": "Set<int[]> seen = new HashSet<>();\nseen.add(new int[]{0, 0});\nSystem.out.println(seen.contains(new int[]{0, 0}));   // prints: {{1}}\n\nSet<String> seen2 = new HashSet<>();\nseen2.add(0 + \",\" + 0);\nSystem.out.println(seen2.contains(\"0,0\"));            // prints: {{2}}",
+    "blanks": {
+      "1": ["false"],
+      "2": ["true"]
+    },
+    "explanation": "Arrays use identity `equals`/`hashCode`, so a new `int[]{0, 0}` is never found. The String key `\"0,0\"` compares by content. Other value-based keys: `r * cols + c`, `List.of(r, c)`, or a record."
   },
   {
     "id": "got-overflow",
@@ -30,6 +57,32 @@
     "explanation": "4×10⁹ exceeds Integer.MAX_VALUE (~2.1×10⁹), wrapping to -294967296. Java throws NOTHING for int overflow. When sums can exceed 2.1 billion, compute in long: `(long) x + x`."
   },
   {
+    "id": "got-fill-overflow",
+    "type": "fill-blank",
+    "title": "Predict: past MAX_VALUE",
+    "prompt": "Predict what each line prints.",
+    "drill": true,
+    "code": "int max = Integer.MAX_VALUE;            // 2147483647\nSystem.out.println(max + 1);            // prints: {{1}}\nSystem.out.println((long) max + 1);     // prints: {{2}}",
+    "blanks": {
+      "1": ["-2147483648"],
+      "2": ["2147483648"]
+    },
+    "explanation": "`max + 1` is int arithmetic and wraps around to `Integer.MIN_VALUE`, -2147483648. Casting `max` to `long` first makes the addition happen in `long`, giving the true 2147483648."
+  },
+  {
+    "id": "got-fill-long-mult",
+    "type": "fill-blank",
+    "title": "Predict: where the cast goes",
+    "prompt": "`a` is 65536 (2¹⁶), so `a * a` is 2³² — too big for an `int`. Predict what each line prints.",
+    "drill": true,
+    "code": "int a = 65536;\nlong x = (long) (a * a);\nlong y = (long) a * a;\nSystem.out.println(x);   // prints: {{1}}\nSystem.out.println(y);   // prints: {{2}}",
+    "blanks": {
+      "1": ["0"],
+      "2": ["4294967296"]
+    },
+    "explanation": "In `(long) (a * a)` the multiplication runs in `int` first: 2³² wraps to exactly 0, and only then is 0 widened to `long`. In `(long) a * a` the cast binds to the first `a`, so the multiplication is done in `long` → 4294967296. Cast an operand, not the result."
+  },
+  {
     "id": "got-mid",
     "type": "mcq",
     "title": "The midpoint bug",
@@ -43,6 +96,19 @@
     ],
     "answer": 0,
     "explanation": "With l and r both near 2 billion, l + r wraps negative and mid becomes garbage. This bug lived in the JDK's own binarySearch for nine years."
+  },
+  {
+    "id": "got-fill-abs-min",
+    "type": "fill-blank",
+    "title": "Predict: Math.abs edge case",
+    "prompt": "Predict what each line prints.",
+    "drill": true,
+    "code": "System.out.println(Math.abs(-5));                  // prints: {{1}}\nSystem.out.println(Math.abs(Integer.MIN_VALUE));   // prints: {{2}}",
+    "blanks": {
+      "1": ["5"],
+      "2": ["-2147483648"]
+    },
+    "explanation": "The int range is -2147483648..2147483647, so +2147483648 doesn't exist. Negating `Integer.MIN_VALUE` overflows right back to itself, and `Math.abs` returns a negative number. If inputs can hit MIN_VALUE, work in `long`: `Math.abs((long) x)`."
   },
   {
     "id": "got-mod",
@@ -60,6 +126,33 @@
     "explanation": "Java's % is a remainder, not a mathematical modulo. For a guaranteed non-negative result (circular indexing!): `((a % b) + b) % b`."
   },
   {
+    "id": "got-fill-mod",
+    "type": "fill-blank",
+    "title": "Predict: remainder vs floorMod",
+    "prompt": "Predict what each line prints.",
+    "drill": true,
+    "code": "System.out.println(-7 % 3);                // prints: {{1}}\nSystem.out.println(Math.floorMod(-7, 3));  // prints: {{2}}\nSystem.out.println(((-7 % 3) + 3) % 3);    // prints: {{3}}",
+    "blanks": {
+      "1": ["-1"],
+      "2": ["2"],
+      "3": ["2"]
+    },
+    "explanation": "`%` keeps the sign of the left operand: -7 = 3 × (-2) + (-1). `Math.floorMod` always returns a result with the sign of the divisor, so 2. Adding `b` and taking `% b` again is the hand-rolled version of the same fix."
+  },
+  {
+    "id": "got-fill-shift",
+    "type": "fill-blank",
+    "title": "Predict: >> vs >>>",
+    "prompt": "`-16` in binary is `1111...11110000` (32 bits). Predict what each line prints.",
+    "drill": true,
+    "code": "System.out.println(-16 >> 2);    // prints: {{1}}\nSystem.out.println(-16 >>> 28);  // prints: {{2}}",
+    "blanks": {
+      "1": ["-4"],
+      "2": ["15"]
+    },
+    "explanation": "`>>` is an arithmetic shift: it copies the sign bit into the top, so a negative stays negative and `-16 >> 2` is -16 / 4 = -4. `>>>` is a logical shift: it fills with zeros, so the 28 bits shifted out leave only the top four 1-bits, `1111` = 15. Bit problems that treat an int as unsigned (Number of 1 Bits, Reverse Bits) need `>>>`."
+  },
+  {
     "id": "got-length",
     "type": "fill-blank",
     "title": "The length gauntlet",
@@ -74,34 +167,19 @@
     "explanation": "Array: field `.length`. String: method `.length()`. Collection: method `.size()`. Three APIs, three spellings — thanks, Java."
   },
   {
-    "id": "got-comod",
-    "type": "mcq",
-    "title": "Mutating while iterating",
-    "prompt": "`for (Integer x : list) { if (x < 0) list.remove(x); }` — what happens?",
+    "id": "got-fill-char-math",
+    "type": "fill-blank",
+    "title": "Predict: char arithmetic",
+    "prompt": "Predict what each line prints.",
     "drill": true,
-    "options": [
-      "ConcurrentModificationException (typically) — you can't structurally modify a list inside its own for-each",
-      "Works fine",
-      "Removes only the first negative",
-      "Infinite loop"
-    ],
-    "answer": 0,
-    "explanation": "Collect removals into a second list, use `list.removeIf(x -> x < 0)`, or iterate by index backwards."
-  },
-  {
-    "id": "got-defaults",
-    "type": "mcq",
-    "title": "Array default values",
-    "prompt": "`new int[3]`, `new boolean[3]`, and `new Integer[3]` start filled with…",
-    "drill": true,
-    "options": [
-      "0, false, and null respectively — and reading a null Integer into an int throws NPE",
-      "0, false, and 0",
-      "All null",
-      "Garbage values like C"
-    ],
-    "answer": 0,
-    "explanation": "Primitives get zero-values; object arrays get null. `int x = integerArr[0];` on a fresh Integer[] is a NullPointerException at the unbox."
+    "code": "System.out.println('a' + 1);          // prints: {{1}}\nSystem.out.println((char) ('a' + 1)); // prints: {{2}}\nSystem.out.println(\"\" + 'a' + 1);     // prints: {{3}}\nSystem.out.println('c' - 'a');        // prints: {{4}}",
+    "blanks": {
+      "1": ["98"],
+      "2": ["b"],
+      "3": ["a1"],
+      "4": ["2"]
+    },
+    "explanation": "`char + int` promotes to `int`: 'a' is 97, so 98. Cast back with `(char)` to get 'b'. Starting with a String makes `+` concatenate left to right: \"a\" then \"a1\". `'c' - 'a'` is 2 — the index trick behind every `int[26]` count array."
   },
   {
     "id": "got-concat",
@@ -117,5 +195,61 @@
     ],
     "answer": 0,
     "explanation": "1 + 2 + ... + n copies ≈ n²/2. On a 10⁵-char build, that's the difference between instant and TLE."
+  },
+  {
+    "id": "got-comod",
+    "type": "mcq",
+    "title": "Mutating while iterating",
+    "prompt": "`for (Integer x : list) { if (x < 0) list.remove(x); }` — what happens?",
+    "drill": true,
+    "options": [
+      "ConcurrentModificationException (typically) — you can't structurally modify a list inside its own for-each",
+      "Works fine",
+      "Removes only the first negative",
+      "Infinite loop"
+    ],
+    "answer": 0,
+    "explanation": "The for-each's hidden iterator notices the list changed under it. Use `list.removeIf(x -> x < 0)`, an explicit `Iterator` with `it.remove()`, or iterate by index backwards."
+  },
+  {
+    "id": "got-fill-aslist",
+    "type": "fill-blank",
+    "title": "Predict: fixed-size lists",
+    "prompt": "What does each marked line do? Write the value printed, or the exception's simple class name if it throws.",
+    "drill": true,
+    "code": "List<Integer> a = Arrays.asList(3, 1, 2);\na.set(0, 9);\nSystem.out.println(a);           // prints: {{1}}\na.add(4);                        // throws: {{2}}\n\nList<Integer> b = new ArrayList<>(Arrays.asList(3, 1, 2));\nb.add(4);\nSystem.out.println(b.size());    // prints: {{3}}",
+    "blanks": {
+      "1": ["[9, 1, 2]"],
+      "2": ["UnsupportedOperationException", "java.lang.UnsupportedOperationException"],
+      "3": ["4"]
+    },
+    "explanation": "`Arrays.asList` returns a fixed-size view backed by an array: `set` works, but `add` and `remove` throw `UnsupportedOperationException`. (`List.of` is stricter still: even `set` throws.) Wrap it in `new ArrayList<>(...)` to get a normal, growable list."
+  },
+  {
+    "id": "got-fill-deque-null",
+    "type": "fill-blank",
+    "title": "Predict: null in an ArrayDeque",
+    "prompt": "A tree BFS enqueues children without checking them. `root.left` is `null`. What happens on the marked line? Write the exception's simple class name.",
+    "drill": true,
+    "code": "Deque<TreeNode> queue = new ArrayDeque<>();\nqueue.offer(root);\nTreeNode node = queue.poll();\nqueue.offer(node.left);          // throws: {{1}}",
+    "blanks": {
+      "1": ["NullPointerException", "java.lang.NullPointerException"]
+    },
+    "explanation": "`ArrayDeque` rejects `null` elements, because `poll`/`peek` use `null` to mean \"empty\". Guard each child: `if (node.left != null) queue.offer(node.left);`. (`LinkedList` allows nulls, which only hides the bug until you dereference one.)"
+  },
+  {
+    "id": "got-defaults",
+    "type": "mcq",
+    "title": "Array default values",
+    "prompt": "`new int[3]`, `new boolean[3]`, and `new Integer[3]` start filled with…",
+    "drill": true,
+    "options": [
+      "0, false, and null respectively — and reading a null Integer into an int throws NPE",
+      "0, false, and 0",
+      "All null",
+      "Garbage values like C"
+    ],
+    "answer": 0,
+    "explanation": "Primitives get zero-values; object arrays get null. `int x = integerArr[0];` on a fresh Integer[] is a NullPointerException at the unbox."
   }
 ]

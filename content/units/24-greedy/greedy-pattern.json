@@ -81,10 +81,12 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int bestProfit(int[] prices) {\n        int minSoFar = prices[0];\n        int best = 0;\n        for (int p : prices) {\n            best = Math.max(best, p - minSoFar);\n            minSoFar = Math.min(minSoFar, p);\n        }\n        return best;\n    }\n}",
-      "explanation": "Two running values, one pass. (This is Best Time to Buy and Sell Stock — you drilled the real problem's core here; the sliding-window unit frames it differently.)"
+      "explanation": "The best buy for a sale today is the minimum price seen before today, so one running minimum plus one running best covers every pair. (This is Best Time to Buy and Sell Stock, the same running-best shape as Kadane.) O(n) time, O(1) space."
     },
     "hints": [
-      "Track `minSoFar` and `best` together in one loop."
+      "You only ever sell AFTER you buy. For today's sale, which earlier day is the best buy?",
+      "The cheapest price seen so far. Keep it as a running minimum while you scan.",
+      "Each day: `best = Math.max(best, p - minSoFar)`, then `minSoFar = Math.min(minSoFar, p)`."
     ]
   },
   {
@@ -150,11 +152,76 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public boolean canReachEnd(int[] nums) {\n        int reach = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (i > reach) return false;\n            reach = Math.max(reach, i + nums[i]);\n        }\n        return true;\n    }\n}"
+      "code": "class Solution {\n    public boolean canReachEnd(int[] nums) {\n        int reach = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (i > reach) return false;\n            reach = Math.max(reach, i + nums[i]);\n        }\n        return true;\n    }\n}",
+      "explanation": "Every index up to `reach` can be reached, so the only thing that matters is the frontier. If the scan index ever passes it, there is an unreachable gap. O(n) time, O(1) space."
     },
     "hints": [
-      "If the scan index passes `reach`, you're stuck.",
-      "Otherwise extend `reach = max(reach, i + nums[i])`."
+      "Do the exact jumps matter, or only how far you could possibly get?",
+      "Keep `reach`, the farthest index reachable from any index you have been able to stand on.",
+      "If `i > reach`, you are stuck. Otherwise `reach = Math.max(reach, i + nums[i])`."
     ]
+  },
+  {
+    "id": "pat-gd-mcq-gas",
+    "type": "mcq",
+    "title": "Why the gas-station reset is safe",
+    "prompt": "In Gas Station you start at station 2, and the tank first goes negative when you arrive at station 5. Why is it safe to try station 6 next, skipping 3, 4 and 5?",
+    "options": [
+      "Stations 3–5 were reached with a tank ≥ 0 from station 2. Starting at one of them means starting with 0 fuel, which is no better, so they also run dry by station 5",
+      "Each station can only be tried once",
+      "Stations 3–5 must have gas[i] < cost[i]",
+      "It isn't safe. It's a heuristic that happens to pass the tests"
+    ],
+    "answer": 0,
+    "explanation": "When you pass through any in-between station k from start 2, you arrive with fuel ≥ 0. Starting fresh at k gives you exactly 0 there, which can't do better, so k also fails by station 5. That exchange-style argument is what lets one O(n) pass replace trying all n starts."
+  },
+  {
+    "id": "pat-gd-fill-jump2",
+    "type": "fill-blank",
+    "title": "Recall: Jump Game II levels",
+    "prompt": "Fill in the BFS-by-levels template for the minimum number of jumps.",
+    "drill": true,
+    "code": "int jumps = 0, curEnd = 0, farthest = 0;\nfor (int i = 0; i < nums.length - {{1}}; i++) {\n    farthest = Math.max(farthest, {{2}});\n    if (i == {{3}}) {\n        jumps++;\n        curEnd = {{4}};\n    }\n}\nreturn jumps;",
+    "blanks": {
+      "1": [
+        "1"
+      ],
+      "2": [
+        "i + nums[i]",
+        "nums[i] + i"
+      ],
+      "3": [
+        "curEnd"
+      ],
+      "4": [
+        "farthest"
+      ]
+    },
+    "explanation": "Stop before the last index, since standing on it needs no more jumps. `farthest` gathers the best reach of the current level. When `i` reaches `curEnd`, the level is used up: count a jump and make `farthest` the end of the next level."
+  },
+  {
+    "id": "pat-gd-fill-kadane",
+    "type": "fill-blank",
+    "title": "Recall: Kadane + gas-station reset",
+    "prompt": "Fill in the two running-sum templates: Kadane's maximum subarray, and the Gas Station restart.",
+    "drill": true,
+    "code": "// Maximum Subarray\nint best = {{1}}, running = nums[0];\nfor (int i = 1; i < nums.length; i++) {\n    running = Math.max(nums[i], {{2}});\n    best = Math.max(best, running);\n}\n\n// Gas Station\ntank += gas[i] - cost[i];\nif (tank {{3}} 0) { start = {{4}}; tank = 0; }",
+    "blanks": {
+      "1": [
+        "nums[0]"
+      ],
+      "2": [
+        "running + nums[i]",
+        "nums[i] + running"
+      ],
+      "3": [
+        "<"
+      ],
+      "4": [
+        "i + 1",
+        "1 + i"
+      ]
+    },
+    "explanation": "Seed `best` with `nums[0]`, not 0, or all-negative arrays break. `max(nums[i], running + nums[i])` drops a negative prefix. In Gas Station, a negative tank at i rules out every start up to i, so the next candidate is `i + 1`."
   }
 ]

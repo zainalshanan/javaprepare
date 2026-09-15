@@ -4,29 +4,76 @@
   "title": "Reverse Integer",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/reverse-integer/",
-  "prompt": "Reverse the digits of a signed 32-bit integer `x`. If the result overflows the int range, return `0`.\n\n**Example**: `123` → `321`; `-123` → `-321`; `1534236469` → `0` (reversed exceeds Integer.MAX_VALUE).\n\nDigit peeling plus a genuine overflow guard — the gotchas unit made real.",
+  "prompt": "Given a signed 32-bit integer `x`, return `x` with its digits reversed. If reversing makes the value go outside the 32-bit signed range `[-2^31, 2^31 - 1]`, return `0`.\n\n**Assume the environment cannot store 64-bit integers** (no `long`).\n\n**Example**: `123` → `321`; `-123` → `-321`; `120` → `21`; `1534236469` → `0`.",
   "method": {
     "name": "reverse",
-    "params": [ { "name": "x", "type": "int" } ],
+    "params": [
+      {
+        "name": "x",
+        "type": "int"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int reverse(int x) {\n\n    }\n}\n",
   "tests": [
-    { "args": [123], "expected": 321 },
-    { "args": [-123], "expected": -321 },
-    { "args": [120], "expected": 21, "note": "trailing zero drops" },
-    { "args": [1534236469], "expected": 0, "note": "overflows on reverse" },
-    { "args": [0], "expected": 0, "hidden": true },
-    { "args": [-2147483648], "expected": 0, "hidden": true, "note": "Integer.MIN_VALUE" },
-    { "args": [1463847412], "expected": 2147483641, "hidden": true, "note": "barely fits" }
+    {
+      "args": [
+        123
+      ],
+      "expected": 321
+    },
+    {
+      "args": [
+        -123
+      ],
+      "expected": -321
+    },
+    {
+      "args": [
+        120
+      ],
+      "expected": 21,
+      "note": "trailing zero drops"
+    },
+    {
+      "args": [
+        1534236469
+      ],
+      "expected": 0,
+      "note": "overflows on reverse"
+    },
+    {
+      "args": [
+        0
+      ],
+      "expected": 0,
+      "hidden": true
+    },
+    {
+      "args": [
+        -2147483648
+      ],
+      "expected": 0,
+      "hidden": true,
+      "note": "Integer.MIN_VALUE"
+    },
+    {
+      "args": [
+        1463847412
+      ],
+      "expected": 2147483641,
+      "hidden": true,
+      "note": "barely fits"
+    }
   ],
   "hints": [
-    "Peel with `x % 10` and `x /= 10` — in Java this handles negatives symmetrically (remainders are negative), so no sign special-casing.",
-    "Build the reverse in a `long`; after the loop, range-check against Integer.MIN/MAX_VALUE before casting.",
-    "(The no-long variant checks `reversed > (Integer.MAX_VALUE - digit) / 10` before each multiply.)"
+    "How do you peel the last digit off a number and add it to a result you are building? What does Java's `%` give for a negative x?",
+    "`-123 % 10 == -3`, so `rev = rev * 10 + d` builds a negative reverse with no sign handling. The only danger is `rev * 10` overflowing, and you have to catch that BEFORE it happens.",
+    "Before multiplying: `if (rev > Integer.MAX_VALUE / 10 || rev < Integer.MIN_VALUE / 10) return 0;`"
   ],
   "solution": {
-    "code": "class Solution {\n    public int reverse(int x) {\n        long reversed = 0;\n        while (x != 0) {\n            reversed = reversed * 10 + x % 10;\n            x /= 10;\n        }\n        if (reversed > Integer.MAX_VALUE || reversed < Integer.MIN_VALUE) return 0;\n        return (int) reversed;\n    }\n}",
-    "explanation": "Java's negative remainders (`-123 % 10 == -3`) build a negative reverse naturally — no abs needed (which would itself overflow on MIN_VALUE!). The long accumulator can't overflow for any 32-bit input, making the final range check trustworthy."
+    "code": "class Solution {\n    public int reverse(int x) {\n        int rev = 0;\n        while (x != 0) {\n            int d = x % 10;\n            x /= 10;\n            if (rev > Integer.MAX_VALUE / 10 || rev < Integer.MIN_VALUE / 10) return 0;\n            rev = rev * 10 + d;\n        }\n        return rev;\n    }\n}",
+    "explanation": "Java's sign-keeping `%` builds negative reverses with no special cases (and avoids `Math.abs`, which overflows on MIN_VALUE). Overflow is checked before `rev * 10`. If |rev| is already above MAX/10, the multiply would overflow. If it equals MAX/10 exactly, the last digit can only be 1 or 2 for a 32-bit input, so it fits. O(log |x|) time, O(1) space."
   }
 }

@@ -110,11 +110,12 @@
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public boolean canAttendAll(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        for (int i = 1; i < intervals.length; i++) {\n            if (intervals[i][0] < intervals[i - 1][1]) return false;\n        }\n        return true;\n    }\n}",
-      "explanation": "After sorting, only NEIGHBORS can conflict — that's the entire power of sort-then-sweep. (This is LeetCode's Meeting Rooms.)"
+      "explanation": "After sorting by start, if meeting i overlaps any earlier meeting, it overlaps meeting i-1, so checking neighbors is enough. This is LeetCode's Meeting Rooms. O(n log n) time, O(1) extra space (beyond the sort)."
     },
     "hints": [
-      "Sort by start first.",
-      "Conflict: this meeting starts before the previous one ends — strict `<` here since touching is allowed."
+      "Checking every pair is O(n²). What order would make only neighbors able to conflict?",
+      "Sort by start with `Integer.compare(a[0], b[0])`, then compare each meeting with the one before it.",
+      "Conflict iff `intervals[i][0] < intervals[i - 1][1]`. Use strict `<` because touching is allowed."
     ]
   },
   {
@@ -206,11 +207,53 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int mergedCount(int[][] intervals) {\n        if (intervals.length == 0) return 0;\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        int count = 1, end = intervals[0][1];\n        for (int i = 1; i < intervals.length; i++) {\n            if (intervals[i][0] > end) {\n                count++;\n                end = intervals[i][1];\n            } else {\n                end = Math.max(end, intervals[i][1]);\n            }\n        }\n        return count;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int mergedCount(int[][] intervals) {\n        if (intervals.length == 0) return 0;\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        int count = 1, end = intervals[0][1];\n        for (int i = 1; i < intervals.length; i++) {\n            if (intervals[i][0] > end) {\n                count++;\n                end = intervals[i][1];\n            } else {\n                end = Math.max(end, intervals[i][1]);\n            }\n        }\n        return count;\n    }\n}",
+      "explanation": "Sorting by start means an interval can only extend the most recent group. A start beyond that group's end begins a new one. The `max` keeps a contained interval from shrinking the end. O(n log n) time, O(1) extra space."
     },
     "hints": [
-      "Sort by start. A new merged interval begins when the next start is beyond the current end.",
-      "Otherwise extend the end with max."
+      "After sorting by start, which merged group can the next interval possibly join?",
+      "Only the current (last) group. Track its end while you sweep.",
+      "If `intervals[i][0] > end`, a new group starts (`count++`). Otherwise `end = Math.max(end, intervals[i][1])`."
     ]
+  },
+  {
+    "id": "pat-iv-mcq-sort-end",
+    "type": "mcq",
+    "title": "Why sort by end?",
+    "prompt": "For Non-overlapping Intervals (remove the fewest so the rest don't overlap), the greedy sorts by **end** and keeps each compatible interval. Why end and not start?",
+    "options": [
+      "The interval that finishes earliest leaves the most room for the rest. Sorting by start could keep a long early interval like [1,100] that blocks many short ones",
+      "Sorting by end is faster",
+      "Sorting by start would overflow",
+      "There's no difference. Either order gives the same count"
+    ],
+    "answer": 0,
+    "explanation": "Exchange argument: in any optimal set, swap the first interval for the earliest-ending one. It ends no later, so everything after it still fits. For [[1,100],[2,3],[4,5]], start order keeps [1,100] and removes 2 intervals, while end order keeps [2,3] and [4,5] and removes only 1."
+  },
+  {
+    "id": "pat-iv-fill-rooms",
+    "type": "fill-blank",
+    "title": "Recall: Meeting Rooms II heap",
+    "prompt": "Fill in the min-heap-of-end-times template for the minimum number of meeting rooms.",
+    "drill": true,
+    "code": "Arrays.sort(intervals, (a, b) -> Integer.{{1}}(a[0], b[0]));\nPriorityQueue<Integer> ends = new PriorityQueue<>();\nfor (int[] m : intervals) {\n    if (!ends.isEmpty() && ends.{{2}}() <= m[0]) ends.{{3}}();\n    ends.offer({{4}});\n}\nreturn ends.{{5}}();",
+    "blanks": {
+      "1": [
+        "compare"
+      ],
+      "2": [
+        "peek"
+      ],
+      "3": [
+        "poll"
+      ],
+      "4": [
+        "m[1]"
+      ],
+      "5": [
+        "size"
+      ]
+    },
+    "explanation": "Sort by start with `Integer.compare` (no subtraction overflow). `peek()` is the room that frees up soonest. If it's free by this start, `poll()` to reuse it. Always `offer` this meeting's end. The heap size is the peak number of simultaneous meetings."
   }
 ]

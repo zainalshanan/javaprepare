@@ -4,27 +4,81 @@
   "title": "Jump Game II",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/jump-game-ii/",
-  "prompt": "`nums[i]` is the max jump length from index `i`. Starting at index 0 (reaching the end is guaranteed), return the **minimum** number of jumps to reach the last index.\n\n**Example**: `[2,3,1,1,4]` → `2` (index 0 → 1 → 4).\n\nGreedy BFS by 'levels': each jump extends the farthest reachable frontier; count how many frontiers you cross.",
+  "prompt": "`nums[i]` is the max jump length from index `i`. Starting at index 0 (reaching the end is guaranteed), return the **minimum** number of jumps to reach the last index.\n\n**Example**: `[2,3,1,1,4]` → `2` (index 0 → 1 → 4).\n\n**Constraints**: `1 ≤ nums.length ≤ 10^4`, `0 ≤ nums[i] ≤ 1000`.",
   "method": {
     "name": "jump",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int jump(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[2, 3, 1, 1, 4]], "expected": 2 },
-    { "args": [[2, 3, 0, 1, 4]], "expected": 2 },
-    { "args": [[1]], "expected": 0 },
-    { "args": [[1, 2]], "expected": 1, "hidden": true },
-    { "args": [[1, 1, 1, 1]], "expected": 3, "hidden": true }
+    {
+      "args": [
+        [
+          2,
+          3,
+          1,
+          1,
+          4
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          2,
+          3,
+          0,
+          1,
+          4
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "expected": 1,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          1,
+          1,
+          1,
+          1
+        ]
+      ],
+      "expected": 3,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Track the current jump's reachable end (`curEnd`) and the farthest any index in it can reach (`farthest`).",
-    "When the scan hits `curEnd`, you must jump: increment jumps and set curEnd = farthest.",
-    "Loop only to n-2 (arriving at the last index needs no further jump)."
+    "Group indices by the fewest jumps needed to reach them. What shape do those groups have on the array?",
+    "Each group is a contiguous window. While scanning a window, track the farthest index any of its cells can reach. That is where the next window ends.",
+    "When `i == curEnd`: `jumps++` and `curEnd = farthest`. Loop only to `n - 2`, since standing on the last index needs no jump."
   ],
   "solution": {
     "code": "class Solution {\n    public int jump(int[] nums) {\n        int jumps = 0, curEnd = 0, farthest = 0;\n        for (int i = 0; i < nums.length - 1; i++) {\n            farthest = Math.max(farthest, i + nums[i]);\n            if (i == curEnd) {\n                jumps++;\n                curEnd = farthest;\n            }\n        }\n        return jumps;\n    }\n}",
-    "explanation": "This is BFS layer-counting without a queue: everything reachable in k jumps forms one layer [previous end .. curEnd]. When the scan exhausts a layer, we've committed to a jump and extend to the farthest that layer could reach. O(n)."
+    "explanation": "This is BFS level counting without a queue. The indices reachable in exactly k jumps form a window, and the next window ends at the farthest reach from inside it. Each time the scan finishes a window it counts one jump, so the count is the BFS depth of the last index. O(n) time, O(1) space."
   }
 }

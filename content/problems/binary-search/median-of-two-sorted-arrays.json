@@ -4,7 +4,7 @@
   "title": "Median of Two Sorted Arrays",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
-  "prompt": "Given two sorted arrays, return the median of their combined elements in O(log(m+n)).\n\n**Example**: `nums1 = [1,3]`, `nums2 = [2]` → `2.0`; `[1,2]` and `[3,4]` → `2.5`.\n\nBinary-search the partition of the SMALLER array: find where to cut both arrays so every left element ≤ every right element.",
+  "prompt": "Given two sorted arrays `nums1` (size m) and `nums2` (size n), return the median of the two arrays combined. The overall run time must be O(log(m+n)).\n\n**Example 1**: `nums1 = [1,3]`, `nums2 = [2]` → `2.0` (merged `[1,2,3]`)\n\n**Example 2**: `nums1 = [1,2]`, `nums2 = [3,4]` → `2.5` (merged `[1,2,3,4]`, (2+3)/2)\n\n**Constraints**: `0 <= m, n <= 1000`, `1 <= m + n <= 2000`, `-10^6 <= nums1[i], nums2[i] <= 10^6`.",
   "method": {
     "name": "findMedianSortedArrays",
     "params": [ { "name": "nums1", "type": "int[]" }, { "name": "nums2", "type": "int[]" } ],
@@ -20,12 +20,12 @@
     { "args": [[2], [1, 3, 4]], "expected": 2.5, "hidden": true }
   ],
   "hints": [
-    "Always binary-search the smaller array; let `i` be its partition, then `j = (m+n+1)/2 - i` for the other.",
-    "Use ±infinity sentinels for the edges (i=0, i=m, etc.) so boundary partitions need no special cases.",
-    "A partition is correct when `left1 <= right2` and `left2 <= right1`. Odd total → max of the two lefts; even → average of max-left and min-right."
+    "The median splits the combined sorted array into a left half and a right half of equal size. You never need to build the merged array — only to decide how many elements each input contributes to the left half.",
+    "If nums1 contributes `i` elements to the left half, nums2 must contribute `j = (m + n + 1) / 2 - i`. So there is one unknown, `i` — search it over the SMALLER array. Use ±infinity sentinels when a side is empty.",
+    "The split is right when `left1 <= right2 && left2 <= right1`. If `left1 > right2`, i is too big (`hi = i - 1`); else too small. Odd total → `max(left1, left2)`; even → average of that and `min(right1, right2)`."
   ],
   "solution": {
     "code": "class Solution {\n    public double findMedianSortedArrays(int[] nums1, int[] nums2) {\n        if (nums1.length > nums2.length) return findMedianSortedArrays(nums2, nums1);\n        int m = nums1.length, n = nums2.length;\n        int total = m + n, half = (total + 1) / 2;\n        int lo = 0, hi = m;\n        while (lo <= hi) {\n            int i = lo + (hi - lo) / 2;\n            int j = half - i;\n            int left1 = i > 0 ? nums1[i - 1] : Integer.MIN_VALUE;\n            int right1 = i < m ? nums1[i] : Integer.MAX_VALUE;\n            int left2 = j > 0 ? nums2[j - 1] : Integer.MIN_VALUE;\n            int right2 = j < n ? nums2[j] : Integer.MAX_VALUE;\n            if (left1 <= right2 && left2 <= right1) {\n                if (total % 2 == 1) return Math.max(left1, left2);\n                return (Math.max(left1, left2) + Math.min(right1, right2)) / 2.0;\n            } else if (left1 > right2) {\n                hi = i - 1;\n            } else {\n                lo = i + 1;\n            }\n        }\n        return 0.0;\n    }\n}",
-    "explanation": "O(log(min(m,n))). The median only depends on where the combined array splits into two equal halves. Fixing the left-half size (`half`) means choosing i in nums1 forces j in nums2, so a 1-D binary search over i finds the valid partition. Infinity sentinels remove all the empty-side edge cases."
+    "explanation": "Choosing how many elements nums1 puts in the left half forces nums2's count, so a 1-D binary search over i finds the partition where every left element ≤ every right element. That condition is monotonic in i (too many from nums1 makes `left1 > right2`), which is what makes halving valid. Searching the smaller array keeps j in range, and infinity sentinels remove empty-side edge cases. O(log(min(m, n))) time, O(1) space."
   }
 }

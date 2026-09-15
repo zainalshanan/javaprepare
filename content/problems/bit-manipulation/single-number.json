@@ -7,23 +7,76 @@
   "prompt": "Every element appears twice except one — find it, in O(n) time and **O(1) space** (which rules out the HashMap).\n\n**Example**: `[4,1,2,1,2]` → `4`.\n\nThe XOR cancellation trick from the pattern lesson.",
   "method": {
     "name": "singleNumber",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int singleNumber(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[2, 2, 1]], "expected": 1 },
-    { "args": [[4, 1, 2, 1, 2]], "expected": 4 },
-    { "args": [[1]], "expected": 1 },
-    { "args": [[-3, 5, -3]], "expected": 5, "hidden": true },
-    { "args": [[0, 1, 0]], "expected": 1, "hidden": true }
+    {
+      "args": [
+        [
+          2,
+          2,
+          1
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          4,
+          1,
+          2,
+          1,
+          2
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          -3,
+          5,
+          -3
+        ]
+      ],
+      "expected": 5,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          0,
+          1,
+          0
+        ]
+      ],
+      "expected": 1,
+      "hidden": true
+    }
   ],
   "hints": [
-    "a ^ a = 0 and a ^ 0 = a, in any order.",
-    "XOR the entire array into one accumulator — the pairs annihilate."
+    "O(1) space rules out counting with a map. Is there an operator where combining a value with itself makes it vanish?",
+    "XOR: `a ^ a = 0`, `a ^ 0 = a`, and the order doesn't matter.",
+    "XOR the whole array into one accumulator. The pairs cancel and the single number is left."
   ],
   "solution": {
     "code": "class Solution {\n    public int singleNumber(int[] nums) {\n        int result = 0;\n        for (int x : nums) {\n            result ^= x;\n        }\n        return result;\n    }\n}",
-    "explanation": "Since XOR is commutative and associative, the whole array can be mentally reordered to pair the duplicates: each pair XORs to 0, and 0 XOR the loner is the loner. O(n)/O(1)."
+    "explanation": "XOR is commutative and associative, so you can regroup the array to pair up the duplicates. Each pair XORs to 0, and 0 XOR the single number is the single number. O(n) time, O(1) space."
   }
 }

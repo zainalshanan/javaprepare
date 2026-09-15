@@ -27,9 +27,13 @@ function mulberry32(seed: number): () => number {
   };
 }
 
-/** Returns a permutation `order` where `order[displayIndex] = originalIndex`. */
-export function optionOrder(id: string, n: number): number[] {
-  const rng = mulberry32(hashString(id));
+/**
+ * Returns a permutation `order` where `order[displayIndex] = originalIndex`.
+ * `round` (server-tracked, bumps on each pass) varies the order across reps/reviews;
+ * round 0 keeps the original per-id order.
+ */
+export function optionOrder(id: string, n: number, round = 0): number[] {
+  const rng = mulberry32(hashString(round > 0 ? `${id}#${round}` : id));
   const arr = Array.from({ length: n }, (_, i) => i);
   for (let i = n - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));

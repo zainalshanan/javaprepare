@@ -4,27 +4,90 @@
   "title": "Longest Increasing Subsequence",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/longest-increasing-subsequence/",
-  "prompt": "Return the length of the longest strictly increasing subsequence (elements in order, not necessarily contiguous).\n\n**Example**: `[10,9,2,5,3,7,101,18]` → `4` (e.g. `[2,3,7,101]`).\n\nThe O(n log n) approach keeps a `tails` array where `tails[k]` is the smallest possible tail of an increasing subsequence of length k+1; binary-search each number into it.",
+  "prompt": "Return the length of the longest **strictly increasing** subsequence of `nums`. A subsequence keeps order but may skip elements.\n\n**Example**: `[10,9,2,5,3,7,101,18]` → `4` (e.g. `[2,3,7,101]`).\n\n**Constraints**: `1 <= nums.length <= 2500`, `-10⁴ <= nums[i] <= 10⁴`.",
   "method": {
     "name": "lengthOfLIS",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int lengthOfLIS(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[10, 9, 2, 5, 3, 7, 101, 18]], "expected": 4 },
-    { "args": [[0, 1, 0, 3, 2, 3]], "expected": 4 },
-    { "args": [[7, 7, 7, 7]], "expected": 1, "note": "strictly increasing → duplicates don't extend" },
-    { "args": [[1]], "expected": 1, "hidden": true },
-    { "args": [[4, 10, 4, 3, 8, 9]], "expected": 3, "hidden": true }
+    {
+      "args": [
+        [
+          10,
+          9,
+          2,
+          5,
+          3,
+          7,
+          101,
+          18
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          0,
+          1,
+          0,
+          3,
+          2,
+          3
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          7,
+          7,
+          7,
+          7
+        ]
+      ],
+      "expected": 1,
+      "note": "strictly increasing → duplicates don't extend"
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": 1,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          4,
+          10,
+          4,
+          3,
+          8,
+          9
+        ]
+      ],
+      "expected": 3,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Maintain `tails`: the smallest tail value for an LIS of each length.",
-    "For each number, binary-search the first tail ≥ it; replace it (or append if it's largest so far).",
-    "The length of `tails` is the LIS length. (An O(n²) dp with dp[i] = best ending at i also works.)"
+    "Suppose an increasing subsequence ends at `nums[i]`. What was its previous element, and what do you need to know about subsequences ending there?",
+    "Let dp[i] = length of the longest increasing subsequence that ends exactly at index i. dp[i] = 1 + max dp[j] over j < i with nums[j] < nums[i] (or 1 if there's none).",
+    "The answer is the max over all dp[i], not dp[n-1]. For O(n log n): keep a sorted `tails` list and binary-search each number into it."
   ],
   "solution": {
-    "code": "import java.util.*;\n\nclass Solution {\n    public int lengthOfLIS(int[] nums) {\n        List<Integer> tails = new ArrayList<>();\n        for (int x : nums) {\n            int lo = 0, hi = tails.size();\n            while (lo < hi) {\n                int mid = (lo + hi) / 2;\n                if (tails.get(mid) < x) lo = mid + 1;\n                else hi = mid;\n            }\n            if (lo == tails.size()) tails.add(x);\n            else tails.set(lo, x);\n        }\n        return tails.size();\n    }\n}",
-    "explanation": "`tails` stays sorted; `tails[k]` being the smallest achievable tail for length k+1 means a new number either extends the longest run (append) or improves a shorter run's tail (replace), keeping future options maximally open. The binary search makes it O(n log n) — `tails` isn't the LIS itself, but its length is correct."
+    "code": "import java.util.*;\n\nclass Solution {\n    public int lengthOfLIS(int[] nums) {\n        int n = nums.length;\n        int[] dp = new int[n];\n        Arrays.fill(dp, 1);                     // each element alone\n        int best = 1;\n        for (int i = 1; i < n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (nums[j] < nums[i]) dp[i] = Math.max(dp[i], dp[j] + 1);\n            }\n            best = Math.max(best, dp[i]);\n        }\n        return best;\n    }\n}",
+    "explanation": "An increasing subsequence ending at i is either nums[i] alone or a longer one ending at a smaller nums[j] with j < i, extended by nums[i]. Checking every j finds the best. The overall LIS ends somewhere, hence the max over all i. O(n²) time, O(n) space. Patience sorting (binary search into a `tails` array) gets O(n log n)."
   }
 }

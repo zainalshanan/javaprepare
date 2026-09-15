@@ -53,8 +53,50 @@
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Point {\n    int x, y;\n    Point(int x, int y) { this.x = x; this.y = y; }\n\n    @Override\n    public boolean equals(Object o) {\n        if (!(o instanceof Point)) return false;\n        Point p = (Point) o;\n        return x == p.x && y == p.y;\n    }\n\n    @Override\n    public int hashCode() {\n        return Objects.hash(x, y);\n    }\n}\n\nclass Solution {\n    public int distinctPoints(int[][] points) {\n        Set<Point> set = new HashSet<>();\n        for (int[] p : points) set.add(new Point(p[0], p[1]));\n        return set.size();\n    }\n}",
-      "explanation": "With value-based equals/hashCode, the HashSet collapses coordinate-equal points, so its size is the distinct count. Omit the overrides and every point hashes to a unique bucket — the hidden tests with repeats would fail."
+      "explanation": "With value-based equals/hashCode, the HashSet collapses coordinate-equal points, so its size is the distinct count. Omit the overrides and every point hashes to a unique bucket — the hidden tests with repeats would fail. O(n) time and space."
     },
-    "hints": ["Override `equals` (instanceof + field compare) and `hashCode` (`Objects.hash(x, y)`).", "Then just add every point to a HashSet and return its size."]
+    "hints": [
+      "The set can only dedupe if two Points with the same coordinates count as equal. Which two methods decide that?",
+      "Override `equals` (instanceof check, cast, compare `x` and `y`) and `hashCode` (`return Objects.hash(x, y);`).",
+      "Then add a `new Point(p[0], p[1])` for every row and return the set's size."
+    ]
+  },
+  {
+    "id": "eq-fill-array-key",
+    "type": "fill-blank",
+    "title": "Predict the output: array keys",
+    "prompt": "Predict what each line prints.",
+    "code": "Set<int[]> a = new HashSet<>();\na.add(new int[]{1, 2});\nSystem.out.println(a.contains(new int[]{1, 2}));   // prints: {{1}}\n\nSet<String> b = new HashSet<>();\nb.add(Arrays.toString(new int[]{1, 2}));\nSystem.out.println(b.contains(\"[1, 2]\"));          // prints: {{2}}\n\nSet<List<Integer>> c = new HashSet<>();\nc.add(List.of(1, 2));\nSystem.out.println(c.contains(List.of(1, 2)));     // prints: {{3}}",
+    "blanks": {
+      "1": ["false"],
+      "2": ["true"],
+      "3": ["true"]
+    },
+    "explanation": "Arrays inherit identity `equals`/`hashCode`, so a fresh `int[]{1, 2}` is a different key. `Arrays.toString` produces the String `\"[1, 2]\"`, and Strings compare by content. `List` defines `equals`/`hashCode` by its elements, so two `List.of(1, 2)` are the same key."
+  },
+  {
+    "id": "eq-code-path-crossing",
+    "type": "code-method",
+    "title": "Path crossing",
+    "prompt": "You start at `(0, 0)` and follow `path`, one step per character: `N` (y+1), `S` (y-1), `E` (x+1), `W` (x-1). Return `true` if you ever stand on a spot you've already visited (including the start).\n\nStore visited positions in a `HashSet` — with a key type that compares by value, **not** `int[]`.",
+    "drill": true,
+    "method": { "name": "isPathCrossing", "params": [ { "name": "path", "type": "String" } ], "returns": "boolean" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public boolean isPathCrossing(String path) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["NES"], "expected": false },
+      { "args": ["NESWW"], "expected": true, "note": "returns to (0, 0)" },
+      { "args": ["NS"], "expected": true, "hidden": true, "note": "back to the start after 2 steps" },
+      { "args": ["EEEE"], "expected": false, "hidden": true },
+      { "args": ["NNEESSWWN"], "expected": true, "hidden": true, "note": "loop closes back at the start" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean isPathCrossing(String path) {\n        Set<String> visited = new HashSet<>();\n        int x = 0, y = 0;\n        visited.add(x + \",\" + y);\n        for (char step : path.toCharArray()) {\n            if (step == 'N') y++;\n            else if (step == 'S') y--;\n            else if (step == 'E') x++;\n            else x--;\n            if (!visited.add(x + \",\" + y)) return true;\n        }\n        return false;\n    }\n}",
+      "explanation": "`\"x,y\"` Strings compare by content, so revisiting a spot builds an equal key and `add` returns false. An `int[]` key would never match. The comma matters: without it, (1, 11) and (11, 1) would both become \"111\". O(n) time and space."
+    },
+    "hints": [
+      "Track your current position and a set of every position seen so far. The start counts as visited.",
+      "`int[]` keys never match by value. Encode the position as a String like `x + \",\" + y` (or use `List.of(x, y)`).",
+      "`visited.add(key)` returns `false` if the key was already there — that's your crossing."
+    ]
   }
 ]

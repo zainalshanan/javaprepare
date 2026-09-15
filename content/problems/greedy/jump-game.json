@@ -4,28 +4,92 @@
   "title": "Jump Game",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/jump-game/",
-  "prompt": "`nums[i]` is your maximum jump length from index `i`. Starting at index 0, can you reach the last index?\n\n**Example**: `[2,3,1,1,4]` → `true`; `[3,2,1,0,4]` → `false` (everything funnels into the 0).\n\nOne greedy pass tracking the farthest reachable index.",
+  "prompt": "`nums[i]` is your maximum jump length from index `i`. Starting at index 0, return whether you can reach the last index.\n\n**Example**: `[2,3,1,1,4]` → `true`; `[3,2,1,0,4]` → `false` (every path lands on the 0 at index 3).\n\n**Constraints**: `1 ≤ nums.length ≤ 10^4`, `0 ≤ nums[i] ≤ 10^5`.",
   "method": {
     "name": "canJump",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean canJump(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[2, 3, 1, 1, 4]], "expected": true },
-    { "args": [[3, 2, 1, 0, 4]], "expected": false },
-    { "args": [[0]], "expected": true, "note": "already at the last index" },
-    { "args": [[0, 1]], "expected": false, "hidden": true },
-    { "args": [[2, 0, 0]], "expected": true, "hidden": true },
-    { "args": [[1, 0, 1]], "expected": false, "hidden": true }
+    {
+      "args": [
+        [
+          2,
+          3,
+          1,
+          1,
+          4
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          3,
+          2,
+          1,
+          0,
+          4
+        ]
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        [
+          0
+        ]
+      ],
+      "expected": true,
+      "note": "already at the last index"
+    },
+    {
+      "args": [
+        [
+          0,
+          1
+        ]
+      ],
+      "expected": false,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          2,
+          0,
+          0
+        ]
+      ],
+      "expected": true,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          1,
+          0,
+          1
+        ]
+      ],
+      "expected": false,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Track `reach` = the farthest index attainable so far.",
-    "If the loop arrives at an index beyond `reach`, you're stranded — return false.",
-    "Otherwise extend: `reach = max(reach, i + nums[i])`."
+    "Do the exact jumps matter, or only how far you could possibly get?",
+    "Scan left to right, keeping `reach`, the farthest index reachable from any index you can actually stand on.",
+    "`if (i > reach) return false; reach = Math.max(reach, i + nums[i]);`"
   ],
   "solution": {
     "code": "class Solution {\n    public boolean canJump(int[] nums) {\n        int reach = 0;\n        for (int i = 0; i < nums.length; i++) {\n            if (i > reach) return false;\n            reach = Math.max(reach, i + nums[i]);\n        }\n        return true;\n    }\n}",
-    "explanation": "O(n)/O(1). The greedy claim: exact jump choices don't matter, only the reachable frontier — any index ≤ reach is attainable. Surviving the loop means the last index was within reach."
+    "explanation": "Every index ≤ reach can be reached (you can always jump short), so only the frontier matters. If the scan index passes it, there is a gap nobody can jump over. Otherwise the last index was within reach. O(n) time, O(1) space."
   }
 }

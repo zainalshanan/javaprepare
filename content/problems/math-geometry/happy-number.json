@@ -7,24 +7,56 @@
   "prompt": "Repeatedly replace `n` with the sum of the squares of its digits. `n` is happy if this reaches 1; otherwise it loops forever. Return whether `n` is happy.\n\n**Example**: `19` → `1²+9²=82 → 68 → 100 → 1` → `true`.\n\nDetect the loop with a HashSet (or fast/slow pointers).",
   "method": {
     "name": "isHappy",
-    "params": [ { "name": "n", "type": "int" } ],
+    "params": [
+      {
+        "name": "n",
+        "type": "int"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public boolean isHappy(int n) {\n\n    }\n}\n",
   "tests": [
-    { "args": [19], "expected": true },
-    { "args": [2], "expected": false },
-    { "args": [1], "expected": true },
-    { "args": [7], "expected": true, "hidden": true },
-    { "args": [4], "expected": false, "hidden": true }
+    {
+      "args": [
+        19
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        2
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        1
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        7
+      ],
+      "expected": true,
+      "hidden": true
+    },
+    {
+      "args": [
+        4
+      ],
+      "expected": false,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Compute the digit-square-sum in a helper (peel digits with % 10 and / 10).",
-    "Track seen values in a HashSet; if you revisit one before reaching 1, it's an endless loop → false.",
-    "Reaching 1 → true."
+    "Each number has exactly one next value. If the sequence never reaches 1, what must eventually happen?",
+    "It must revisit a value and loop forever. Write a helper that sums the squares of the digits (peel with `% 10` and `/ 10`).",
+    "Keep a `HashSet` of seen values and return false on a repeat. Or use slow/fast pointers (`slow = next(slow)`, `fast = next(next(fast))`) for O(1) space."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public boolean isHappy(int n) {\n        Set<Integer> seen = new HashSet<>();\n        while (n != 1 && !seen.contains(n)) {\n            seen.add(n);\n            int sum = 0;\n            while (n > 0) {\n                int d = n % 10;\n                sum += d * d;\n                n /= 10;\n            }\n            n = sum;\n        }\n        return n == 1;\n    }\n}",
-    "explanation": "The sequence is deterministic, so it either hits 1 or enters a cycle. A HashSet detects the repeat; seeing a value twice proves we're trapped in a loop that never reaches 1. (Floyd's fast/slow pointers give the same answer in O(1) space.)"
+    "explanation": "The digit-square function is deterministic, so the sequence either reaches 1 or enters a cycle. It is cycle detection, like a linked list. The values quickly fall below 243 (the max for a 3-digit number), so only a small number of steps happen: O(log n) per step, O(1) space if you use Floyd's slow/fast pointers instead of a set."
   }
 }

@@ -4,26 +4,115 @@
   "title": "Max Area of Island",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/max-area-of-island/",
-  "prompt": "Same grid setup as Number of Islands (here with int 0/1), but return the **area of the largest island** (0 if there's no land).\n\nThe twist: the DFS now *returns a value* — the size of the region it flooded. Compare with tree DFS: same combine-the-recursion shape.",
+  "prompt": "Given an `m x n` binary grid (`1` = land, `0` = water), return the **area of the largest island**, meaning the number of cells in the biggest 4-directionally connected group of 1s. Return `0` if there's no land.\n\n**Example**: `[[0,0,1,0,0],[0,1,1,1,0],[0,0,1,0,0],[0,0,0,0,0]]` → `5`.\n\n**Constraints**: `1 <= m, n <= 50`.",
   "method": {
     "name": "maxAreaOfIsland",
-    "params": [ { "name": "grid", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "grid",
+        "type": "int[][]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int maxAreaOfIsland(int[][] grid) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[0, 0, 1, 0, 0], [0, 1, 1, 1, 0], [0, 0, 1, 0, 0], [0, 0, 0, 0, 0]]], "expected": 5 },
-    { "args": [[[0, 0, 0]]], "expected": 0 },
-    { "args": [[[1]]], "expected": 1 },
-    { "args": [[[1, 1], [1, 1]]], "expected": 4, "hidden": true },
-    { "args": [[[1, 0, 1, 1, 1]]], "expected": 3, "hidden": true }
+    {
+      "args": [
+        [
+          [
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            1
+          ]
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            1
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "expected": 4,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            0,
+            1,
+            1,
+            1
+          ]
+        ]
+      ],
+      "expected": 3,
+      "hidden": true
+    }
   ],
   "hints": [
-    "dfs returns an int: 0 for out-of-bounds/water, else 1 + the four recursive areas.",
-    "The scan loop takes `best = Math.max(best, dfs(r, c))` for every cell."
+    "You already know how to visit a whole island. What could that visit *return* instead of nothing?",
+    "Make the DFS return the island's size: 0 for out-of-bounds, water, or already visited, and otherwise 1 plus the sizes from its four neighbors.",
+    "Mark before recursing, then `return 1 + dfs(r+1,c) + dfs(r-1,c) + dfs(r,c+1) + dfs(r,c-1);`, and in the scan keep `best = Math.max(best, dfs(r, c))`."
   ],
   "solution": {
     "code": "class Solution {\n    public int maxAreaOfIsland(int[][] grid) {\n        int best = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                best = Math.max(best, dfs(grid, r, c));\n            }\n        }\n        return best;\n    }\n\n    private int dfs(int[][] grid, int r, int c) {\n        if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] != 1) {\n            return 0;\n        }\n        grid[r][c] = 0;\n        return 1 + dfs(grid, r + 1, c) + dfs(grid, r - 1, c)\n                 + dfs(grid, r, c + 1) + dfs(grid, r, c - 1);\n    }\n}",
-    "explanation": "Identical traversal to Number of Islands, but the DFS aggregates a value instead of just marking — the grid version of `treeSum`. O(m·n)."
+    "explanation": "This is the same traversal as Number of Islands, but the DFS adds up a value instead of only marking cells, just like summing a tree. Marking in place stops cells from being counted twice. O(m·n) time, O(m·n) worst-case recursion depth."
   }
 }

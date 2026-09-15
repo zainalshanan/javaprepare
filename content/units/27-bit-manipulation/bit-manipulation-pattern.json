@@ -60,10 +60,12 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int countBits(int n) {\n        int count = 0;\n        while (n != 0) {\n            n &= (n - 1);\n            count++;\n        }\n        return count;\n    }\n}",
-      "explanation": "Each iteration erases exactly one set bit, so the loop runs `popcount(n)` times — faster than checking all 32 positions."
+      "explanation": "`n - 1` turns the lowest 1 into 0 and the zeros below it into 1s, so `n & (n - 1)` erases exactly that bit. The loop runs once per set bit: O(popcount) ≤ 32 steps, O(1) space."
     },
     "hints": [
-      "`n &= (n - 1)` erases the lowest set bit; count until n is 0."
+      "Is there a way to remove exactly one set bit per step, instead of looking at all 32 positions?",
+      "Subtracting 1 flips the lowest set bit and every bit below it. AND that with the original.",
+      "`n &= (n - 1); count++;` while `n != 0`."
     ]
   },
   {
@@ -117,10 +119,52 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n        return n > 0 && (n & (n - 1)) == 0;\n    }\n}"
+      "code": "class Solution {\n    public boolean isPowerOfTwo(int n) {\n        return n > 0 && (n & (n - 1)) == 0;\n    }\n}",
+      "explanation": "Powers of two have a single 1-bit, so clearing the lowest set bit leaves 0. Zero has no set bits and negatives have the sign bit, so the `n > 0` guard is required. O(1) time and space."
     },
     "hints": [
-      "Guard `n > 0`, then `(n & (n - 1)) == 0` means a single set bit."
+      "What does a power of two look like in binary?",
+      "Exactly one set bit. Which trick removes one set bit?",
+      "`n > 0 && (n & (n - 1)) == 0`. The `n > 0` guard rules out 0 and negatives."
     ]
+  },
+  {
+    "id": "pat-bit-mcq-shift",
+    "type": "mcq",
+    "title": ">> on a negative",
+    "prompt": "What happens here?\n\n```java\nint n = -8, count = 0;\nwhile (n != 0) {\n    count += n & 1;\n    n >>= 1;\n}\n```",
+    "options": [
+      "Infinite loop: `>>` copies the sign bit in, so n gets stuck at -1 and never reaches 0",
+      "count ends at 29",
+      "count ends at 1",
+      "It throws an ArithmeticException"
+    ],
+    "answer": 0,
+    "explanation": "`>>` is an arithmetic shift: a negative number keeps filling with 1s from the left and ends at `-1` (all 1s), and `-1 >> 1 == -1`. Use `n >>>= 1` (zero-fill), loop exactly 32 times, or use `n &= (n - 1)`."
+  },
+  {
+    "id": "pat-bit-fill-tricks",
+    "type": "fill-blank",
+    "title": "Recall: the bit identities",
+    "prompt": "Fill in the core bit tricks: clear the lowest set bit, the counting-bits DP, and adding without `+`.",
+    "drill": true,
+    "code": "// clear the lowest set bit\nn = n & ({{1}});\n\n// Counting Bits DP\nbits[i] = bits[{{2}}] + (i & 1);\n\n// Sum of Two Integers\nwhile (b != 0) {\n    int carry = (a {{3}} b) << 1;\n    a = a {{4}} b;\n    b = carry;\n}",
+    "blanks": {
+      "1": [
+        "n - 1"
+      ],
+      "2": [
+        "i >> 1",
+        "i >>> 1",
+        "i / 2"
+      ],
+      "3": [
+        "&"
+      ],
+      "4": [
+        "^"
+      ]
+    },
+    "explanation": "`n & (n - 1)` drops the lowest 1-bit. `i >> 1` is i without its lowest bit, which was already computed, so add back `i & 1`. For addition, `a & b` marks the columns that carry (shift them left), and `a ^ b` is the sum without carries. Repeat until there are no carries."
   }
 ]

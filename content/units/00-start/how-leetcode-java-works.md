@@ -27,6 +27,30 @@ Reading that signature:
 
 @exercise start-mcq-signature
 
+## You can add your own code to Solution
+
+The given method is just the entry point. Inside `class Solution` you're free to add **helper methods** — and even small **helper classes** — and call them from it:
+
+```java
+class Solution {
+    public int twiceSquare(int n) {
+        return 2 * square(n);          // call a helper by name
+    }
+
+    private int square(int n) {        // your own helper method
+        return n * n;
+    }
+
+    static class Pair {                // a tiny nested helper class
+        int a, b;
+    }
+}
+```
+
+Real solutions do this constantly (a `dfs` helper, a `Pair` to store two values). Methods get a full lesson in Fundamentals; classes arrive in Unit 2.
+
+@exercise start-fill-helper
+
 ## How this course grades you
 
 Every code exercise here is compiled and run with a **real Java compiler on your machine** — the same `javac` used in production. When you hit *Run & grade*:
@@ -49,4 +73,12 @@ And one in LeetCode style — fill in a method body. `return` hands a value back
 
 @exercise start-add
 
-That's the whole workflow: read, write, submit, iterate. Next up: variables and types, where the drilling begins.
+That's the whole workflow: read, write, submit, iterate. Next up: boilerplate drills, then variables and types.
+
+## Recap
+
+- LeetCode: fill in a method inside `class Solution` — no `main`.
+- Signature reads as `public <returnType> <name>(<type> <param>, ...)`.
+- A non-`void` method must `return` a value of its return type.
+- Add `private` helper methods (and `static class` helpers) inside `Solution` freely.
+- Drills need 3 passes **in a row**, then return in Review.

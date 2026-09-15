@@ -11,7 +11,7 @@ import {
   generateMethodHarness, parseHarnessOutput,
 } from './codegen.ts';
 import { compareValues, normalizeOutput, outputsMatch } from './compare.ts';
-import { cleanCompileErrors, cleanRuntimeError, detectClassName } from './errors.ts';
+import { cleanCompileErrors, cleanRuntimeError, compileDiagnostics, detectClassName } from './errors.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const JAVA_LIB = path.resolve(__dirname, '../../java-lib');
@@ -45,7 +45,7 @@ export async function gradeCodeOutput(ex: CodeOutputExercise, code: string): Pro
   });
   if (res.phase === 'compile-timeout') return { status: 'timeout', message: 'Compilation timed out.' };
   if (res.phase === 'compile-error') {
-    return { status: 'compile-error', message: cleanCompileErrors(res.compile.stderr, [fileName]) };
+    return { status: 'compile-error', message: cleanCompileErrors(res.compile.stderr, [fileName]), diagnostics: compileDiagnostics(res.compile.stderr, fileName) };
   }
   if (res.phase === 'run-timeout') {
     return { status: 'timeout', message: 'Your program ran for too long (10s limit). Check for an infinite loop.', actualOutput: res.run?.stdout, expectedOutput: ex.expectedOutput };
@@ -115,7 +115,7 @@ async function runHarness(
 
   if (res.phase === 'compile-timeout') return { status: 'timeout', message: 'Compilation timed out.' };
   if (res.phase === 'compile-error') {
-    return { status: 'compile-error', message: cleanCompileErrors(res.compile.stderr, [userFile]) };
+    return { status: 'compile-error', message: cleanCompileErrors(res.compile.stderr, [userFile]), diagnostics: compileDiagnostics(res.compile.stderr, userFile) };
   }
 
   const stdout = res.run?.stdout ?? '';

@@ -4,7 +4,7 @@
   "title": "Daily Temperatures",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/daily-temperatures/",
-  "prompt": "Given daily temperatures, return an array `answer` where `answer[i]` is the number of days you have to wait after day `i` for a warmer temperature (0 if it never comes).\n\n**Example**: `[73,74,75,71,69,72,76,73]` → `[1,1,4,2,1,1,0,0]`.\n\nA textbook monotonic stack: each day pops all the cooler days it answers.",
+  "prompt": "Given daily temperatures, return an array `answer` where `answer[i]` is the number of days you have to wait after day `i` for a warmer temperature (0 if it never comes).\n\n**Example**: `[73,74,75,71,69,72,76,73]` → `[1,1,4,2,1,1,0,0]`.\n\n**Constraints**: `1 <= temperatures.length <= 10^5`, `30 <= temperatures[i] <= 100`. Aim for O(n).",
   "method": {
     "name": "dailyTemperatures",
     "params": [ { "name": "temperatures", "type": "int[]" } ],
@@ -19,12 +19,12 @@
     { "args": [[70, 70, 70]], "expected": [0, 0, 0], "hidden": true, "note": "equal temps don't count as warmer" }
   ],
   "hints": [
-    "Stack holds INDICES of days still waiting for a warmer day (temperatures decreasing from bottom to top).",
-    "When day i is warmer than the day at the top: pop it — its answer is `i - poppedIndex`.",
-    "Days never popped keep their default 0 (int arrays start zero-filled)."
+    "Scan left to right. At any moment, which past days are still waiting for a warmer day — and what must be true about their temperatures relative to each other?",
+    "Keep the indices of unanswered days, most recent on top (their temperatures never increase toward the top). When today is warmer than the most recent waiting day, today is that day's answer — remove it and check the next one.",
+    "`while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) { int j = stack.pop(); res[j] = i - j; }` then push i. Days never popped keep the default 0."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int[] dailyTemperatures(int[] temperatures) {\n        int n = temperatures.length;\n        int[] res = new int[n];\n        Deque<Integer> stack = new ArrayDeque<>();   // indices, temps decreasing\n        for (int i = 0; i < n; i++) {\n            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {\n                int idx = stack.pop();\n                res[idx] = i - idx;\n            }\n            stack.push(i);\n        }\n        return res;\n    }\n}",
-    "explanation": "O(n) amortized — each index pushes once, pops at most once. The strict `>` handles the equal-temperature case: 70 is not warmer than 70."
+    "explanation": "Insight: the waiting days form a stack whose temperatures never increase toward the top (a monotonic stack). A warmer day would already have answered, and removed, any cooler day below it. So when day i arrives, it is the first warmer day for every waiting day it pops, and `i - j` is that day's answer. The strict `>` keeps equal temperatures waiting. Time O(n) amortized (each index is pushed and popped at most once), space O(n)."
   }
 }

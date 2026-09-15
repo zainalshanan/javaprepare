@@ -20,7 +20,17 @@
     "prompt": "Fill in the stream aggregation operations.",
     "drill": true,
     "code": "int total = Arrays.{{1}}(nums).sum();\nint biggest = Arrays.stream(nums).{{2}}().getAsInt();\nlong evens = Arrays.stream(nums).{{3}}(x -> x % 2 == 0).count();",
-    "blanks": { "1": ["stream"], "2": ["max"], "3": ["filter"] },
+    "blanks": {
+      "1": [
+        "stream"
+      ],
+      "2": [
+        "max"
+      ],
+      "3": [
+        "filter"
+      ]
+    },
     "explanation": "`Arrays.stream(nums)` opens an IntStream; `sum`/`max` aggregate, `filter` narrows before you count or sum."
   },
   {
@@ -29,18 +39,63 @@
     "title": "Drill: sum of positives (streams)",
     "prompt": "From memory: return the sum of the positive numbers in `nums` using a stream — `Arrays.stream(...).filter(...).sum()`.",
     "drill": true,
-    "method": { "name": "sumPositives", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "method": {
+      "name": "sumPositives",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int sumPositives(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, -2, 3]], "expected": 4 },
-      { "args": [[-1, -2]], "expected": 0 },
-      { "args": [[]], "expected": 0 },
-      { "args": [[5, 5, -5]], "expected": 10, "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            -2,
+            3
+          ]
+        ],
+        "expected": 4
+      },
+      {
+        "args": [
+          [
+            -1,
+            -2
+          ]
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            5,
+            5,
+            -5
+          ]
+        ],
+        "expected": 10,
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int sumPositives(int[] nums) {\n        return Arrays.stream(nums).filter(x -> x > 0).sum();\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int sumPositives(int[] nums) {\n        return Arrays.stream(nums).filter(x -> x > 0).sum();\n    }\n}",
+      "explanation": "`filter` passes along only elements matching the predicate, and `IntStream.sum()` returns 0 for an empty stream, so no special cases are needed. O(n)."
     },
-    "hints": ["`Arrays.stream(nums).filter(x -> x > 0).sum()` — one line."]
+    "hints": [
+      "Three steps: open a stream over the array, keep only positives, total them.",
+      "`Arrays.stream(nums)` gives an IntStream; chain `.filter(x -> x > 0)` then `.sum()`."
+    ]
   },
   {
     "id": "streams-fill-convert",
@@ -49,7 +104,14 @@
     "prompt": "Fill in the boxing conversions.",
     "drill": true,
     "code": "int[] arr = list.stream().{{1}}(i -> i).toArray();          // List -> int[]\nList<Integer> boxed = Arrays.stream(nums).{{2}}().collect(Collectors.toList()); // int[] -> List",
-    "blanks": { "1": ["mapToInt"], "2": ["boxed"] },
+    "blanks": {
+      "1": [
+        "mapToInt"
+      ],
+      "2": [
+        "boxed"
+      ]
+    },
     "explanation": "`mapToInt(i -> i)` unboxes Integer→int for `toArray`; `boxed()` boxes int→Integer so `collect(Collectors.toList())` can build a `List<Integer>`."
   },
   {
@@ -58,16 +120,59 @@
     "title": "Drill: int[] to List<Integer>",
     "prompt": "From memory: convert `nums` to a `List<Integer>` in one line using `Arrays.stream(...).boxed().collect(...)`.",
     "drill": true,
-    "method": { "name": "toList", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "List<Integer>" },
+    "method": {
+      "name": "toList",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "List<Integer>"
+    },
     "starter": "import java.util.*;\nimport java.util.stream.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 3]], "expected": [1, 2, 3] },
-      { "args": [[]], "expected": [] },
-      { "args": [[-4, 4]], "expected": [-4, 4], "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": []
+      },
+      {
+        "args": [
+          [
+            -4,
+            4
+          ]
+        ],
+        "expected": [
+          -4,
+          4
+        ],
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\nimport java.util.stream.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n        return Arrays.stream(nums).boxed().collect(Collectors.toList());\n    }\n}"
+      "code": "import java.util.*;\nimport java.util.stream.*;\n\nclass Solution {\n    public List<Integer> toList(int[] nums) {\n        return Arrays.stream(nums).boxed().collect(Collectors.toList());\n    }\n}",
+      "explanation": "`boxed()` turns the IntStream into a `Stream<Integer>`, which `Collectors.toList()` can gather into a `List<Integer>`. O(n)."
     },
-    "hints": ["`Arrays.stream(nums).boxed().collect(Collectors.toList())` — remember `import java.util.stream.*;`"]
+    "hints": [
+      "An IntStream holds primitives, but a List needs Integer objects. Box first.",
+      "`Arrays.stream(nums).boxed()` then `.collect(Collectors.toList())` (needs `import java.util.stream.*;`)."
+    ]
   }
 ]

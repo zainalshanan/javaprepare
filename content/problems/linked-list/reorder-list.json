@@ -4,7 +4,7 @@
   "title": "Reorder List",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/reorder-list/",
-  "prompt": "Reorder the list `L0 → L1 → … → Ln` into `L0 → Ln → L1 → Ln-1 → L2 → …`, in place (rearrange nodes; don't change values).\n\n**Example**: `[1,2,3,4,5]` → `[1,5,2,4,3]`.\n\nAll three linked-list moves composed: (1) fast/slow to find the middle, (2) reverse the second half, (3) merge the two halves alternately.",
+  "prompt": "You are given the head of a singly linked list `L0 → L1 → … → Ln-1 → Ln`. Reorder it to `L0 → Ln → L1 → Ln-1 → L2 → Ln-2 → …`.\n\nYou may not modify the values in the nodes — only the nodes themselves may be rearranged. The method returns nothing; the list is modified in place.\n\n**Example 1**: `[1,2,3,4]` → `[1,4,2,3]`\n\n**Example 2**: `[1,2,3,4,5]` → `[1,5,2,4,3]`\n\n**Constraints**: `1 <= number of nodes <= 5·10^4`, `1 <= Node.val <= 1000`.",
   "method": {
     "name": "reorderList",
     "params": [ { "name": "head", "type": "ListNode" } ],
@@ -16,15 +16,16 @@
     { "args": [[1, 2, 3, 4, 5]], "expected": [1, 5, 2, 4, 3] },
     { "args": [[1]], "expected": [1] },
     { "args": [[1, 2]], "expected": [1, 2], "hidden": true },
-    { "args": [[1, 2, 3]], "expected": [1, 3, 2], "hidden": true }
+    { "args": [[1, 2, 3]], "expected": [1, 3, 2], "hidden": true },
+    { "args": [[1, 2, 3, 4, 5, 6]], "expected": [1, 6, 2, 5, 3, 4], "hidden": true }
   ],
   "hints": [
-    "Step 1: fast/slow — slow lands on the middle; cut with `second = slow.next; slow.next = null;`",
-    "Step 2: reverse `second` with the standard four-liner.",
-    "Step 3: alternate-splice — save both `next`s first, then rewire, then advance."
+    "The result alternates between the front half in order and the back half in reverse order. A singly linked list can't be walked backwards — so how could you get the back half in reverse without extra space?",
+    "Three stages you already know: find the middle, reverse the second half, then weave the two halves together one node from each.",
+    "Cut with `ListNode second = slow.next; slow.next = null;` before reversing, and when weaving save BOTH `first.next` and `second.next` before rewiring."
   ],
   "solution": {
     "code": "class Solution {\n    public void reorderList(ListNode head) {\n        if (head == null || head.next == null) return;\n\n        // 1. find middle\n        ListNode slow = head, fast = head;\n        while (fast.next != null && fast.next.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n        }\n        ListNode second = slow.next;\n        slow.next = null;   // cut the list in two\n\n        // 2. reverse the second half\n        ListNode prev = null, curr = second;\n        while (curr != null) {\n            ListNode next = curr.next;\n            curr.next = prev;\n            prev = curr;\n            curr = next;\n        }\n        second = prev;\n\n        // 3. merge alternately\n        ListNode first = head;\n        while (second != null) {\n            ListNode n1 = first.next, n2 = second.next;\n            first.next = second;\n            second.next = n1;\n            first = n1;\n            second = n2;\n        }\n    }\n}",
-    "explanation": "O(n)/O(1). Note the middle-finder uses `fast.next != null && fast.next.next != null` so slow stops at the END of the first half (for even lengths), making the first half never shorter than the second — which the merge loop relies on."
+    "explanation": "Reordering pairs the i-th node from the front with the i-th from the back; reversing the second half turns 'from the back' into a forward walk, so a simple alternating merge produces the answer. The middle-finder uses `fast.next != null && fast.next.next != null` so slow stops at the end of the first half, keeping the first half at least as long as the second — which the merge loop relies on. O(n) time, O(1) space."
   }
 }

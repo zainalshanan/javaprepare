@@ -4,28 +4,67 @@
   "title": "Decode Ways",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/decode-ways/",
-  "prompt": "A message of digits is decoded with A=1 … Z=26. Return the number of ways to decode string `s`.\n\n**Example**: `\"226\"` → `3` (`\"BZ\"`=2·26, `\"VF\"`=22·6, `\"BBF\"`=2·2·6).\n\ndp[i] = ways to decode the first i characters, adding one-digit and valid two-digit decodings.",
+  "prompt": "Letters are encoded as `'A' → \"1\"`, …, `'Z' → \"26\"`. Given a digit string `s`, return the number of ways to decode it. Groups like `\"06\"` are not valid (no leading zeros).\n\n**Example**: `\"226\"` → `3` (`\"BZ\"` = 2 26, `\"VF\"` = 22 6, `\"BBF\"` = 2 2 6). `\"06\"` → `0`.\n\n**Constraints**: `1 <= s.length <= 100`, digits only; the answer fits in a 32-bit int.",
   "method": {
     "name": "numDecodings",
-    "params": [ { "name": "s", "type": "String" } ],
+    "params": [
+      {
+        "name": "s",
+        "type": "String"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int numDecodings(String s) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["12"], "expected": 2 },
-    { "args": ["226"], "expected": 3 },
-    { "args": ["0"], "expected": 0, "note": "leading zero can't decode" },
-    { "args": ["06"], "expected": 0, "note": "0 can't start a code" },
-    { "args": ["10"], "expected": 1, "hidden": true },
-    { "args": ["2101"], "expected": 1, "hidden": true }
+    {
+      "args": [
+        "12"
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        "226"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "0"
+      ],
+      "expected": 0,
+      "note": "leading zero can't decode"
+    },
+    {
+      "args": [
+        "06"
+      ],
+      "expected": 0,
+      "note": "0 can't start a code"
+    },
+    {
+      "args": [
+        "10"
+      ],
+      "expected": 1,
+      "hidden": true
+    },
+    {
+      "args": [
+        "2101"
+      ],
+      "expected": 1,
+      "hidden": true
+    }
   ],
   "hints": [
-    "dp[i] counts decodings of the first i digits. dp[0] = 1 (empty), and a leading '0' is unrecoverable.",
-    "Single digit: if s[i-1] != '0', add dp[i-1].",
-    "Two digits: if s[i-2..i-1] is between 10 and 26, add dp[i-2]."
+    "Look at how a decoding of the first i digits could end. How many digits can the last letter use?",
+    "Let dp[i] = ways to decode the first i digits, with dp[0] = 1. The last letter is one digit (valid unless it's '0') or two digits (valid if 10–26). Add up the ways for each valid case.",
+    "`if (s.charAt(i-1) != '0') dp[i] += dp[i-1];` and `if (two >= 10 && two <= 26) dp[i] += dp[i-2];`. A leading '0' makes the answer 0."
   ],
   "solution": {
     "code": "class Solution {\n    public int numDecodings(String s) {\n        if (s.charAt(0) == '0') return 0;\n        int n = s.length();\n        int prev2 = 1, prev1 = 1;   // dp[i-2], dp[i-1]\n        for (int i = 1; i < n; i++) {\n            int cur = 0;\n            if (s.charAt(i) != '0') cur += prev1;\n            int two = Integer.parseInt(s.substring(i - 1, i + 1));\n            if (two >= 10 && two <= 26) cur += prev2;\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
-    "explanation": "Each new digit either stands alone (valid unless it's '0') or joins the previous digit as a 10–26 pair. Summing those two sources is the recurrence; the '0' checks encode the un-decodable cases (a lone 0, or a pair like 30). O(n)/O(1)."
+    "explanation": "Every decoding ends in a one-digit or a two-digit letter, and those cases don't overlap, so their counts add. '0' can't stand alone, and a pair must be 10–26, which rules out inputs like \"30\" and \"06\". Only the last two values are needed. O(n) time, O(1) space."
   }
 }

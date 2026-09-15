@@ -1,0 +1,350 @@
+[
+  {
+    "id": "pat-sp-drill-wadj",
+    "type": "code-method",
+    "title": "Drill: weighted adjacency list",
+    "prompt": "From memory: `edges[i] = [u, v, w]` is a **directed** edge u → v with weight w, over nodes `0..n-1`. Build a weighted adjacency list (`List<List<int[]>>` holding `{v, w}` pairs), then return `res` where `res[u]` is the neighbor reached by u's **cheapest** outgoing edge. Break ties by the smaller neighbor. Use `-1` if u has no outgoing edges.",
+    "drill": true,
+    "method": {
+      "name": "cheapestNeighbor",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "edges",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] cheapestNeighbor(int n, int[][] edges) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          4,
+          [
+            [
+              0,
+              1,
+              5
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              1,
+              2,
+              1
+            ],
+            [
+              2,
+              0,
+              7
+            ],
+            [
+              2,
+              3,
+              7
+            ]
+          ]
+        ],
+        "expected": [
+          2,
+          2,
+          0,
+          -1
+        ],
+        "note": "node 2 ties at weight 7 → smaller neighbor 0"
+      },
+      {
+        "args": [
+          2,
+          [
+            [
+              1,
+              0,
+              4
+            ]
+          ]
+        ],
+        "expected": [
+          -1,
+          0
+        ]
+      },
+      {
+        "args": [
+          3,
+          [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              2
+            ],
+            [
+              0,
+              1,
+              1
+            ]
+          ]
+        ],
+        "expected": [
+          1,
+          -1,
+          -1
+        ],
+        "hidden": true,
+        "note": "parallel edges"
+      },
+      {
+        "args": [
+          1,
+          []
+        ],
+        "expected": [
+          -1
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] cheapestNeighbor(int n, int[][] edges) {\n        List<List<int[]>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] e : edges) {\n            adj.get(e[0]).add(new int[]{e[1], e[2]});   // directed: one direction only\n        }\n        int[] res = new int[n];\n        for (int u = 0; u < n; u++) {\n            res[u] = -1;\n            int bestW = Integer.MAX_VALUE;\n            for (int[] e : adj.get(u)) {\n                int v = e[0], w = e[1];\n                if (w < bestW || (w == bestW && v < res[u])) {\n                    bestW = w;\n                    res[u] = v;\n                }\n            }\n        }\n        return res;\n    }\n}",
+      "explanation": "Each adjacency entry is an `int[]{neighbor, weight}`, which is exactly the shape Dijkstra and Prim read. Directed edges go into only the source's list. Building is O(n + E), and scanning every list once is O(n + E)."
+    },
+    "hints": [
+      "An unweighted list stores just the neighbor. What else does each entry need now?",
+      "Create n empty `List<int[]>`s, and for each edge add `new int[]{v, w}` to `adj.get(u)` only. Then scan each list for the minimum weight.",
+      "Update when `w < bestW || (w == bestW && v < res[u])`."
+    ]
+  },
+  {
+    "id": "pat-sp-fill-dijkstra",
+    "type": "fill-blank",
+    "title": "Recall: Dijkstra with lazy deletion",
+    "prompt": "Fill in the Dijkstra core. `adj.get(u)` holds `{v, w}` pairs and heap entries are `{dist, node}`.",
+    "drill": true,
+    "code": "int[] dist = new int[n];\nArrays.fill(dist, Integer.MAX_VALUE);\ndist[src] = 0;\nPriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));\npq.offer(new int[]{0, src});\nwhile (!pq.isEmpty()) {\n    int[] cur = pq.poll();\n    int d = cur[0], u = cur[1];\n    if ({{1}}) continue;               // stale entry\n    for (int[] e : adj.get(u)) {\n        int nd = {{2}};\n        if (nd < {{3}}) {\n            dist[e[0]] = nd;\n            pq.offer({{4}});\n        }\n    }\n}",
+    "blanks": {
+      "1": [
+        "d > dist[u]",
+        "dist[u] < d",
+        "d != dist[u]"
+      ],
+      "2": [
+        "d + e[1]",
+        "e[1] + d",
+        "dist[u] + e[1]",
+        "e[1] + dist[u]"
+      ],
+      "3": [
+        "dist[e[0]]"
+      ],
+      "4": [
+        "new int[]{nd, e[0]}"
+      ]
+    },
+    "explanation": "Java's `PriorityQueue` has no decrease-key, so an improved distance is pushed as a new entry and the old one stays behind. When an entry's `d` is bigger than the best known `dist[u]`, it's stale and gets skipped. Relaxation computes `d + weight`, and if that beats the neighbor's distance, it records the new distance and pushes `{nd, neighbor}`."
+  },
+  {
+    "id": "pat-sp-drill-dijkstra",
+    "type": "code-method",
+    "title": "Drill: single-source shortest paths",
+    "prompt": "From memory: `edges[i] = [u, v, w]` is a directed edge with non-negative weight. Return the shortest distance from `src` to every node `0..n-1`, using `-1` for unreachable nodes.",
+    "drill": true,
+    "method": {
+      "name": "shortestFrom",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        },
+        {
+          "name": "edges",
+          "type": "int[][]"
+        },
+        {
+          "name": "src",
+          "type": "int"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] shortestFrom(int n, int[][] edges, int src) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          4,
+          [
+            [
+              0,
+              1,
+              5
+            ],
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              2,
+              1,
+              2
+            ],
+            [
+              1,
+              3,
+              1
+            ],
+            [
+              2,
+              3,
+              5
+            ]
+          ],
+          0
+        ],
+        "expected": [
+          0,
+          3,
+          1,
+          4
+        ],
+        "note": "the lesson trace"
+      },
+      {
+        "args": [
+          3,
+          [
+            [
+              0,
+              1,
+              4
+            ]
+          ],
+          0
+        ],
+        "expected": [
+          0,
+          4,
+          -1
+        ]
+      },
+      {
+        "args": [
+          2,
+          [
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              0,
+              1
+            ]
+          ],
+          1
+        ],
+        "expected": [
+          1,
+          0
+        ]
+      },
+      {
+        "args": [
+          5,
+          [
+            [
+              0,
+              1,
+              10
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              2,
+              1,
+              4
+            ],
+            [
+              1,
+              3,
+              2
+            ],
+            [
+              2,
+              3,
+              8
+            ],
+            [
+              3,
+              4,
+              7
+            ],
+            [
+              2,
+              4,
+              20
+            ]
+          ],
+          0
+        ],
+        "expected": [
+          0,
+          7,
+          3,
+          9,
+          16
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          1,
+          [],
+          0
+        ],
+        "expected": [
+          0
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] shortestFrom(int n, int[][] edges, int src) {\n        List<List<int[]>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        for (int[] e : edges) adj.get(e[0]).add(new int[]{e[1], e[2]});\n        int[] dist = new int[n];\n        Arrays.fill(dist, Integer.MAX_VALUE);\n        dist[src] = 0;\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));\n        pq.offer(new int[]{0, src});\n        while (!pq.isEmpty()) {\n            int[] cur = pq.poll();\n            int d = cur[0], u = cur[1];\n            if (d > dist[u]) continue;\n            for (int[] e : adj.get(u)) {\n                int nd = d + e[1];\n                if (nd < dist[e[0]]) {\n                    dist[e[0]] = nd;\n                    pq.offer(new int[]{nd, e[0]});\n                }\n            }\n        }\n        for (int i = 0; i < n; i++) if (dist[i] == Integer.MAX_VALUE) dist[i] = -1;\n        return dist;\n    }\n}",
+      "explanation": "With non-negative weights, the smallest distance in the heap can never be improved later, so each node's distance is final the first time it's popped with a current distance. Stale entries are skipped. O((V + E) log V) time, O(V + E) space."
+    },
+    "hints": [
+      "BFS finds the fewest edges. What should you explore first when edges have different costs?",
+      "Keep a min-heap of `{dist, node}`, starting with `{0, src}`. Pop the closest node and relax its edges, pushing any neighbor whose distance improves.",
+      "Lazy deletion: `if (d > dist[u]) continue;` right after polling."
+    ]
+  },
+  {
+    "id": "pat-sp-mcq-bfcopy",
+    "type": "mcq",
+    "title": "Why copy dist each round?",
+    "prompt": "In Cheapest Flights Within K Stops, Bellman-Ford runs `k + 1` rounds, and each round relaxes edges into `tmp = dist.clone()` while reading from `dist`. What goes wrong if you relax directly into `dist`?",
+    "options": [
+      "An update made earlier in the same round can be extended by a later edge, so one round can use several flights and the k-stop limit breaks",
+      "Nothing; the copy only saves memory",
+      "It would overflow Integer.MAX_VALUE",
+      "The algorithm would no longer terminate"
+    ],
+    "answer": 0,
+    "explanation": "Round i is supposed to allow paths of at most i edges. Take 0→1 ($100), 1→2 ($100), 0→2 ($500) with k = 0. Relaxing in place sets dist[1] = 100 and then immediately dist[2] = 200, a two-flight path found in a single round. Reading only from last round's snapshot gives the correct answer, 500."
+  }
+]

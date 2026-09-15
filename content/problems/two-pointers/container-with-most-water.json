@@ -4,27 +4,90 @@
   "title": "Container With Most Water",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/container-with-most-water/",
-  "prompt": "`height[i]` is the height of a vertical line at position `i`. Pick two lines that, with the x-axis, hold the most water. Return that maximum area.\n\nArea between lines `l` and `r` = `min(height[l], height[r]) * (r - l)`.\n\n**Example**: `[1,8,6,2,5,4,8,3,7]` → `49`.\n\nConverging pointers: always move the SHORTER line inward — moving the taller one can never help.",
+  "prompt": "`height[i]` is the height of a vertical line at position `i`. Pick two lines that, with the x-axis, hold the most water. Return that maximum area.\n\nArea between lines `l` and `r` = `min(height[l], height[r]) * (r - l)`.\n\n**Example**: `[1,8,6,2,5,4,8,3,7]` → `49`.\n\n**Constraints**: `2 <= height.length <= 10^5`, `0 <= height[i] <= 10^4`.",
   "method": {
     "name": "maxArea",
-    "params": [ { "name": "height", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "height",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int maxArea(int[] height) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[1, 8, 6, 2, 5, 4, 8, 3, 7]], "expected": 49 },
-    { "args": [[1, 1]], "expected": 1 },
-    { "args": [[4, 3, 2, 1, 4]], "expected": 16 },
-    { "args": [[1, 2, 1]], "expected": 2, "hidden": true },
-    { "args": [[2, 3, 4, 5, 18, 17, 6]], "expected": 17, "hidden": true }
+    {
+      "args": [
+        [
+          1,
+          8,
+          6,
+          2,
+          5,
+          4,
+          8,
+          3,
+          7
+        ]
+      ],
+      "expected": 49
+    },
+    {
+      "args": [
+        [
+          1,
+          1
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          4,
+          3,
+          2,
+          1,
+          4
+        ]
+      ],
+      "expected": 16
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          1
+        ]
+      ],
+      "expected": 2,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          2,
+          3,
+          4,
+          5,
+          18,
+          17,
+          6
+        ]
+      ],
+      "expected": 17,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Start with the widest container: l = 0, r = last index.",
-    "The area is capped by the shorter wall, so move the shorter pointer inward hoping for a taller one.",
-    "Moving the taller pointer can only lose width without raising the min — never do it."
+    "Start with the widest possible container. Any narrower container loses width — what would it have to gain to be better?",
+    "Use pointers at both ends. The area is capped by the shorter wall, so moving the taller wall inward can never increase the area — move the shorter one.",
+    "Each step: `best = Math.max(best, Math.min(height[l], height[r]) * (r - l));` then `if (height[l] < height[r]) l++; else r--;`"
   ],
   "solution": {
     "code": "class Solution {\n    public int maxArea(int[] height) {\n        int l = 0, r = height.length - 1, best = 0;\n        while (l < r) {\n            int area = Math.min(height[l], height[r]) * (r - l);\n            best = Math.max(best, area);\n            if (height[l] < height[r]) l++;\n            else r--;\n        }\n        return best;\n    }\n}",
-    "explanation": "O(n). Each step discards the shorter wall with a proof it can't be part of a better container (its height caps the area, and every remaining width is smaller). Starting maximally wide and shrinking is what makes one pass suffice."
+    "explanation": "Insight: the shorter wall is the bottleneck. Every container that pairs the shorter wall with something further inward is narrower and still capped by that same short height, so none can beat the current area — the short wall can be discarded safely. Repeating this discards one wall per step without ever losing the optimum. O(n) time, O(1) space."
   }
 }

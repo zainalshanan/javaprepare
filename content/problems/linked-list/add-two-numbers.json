@@ -4,7 +4,7 @@
   "title": "Add Two Numbers",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/add-two-numbers/",
-  "prompt": "Two non-empty lists represent non-negative integers with digits stored in **reverse** order (ones digit first). Add them and return the sum as a list, same format.\n\n**Example**: `[2,4,3] + [5,6,4]` = 342 + 465 = 807 → `[7,0,8]`.\n\nElementary-school addition with a carry, using a dummy head to build the result.",
+  "prompt": "You are given two **non-empty** linked lists representing two non-negative integers. The digits are stored in **reverse order** (ones digit first), and each node holds a single digit. Add the two numbers and return the sum as a linked list in the same format.\n\n**Example 1**: `[2,4,3] + [5,6,4]` = 342 + 465 = 807 → `[7,0,8]`\n\n**Example 2**: `[9,9,9,9,9,9,9] + [9,9,9,9]` → `[8,9,9,9,0,0,0,1]`\n\n**Constraints**: each list has 1–100 nodes; `0 <= Node.val <= 9`; no leading zeros except the number 0 itself.",
   "method": {
     "name": "addTwoNumbers",
     "params": [ { "name": "l1", "type": "ListNode" }, { "name": "l2", "type": "ListNode" } ],
@@ -19,12 +19,12 @@
     { "args": [[1, 8], [0]], "expected": [1, 8], "hidden": true }
   ],
   "hints": [
-    "Loop while either list has nodes OR a carry remains.",
-    "`sum = carry + (l1 digit) + (l2 digit)`; new digit is `sum % 10`, next carry is `sum / 10`.",
-    "Reverse storage means you process ones-first, so no reversing needed — just append and advance."
+    "Think about how you add multi-digit numbers on paper. The digits here already come ones-first — the same order you'd add them in.",
+    "Walk both lists together, adding digit + digit + carry. Write `sum % 10` into a new node appended to the result, and carry `sum / 10` forward. A dummy head makes appending uniform.",
+    "Loop while either list has nodes OR a carry remains: `while (l1 != null || l2 != null || carry != 0)` — that one condition handles unequal lengths and a final carry like 5 + 5 → `[0,1]`."
   ],
   "solution": {
     "code": "class Solution {\n    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {\n        ListNode dummy = new ListNode(0), tail = dummy;\n        int carry = 0;\n        while (l1 != null || l2 != null || carry != 0) {\n            int sum = carry;\n            if (l1 != null) { sum += l1.val; l1 = l1.next; }\n            if (l2 != null) { sum += l2.val; l2 = l2.next; }\n            carry = sum / 10;\n            tail.next = new ListNode(sum % 10);\n            tail = tail.next;\n        }\n        return dummy.next;\n    }\n}",
-    "explanation": "O(max(m, n)). The single loop condition `l1 != null || l2 != null || carry != 0` handles unequal lengths and the final carry-out (like 5+5=10) uniformly, so there are no trailing special cases."
+    "explanation": "Reverse digit order means the lists are already in the order column addition processes them, so one simultaneous walk with a carry computes the sum. The loop condition `l1 != null || l2 != null || carry != 0` treats a missing digit as 0 and emits the final carry-out, so unequal lengths and 5+5=10 need no special cases. O(max(m, n)) time, O(max(m, n)) space for the result list."
   }
 }

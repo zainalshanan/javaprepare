@@ -4,7 +4,7 @@
   "title": "Design Add and Search Words Data Structure",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
-  "prompt": "Design a dictionary supporting wildcard search:\n\n- `WordDictionary()`\n- `void addWord(String word)`\n- `boolean search(String word)` — `word` may contain `.`, which matches any single letter\n\nA trie handles the letters; the `.` wildcard forces a branch: try every child at that position (DFS).",
+  "prompt": "Design a dictionary that supports wildcard search:\n\n- `WordDictionary()`\n- `void addWord(String word)`\n- `boolean search(String word)`: `word` may contain `.`, which matches any single letter\n\n**Example**: after adding `\"bad\"`, `\"dad\"`, `\"mad\"`: `search(\"pad\")` → `false`, `search(\"bad\")` → `true`, `search(\".ad\")` → `true`, `search(\"b..\")` → `true`.\n\n**Constraints**: words have 1–25 lowercase letters; a search contains at most 2 dots.",
   "className": "WordDictionary",
   "methods": {
     "WordDictionary": { "params": [], "returns": "void" },
@@ -24,15 +24,22 @@
       "expected": [null, null, true, true, false],
       "hidden": true,
       "note": "single-letter wildcard, and length must match"
+    },
+    {
+      "ops": ["WordDictionary", "addWord", "search", "search", "search", "search"],
+      "args": [[], ["ab"], ["a."], [".b"], ["b."], ["..."]],
+      "expected": [null, null, true, true, false, false],
+      "hidden": true,
+      "note": "dot in either position; too-long pattern"
     }
   ],
   "hints": [
-    "Build a trie (26-way children + isEnd). addWord is the standard trie insert.",
-    "search recurses with an index into the word and the current node.",
-    "On a normal letter, descend that one child. On `.`, try DFS into EVERY non-null child; succeed if any branch matches."
+    "Plain letters could be handled by walking down a trie. What does a `.` force you to do at that position?",
+    "Store words in a trie. Make search a recursive DFS over (index in word, current node).",
+    "On `.`, loop over all 26 children and return true if any non-null child satisfies `dfs(word, i + 1, child)`. At the end of the word, return `node.isEnd`."
   ],
   "solution": {
     "code": "class WordDictionary {\n    private WordDictionary[] children = new WordDictionary[26];\n    private boolean isEnd = false;\n\n    public WordDictionary() {\n    }\n\n    public void addWord(String word) {\n        WordDictionary node = this;\n        for (char c : word.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) node.children[i] = new WordDictionary();\n            node = node.children[i];\n        }\n        node.isEnd = true;\n    }\n\n    public boolean search(String word) {\n        return dfs(word, 0, this);\n    }\n\n    private boolean dfs(String word, int idx, WordDictionary node) {\n        if (idx == word.length()) return node.isEnd;\n        char c = word.charAt(idx);\n        if (c == '.') {\n            for (WordDictionary child : node.children) {\n                if (child != null && dfs(word, idx + 1, child)) return true;\n            }\n            return false;\n        }\n        WordDictionary child = node.children[c - 'a'];\n        return child != null && dfs(word, idx + 1, child);\n    }\n}",
-    "explanation": "addWord and non-wildcard search are O(word length). A `.` multiplies the search by branching into up to 26 children, so worst-case search is O(26^(dots)) — fine because the tree prunes dead branches immediately (missing children return false at once)."
+    "explanation": "Letters follow exactly one child, just like a normal trie lookup, while a `.` has to try every existing child. A branch fails as soon as it reaches a null child, which keeps the search cheap. addWord is O(L); search is O(L) without dots and O(26^d · L) in the worst case with d dots. Space is O(total characters)."
   }
 }

@@ -7,21 +7,75 @@
   "prompt": "`nums` contains `n` distinct numbers from the range `[0, n]`, so exactly one is missing. Return it.\n\n**Example**: `[3,0,1]` → `2`.\n\nThe expected sum of 0..n is `n(n+1)/2`; subtract the actual sum to get the gap. (XOR also works.)",
   "method": {
     "name": "missingNumber",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int missingNumber(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[3, 0, 1]], "expected": 2 },
-    { "args": [[0, 1]], "expected": 2, "note": "the missing one can be n itself" },
-    { "args": [[9, 6, 4, 2, 3, 5, 7, 0, 1]], "expected": 8 },
-    { "args": [[0]], "expected": 1, "hidden": true },
-    { "args": [[1]], "expected": 0, "hidden": true }
+    {
+      "args": [
+        [
+          3,
+          0,
+          1
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          0,
+          1
+        ]
+      ],
+      "expected": 2,
+      "note": "the missing one can be n itself"
+    },
+    {
+      "args": [
+        [
+          9,
+          6,
+          4,
+          2,
+          3,
+          5,
+          7,
+          0,
+          1
+        ]
+      ],
+      "expected": 8
+    },
+    {
+      "args": [
+        [
+          0
+        ]
+      ],
+      "expected": 1,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": 0,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Sum of 0..n is n*(n+1)/2.",
-    "Subtract every element from that expected sum; what remains is the missing number.",
-    "Alternatively XOR all indices 0..n with all values — pairs cancel, leaving the gap."
+    "You know exactly which values should be there. What single quantity of the full range 0..n can you compute without looking at the array?",
+    "Its sum, `n * (n + 1) / 2`. Subtract every element, and what remains is the missing value.",
+    "Or XOR every index 0..n with every value (`x = n; x ^= i ^ nums[i]`). Each present number cancels and the missing one remains."
   ],
   "solution": {
     "code": "class Solution {\n    public int missingNumber(int[] nums) {\n        int n = nums.length;\n        int sum = n * (n + 1) / 2;\n        for (int x : nums) sum -= x;\n        return sum;\n    }\n}",

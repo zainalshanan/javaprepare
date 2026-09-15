@@ -4,27 +4,151 @@
   "title": "Spiral Matrix",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/spiral-matrix/",
-  "prompt": "Return all elements of the matrix in spiral order (clockwise from the top-left).\n\n**Example**: `[[1,2,3],[4,5,6],[7,8,9]]` → `[1,2,3,6,9,8,7,4,5]`.\n\nWalk four shrinking boundaries — top, right, bottom, left — peeling one layer per loop.",
+  "prompt": "Given an `m x n` matrix, return all of its elements in spiral order (clockwise, starting from the top-left).\n\n**Example**: `[[1,2,3],[4,5,6],[7,8,9]]` → `[1,2,3,6,9,8,7,4,5]`.\n\n**Constraints**: `1 ≤ m, n ≤ 10`.",
   "method": {
     "name": "spiralOrder",
-    "params": [ { "name": "matrix", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "matrix",
+        "type": "int[][]"
+      }
+    ],
     "returns": "List<Integer>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> spiralOrder(int[][] matrix) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[1, 2, 3], [4, 5, 6], [7, 8, 9]]], "expected": [1, 2, 3, 6, 9, 8, 7, 4, 5] },
-    { "args": [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]], "expected": [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7] },
-    { "args": [[[1]]], "expected": [1] },
-    { "args": [[[1, 2], [3, 4]]], "expected": [1, 2, 4, 3], "hidden": true },
-    { "args": [[[1], [2], [3]]], "expected": [1, 2, 3], "hidden": true }
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8,
+            9
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        3,
+        6,
+        9,
+        8,
+        7,
+        4,
+        5
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            5,
+            6,
+            7,
+            8
+          ],
+          [
+            9,
+            10,
+            11,
+            12
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        3,
+        4,
+        8,
+        12,
+        11,
+        10,
+        9,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        1
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        4,
+        3
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        3
+      ],
+      "hidden": true
+    }
   ],
   "hints": [
-    "Maintain four bounds: top, bottom, left, right.",
-    "Each loop: go right across `top`, down `right`, left across `bottom`, up `left`, then shrink each bound inward.",
-    "Guard the bottom and left passes with `top <= bottom` / `left <= right` to avoid double-visiting in thin matrices."
+    "Think of the matrix as nested rings. Which four straight passes trace one ring?",
+    "Keep four boundaries `top`, `bottom`, `left`, `right`. After each pass (right along top, down right, left along bottom, up left), move that boundary inward.",
+    "Guard the bottom pass with `if (top <= bottom)` and the left pass with `if (left <= right)`, or a leftover single row or column gets read twice."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> spiralOrder(int[][] matrix) {\n        List<Integer> res = new ArrayList<>();\n        int top = 0, bottom = matrix.length - 1, left = 0, right = matrix[0].length - 1;\n        while (top <= bottom && left <= right) {\n            for (int c = left; c <= right; c++) res.add(matrix[top][c]);\n            top++;\n            for (int r = top; r <= bottom; r++) res.add(matrix[r][right]);\n            right--;\n            if (top <= bottom) {\n                for (int c = right; c >= left; c--) res.add(matrix[bottom][c]);\n                bottom--;\n            }\n            if (left <= right) {\n                for (int r = bottom; r >= top; r--) res.add(matrix[r][left]);\n                left++;\n            }\n        }\n        return res;\n    }\n}",
-    "explanation": "Each iteration traces the current outer ring and then contracts the boundaries, spiraling inward. The two guards before the bottom/left passes prevent re-reading a row or column when the remaining band is a single line. O(rows·cols)."
+    "explanation": "Each loop reads the outer ring of the remaining rectangle and then shrinks it, so every cell is read exactly once. The two guards cover the degenerate case where the remaining rectangle is one row or one column. O(m·n) time, O(1) extra space beyond the output."
   }
 }

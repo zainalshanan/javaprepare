@@ -4,7 +4,7 @@
   "title": "Design Twitter",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/design-twitter/",
-  "prompt": "Design a tiny Twitter:\n\n- `Twitter()`\n- `void postTweet(int userId, int tweetId)`\n- `List<Integer> getNewsFeed(int userId)` — the 10 most recent tweet ids from the user and everyone they follow, newest first\n- `void follow(int followerId, int followeeId)`\n- `void unfollow(int followerId, int followeeId)`\n\nStamp each tweet with a global time; a max-heap over the relevant users' recent tweets pulls the newest 10.",
+  "prompt": "Design a tiny Twitter:\n\n- `Twitter()`\n- `void postTweet(int userId, int tweetId)`: each call uses a unique `tweetId`\n- `List<Integer> getNewsFeed(int userId)`: the 10 most recent tweet ids posted by the user or anyone they follow, newest first\n- `void follow(int followerId, int followeeId)`\n- `void unfollow(int followerId, int followeeId)`\n\n**Example**: user 1 posts 5; feed(1) → `[5]`; 1 follows 2; 2 posts 6; feed(1) → `[6,5]`; 1 unfollows 2; feed(1) → `[5]`.",
   "className": "Twitter",
   "methods": {
     "Twitter": { "params": [], "returns": "void" },
@@ -26,15 +26,22 @@
       "expected": [null, null, null, [20, 10]],
       "hidden": true,
       "note": "own tweets, newest first"
+    },
+    {
+      "ops": ["Twitter", "postTweet", "postTweet", "postTweet", "postTweet", "postTweet", "postTweet", "postTweet", "postTweet", "postTweet", "postTweet", "postTweet", "follow", "unfollow", "getNewsFeed"],
+      "args": [[], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7], [1, 8], [1, 9], [1, 10], [1, 11], [1, 1], [1, 1], [1]],
+      "expected": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]],
+      "hidden": true,
+      "note": "only 10 newest; unfollowing yourself keeps your own tweets"
     }
   ],
   "hints": [
-    "Global counter `time` stamps each tweet so ordering across users is comparable.",
-    "Store per-user tweet lists and a follow set per user.",
-    "getNewsFeed: gather the recent tweets of self + followees into a max-heap keyed by time, pop up to 10."
+    "A feed mixes tweets from several users. What do you need to store with each tweet so tweets from different users can be put in order?",
+    "Keep a global counter as a timestamp, a per-user list of `{time, tweetId}`, and a per-user set of followees. For a feed, only the last 10 tweets of each relevant user can matter.",
+    "Merge those candidate tweets with a max-heap ordered by time and poll up to 10. Always include the user's own tweets, even if they follow or unfollow themselves."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Twitter {\n    private int time = 0;\n    private Map<Integer, List<int[]>> tweets = new HashMap<>();      // user -> {time, tweetId}\n    private Map<Integer, Set<Integer>> following = new HashMap<>();\n\n    public Twitter() {\n    }\n\n    public void postTweet(int userId, int tweetId) {\n        tweets.computeIfAbsent(userId, k -> new ArrayList<>()).add(new int[]{time++, tweetId});\n    }\n\n    public List<Integer> getNewsFeed(int userId) {\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(b[0], a[0]));\n        Set<Integer> users = new HashSet<>(following.getOrDefault(userId, new HashSet<>()));\n        users.add(userId);\n        for (int u : users) {\n            List<int[]> ts = tweets.get(u);\n            if (ts != null) {\n                for (int i = Math.max(0, ts.size() - 10); i < ts.size(); i++) pq.offer(ts.get(i));\n            }\n        }\n        List<Integer> res = new ArrayList<>();\n        while (!pq.isEmpty() && res.size() < 10) res.add(pq.poll()[1]);\n        return res;\n    }\n\n    public void follow(int followerId, int followeeId) {\n        following.computeIfAbsent(followerId, k -> new HashSet<>()).add(followeeId);\n    }\n\n    public void unfollow(int followerId, int followeeId) {\n        Set<Integer> set = following.get(followerId);\n        if (set != null) set.remove(followeeId);\n    }\n}",
-    "explanation": "A monotonic timestamp gives a global order across all users' tweets. Because each user's own tweets are already time-sorted, only their last 10 can matter, so the heap merges these short frontiers — a k-way merge that yields the 10 newest without sorting everything."
+    "explanation": "A single increasing timestamp orders tweets across all users. Each user's list is already sorted by time, so only its last 10 entries can reach the feed, and a heap merges these short lists into the 10 newest overall. The feed costs O(f · 10 · log(10f)) for f followees; post, follow and unfollow are O(1). Space O(users + tweets + follows)."
   }
 }

@@ -42,6 +42,8 @@ class Point {
 
 `Objects.hash(...)` is the easy, correct way to build a hash from your fields — no need to hand-roll the classic `31 * result + field` formula (though you'll see it in older code).
 
+Or skip the boilerplate entirely: `record Point(int x, int y) {}` generates exactly these two methods for you.
+
 @exercise eq-fill-skeleton
 
 ## The contract (interviewers love this)
@@ -53,3 +55,40 @@ The rule that makes hash-based collections work: **if `a.equals(b)`, then `a.has
 ## Prove it
 
 @exercise eq-code-distinct
+
+## The array-key trap
+
+Arrays never override `equals` or `hashCode`. So an `int[]` key has the exact same identity problem as the un-overridden `Point`, and you can't fix it by editing the class:
+
+```java
+Set<int[]> seen = new HashSet<>();
+seen.add(new int[]{1, 2});
+seen.contains(new int[]{1, 2});   // false — a different array object
+```
+
+This bites constantly in grid problems ("have I visited cell `(r, c)`?"). The code compiles and runs. It just never finds anything. Pick a key type that compares by **value** instead:
+
+| Key | Example | Notes |
+| --- | --- | --- |
+| encoded int | `r * cols + c` | fastest; needs the column count |
+| String | `r + "," + c` | always works; slower; the separator matters (`"1" + "11"` vs `"11" + "1"`) |
+| `Arrays.toString` | `Arrays.toString(arr)` → `"[1, 2]"` | handy for whole arrays, e.g. a count signature |
+| `List` | `List.of(r, c)` | `List` implements value `equals`/`hashCode` |
+| record | `record Cell(int r, int c) {}` | named fields, free `equals`/`hashCode` |
+
+```java
+Set<String> visited = new HashSet<>();
+visited.add(r + "," + c);
+visited.contains(r + "," + c);    // true
+```
+
+@exercise eq-fill-array-key
+
+@exercise eq-code-path-crossing
+
+## Recap
+
+- Default `equals`/`hashCode` = identity; two value-equal objects are different keys.
+- Override both: `instanceof` + field compare, and `Objects.hash(x, y)`. Or use a `record`.
+- Contract: equal ⇒ same hash; same hash ⇏ equal.
+- `int[]` keys never match by value. Use `r * cols + c`, `r + "," + c`, `Arrays.toString(a)`, `List.of(r, c)`, or a record.

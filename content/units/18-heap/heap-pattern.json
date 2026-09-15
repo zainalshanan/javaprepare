@@ -1,19 +1,5 @@
 [
   {
-    "id": "pat-hp-mcq-which",
-    "type": "mcq",
-    "title": "Which heap?",
-    "prompt": "\"Return the k points closest to the origin.\" To keep memory at O(k), you maintain…",
-    "options": [
-      "A MAX-heap of size k ordered by distance — evict the farthest whenever size exceeds k",
-      "A min-heap of size k — evict the closest",
-      "A max-heap of all n points",
-      "Two heaps"
-    ],
-    "answer": 0,
-    "explanation": "Mirror image of k-th largest: to KEEP the smallest k, the heap's top must be the current worst (largest distance) so it can be evicted. Keep-smallest → max-heap; keep-largest → min-heap."
-  },
-  {
     "id": "pat-hp-drill-stream",
     "type": "code-method",
     "title": "Drill: heap-sort descending",
@@ -72,11 +58,37 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[] sortDescending(int[] nums) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));\n        for (int x : nums) maxHeap.offer(x);\n        int[] res = new int[nums.length];\n        for (int i = 0; i < res.length; i++) {\n            res[i] = maxHeap.poll();\n        }\n        return res;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] sortDescending(int[] nums) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));\n        for (int x : nums) maxHeap.offer(x);\n        int[] res = new int[nums.length];\n        for (int i = 0; i < res.length; i++) {\n            res[i] = maxHeap.poll();\n        }\n        return res;\n    }\n}",
+      "explanation": "A reversed comparator turns Java's min-heap into a max-heap, so each poll returns the largest remaining value. n offers and n polls give O(n log n) time and O(n) space. `Integer.compare` avoids the overflow that `b - a` risks."
     },
     "hints": [
-      "Max-heap comparator: `(a, b) -> Integer.compare(b, a)`."
+      "A min-heap always hands back the smallest element. What change makes it hand back the largest?",
+      "Give the `PriorityQueue` a reversed comparator: `(a, b) -> Integer.compare(b, a)`.",
+      "Offer every value, then fill `res[i] = maxHeap.poll();` for i from 0 to n - 1."
     ]
+  },
+  {
+    "id": "pat-hp-fill-topk",
+    "type": "fill-blank",
+    "title": "Template: size-k heap",
+    "prompt": "Complete the k-th largest template.",
+    "drill": true,
+    "code": "PriorityQueue<Integer> heap = new PriorityQueue<>();   // min-heap\nfor (int x : nums) {\n    heap.{{1}}(x);\n    if ({{2}}) heap.poll();\n}\nreturn heap.{{3}}();   // the k-th largest",
+    "blanks": {
+      "1": [
+        "offer",
+        "add"
+      ],
+      "2": [
+        "heap.size() > k",
+        "k < heap.size()"
+      ],
+      "3": [
+        "peek",
+        "element"
+      ]
+    },
+    "explanation": "Offer everything, and evict the smallest once the heap holds more than k values. What remains is the k largest, and their minimum, `peek()`, is the k-th largest. The check is `> k`, not `>= k`: the heap should settle at exactly k values."
   },
   {
     "id": "pat-hp-drill-klargest",
@@ -164,10 +176,189 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[] kLargest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) {\n            heap.offer(x);\n            if (heap.size() > k) heap.poll();\n        }\n        int[] res = new int[k];\n        for (int i = 0; i < k; i++) res[i] = heap.poll();\n        return res;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] kLargest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) {\n            heap.offer(x);\n            if (heap.size() > k) heap.poll();\n        }\n        int[] res = new int[k];\n        for (int i = 0; i < k; i++) res[i] = heap.poll();\n        return res;\n    }\n}",
+      "explanation": "The min-heap's top is always the weakest of the values kept, so evicting it whenever the size goes over k keeps exactly the k largest seen so far. O(n log k) time, O(k) space."
     },
     "hints": [
-      "Min-heap capped at k holds exactly the k largest; drain it into the result."
+      "If the heap may hold only k values, which value should be easiest to throw out when a new one arrives?",
+      "Use a min-heap (the default `PriorityQueue`): offer each number, and `poll()` whenever `size() > k`.",
+      "After the loop the heap holds exactly the k largest. Drain it: `res[i] = heap.poll();`."
     ]
+  },
+  {
+    "id": "pat-hp-mcq-which",
+    "type": "mcq",
+    "title": "Which heap?",
+    "prompt": "\"Return the k points closest to the origin.\" To keep memory at O(k), you maintain…",
+    "options": [
+      "A MAX-heap of size k ordered by distance — evict the farthest whenever size exceeds k",
+      "A min-heap of size k — evict the closest",
+      "A max-heap of all n points",
+      "Two heaps"
+    ],
+    "answer": 0,
+    "explanation": "Mirror image of k-th largest: to KEEP the smallest k, the heap's top must be the current worst (largest distance) so it can be evicted. Keep-smallest → max-heap; keep-largest → min-heap."
+  },
+  {
+    "id": "pat-hp-mcq-median",
+    "type": "mcq",
+    "title": "Two heaps: which is which?",
+    "prompt": "In the two-heap running median, why is the **lower** half stored in a **max**-heap?",
+    "options": [
+      "Its top must be the largest value of the lower half, the one right next to the median",
+      "Max-heaps insert faster than min-heaps",
+      "So `findMedian` can poll every element in order",
+      "Because the stream may contain negative numbers"
+    ],
+    "answer": 0,
+    "explanation": "The median depends only on the values at the boundary between the halves: the largest of the lower half and the smallest of the upper half. A max-heap puts the first at its top and a min-heap puts the second at its top, so both are O(1) to peek."
+  },
+  {
+    "id": "pat-hp-fill-median",
+    "type": "fill-blank",
+    "title": "Template: two-heap median",
+    "prompt": "Complete `addNum` and `findMedian`. `small` holds the lower half and may have one more element than `large`.",
+    "drill": true,
+    "code": "PriorityQueue<Integer> small = new PriorityQueue<>((a, b) -> Integer.compare(b, a)); // lower half\nPriorityQueue<Integer> large = new PriorityQueue<>();                               // upper half\n\npublic void addNum(int num) {\n    small.offer(num);\n    large.offer({{1}});\n    if ({{2}}) small.offer(large.poll());\n}\n\npublic double findMedian() {\n    if (small.size() > large.size()) return {{3}};\n    return (small.peek() + large.peek()) / 2.0;\n}",
+    "blanks": {
+      "1": [
+        "small.poll()"
+      ],
+      "2": [
+        "large.size() > small.size()",
+        "small.size() < large.size()"
+      ],
+      "3": [
+        "small.peek()"
+      ]
+    },
+    "explanation": "Moving `small`'s maximum into `large` keeps every lower-half value ≤ every upper-half value. Moving one back when `large` gets bigger keeps the sizes equal or `small` one larger. With an odd count, the median is `small.peek()`."
+  },
+  {
+    "id": "pat-hp-drill-merge",
+    "type": "code-method",
+    "title": "Drill: merge k sorted arrays",
+    "prompt": "From memory (k-way merge with a heap): each `lists[i]` is sorted ascending. Return one ascending array with every element. Keep at most one entry per list in the heap.",
+    "drill": true,
+    "method": {
+      "name": "mergeKSorted",
+      "params": [
+        {
+          "name": "lists",
+          "type": "int[][]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] mergeKSorted(int[][] lists) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            [
+              1,
+              4,
+              5
+            ],
+            [
+              1,
+              3,
+              4
+            ],
+            [
+              2,
+              6
+            ]
+          ]
+        ],
+        "expected": [
+          1,
+          1,
+          2,
+          3,
+          4,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "note": "no lists"
+      },
+      {
+        "args": [
+          [
+            [],
+            [
+              1
+            ]
+          ]
+        ],
+        "expected": [
+          1
+        ],
+        "note": "an empty list among them"
+      },
+      {
+        "args": [
+          [
+            [
+              -3,
+              0
+            ],
+            [
+              5
+            ],
+            [
+              -1,
+              2,
+              9
+            ]
+          ]
+        ],
+        "expected": [
+          -3,
+          -1,
+          0,
+          2,
+          5,
+          9
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            [
+              2,
+              2
+            ],
+            [
+              2
+            ]
+          ]
+        ],
+        "expected": [
+          2,
+          2,
+          2
+        ],
+        "hidden": true,
+        "note": "duplicates"
+      }
+    ],
+    "hints": [
+      "The smallest remaining element is always at the front of one of the lists. How can you find the smallest of k fronts quickly, again and again?",
+      "Use a min-heap of `int[]{value, listIndex, elementIndex}`, seeded with index 0 of every non-empty list.",
+      "Poll the smallest entry, write its value, then `if (next < lists[li].length) heap.offer(new int[]{lists[li][next], li, next});`."
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] mergeKSorted(int[][] lists) {\n        int total = 0;\n        for (int[] list : lists) total += list.length;\n        int[] out = new int[total];\n        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));\n        for (int i = 0; i < lists.length; i++) {\n            if (lists[i].length > 0) heap.offer(new int[]{lists[i][0], i, 0});\n        }\n        int pos = 0;\n        while (!heap.isEmpty()) {\n            int[] top = heap.poll();\n            out[pos++] = top[0];\n            int li = top[1], next = top[2] + 1;\n            if (next < lists[li].length) heap.offer(new int[]{lists[li][next], li, next});\n        }\n        return out;\n    }\n}",
+      "explanation": "The heap holds only the current front of each list, so its top is always the smallest element not yet output. After polling it, that list's next element takes its place. N total elements with a heap of size at most k give O(N log k) time and O(k) extra space (plus the output array)."
+    }
   }
 ]

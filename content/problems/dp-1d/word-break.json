@@ -4,27 +4,84 @@
   "title": "Word Break",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/word-break/",
-  "prompt": "Given a string `s` and a dictionary `wordDict`, return whether `s` can be segmented into a sequence of dictionary words (words reusable).\n\n**Example**: `s = \"leetcode\"`, dict `[\"leet\",\"code\"]` → `true`.\n\ndp[i] = 'the first i characters can be segmented' — true if some split point j has dp[j] true and s[j..i] is a word.",
+  "prompt": "Given a string `s` and a dictionary `wordDict`, return `true` if `s` can be split into a sequence of one or more dictionary words. Words may be reused.\n\n**Example**: `s = \"applepenapple\"`, `wordDict = [\"apple\",\"pen\"]` → `true`. `s = \"catsandog\"`, `wordDict = [\"cats\",\"dog\",\"sand\",\"and\",\"cat\"]` → `false`.\n\n**Constraints**: `1 <= s.length <= 300`, `1 <= wordDict.length <= 1000`, words have length 1–20.",
   "method": {
     "name": "wordBreak",
-    "params": [ { "name": "s", "type": "String" }, { "name": "wordDict", "type": "List<String>" } ],
+    "params": [
+      {
+        "name": "s",
+        "type": "String"
+      },
+      {
+        "name": "wordDict",
+        "type": "List<String>"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public boolean wordBreak(String s, List<String> wordDict) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["leetcode", ["leet", "code"]], "expected": true },
-    { "args": ["applepenapple", ["apple", "pen"]], "expected": true },
-    { "args": ["catsandog", ["cats", "dog", "sand", "and", "cat"]], "expected": false },
-    { "args": ["a", ["a"]], "expected": true, "hidden": true },
-    { "args": ["ab", ["a"]], "expected": false, "hidden": true }
+    {
+      "args": [
+        "leetcode",
+        [
+          "leet",
+          "code"
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "applepenapple",
+        [
+          "apple",
+          "pen"
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "catsandog",
+        [
+          "cats",
+          "dog",
+          "sand",
+          "and",
+          "cat"
+        ]
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        "a",
+        [
+          "a"
+        ]
+      ],
+      "expected": true,
+      "hidden": true
+    },
+    {
+      "args": [
+        "ab",
+        [
+          "a"
+        ]
+      ],
+      "expected": false,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Put the dictionary in a HashSet. dp[0] = true (empty string).",
-    "For each end i, look for a split j where dp[j] is true and s.substring(j, i) is a word.",
-    "dp[n] is the answer."
+    "Greedily taking the longest (or shortest) matching word can paint you into a corner. If you knew which *prefixes* of s can be split, how would you decide about a longer prefix?",
+    "Let dp[i] = the first i characters can be split. dp[0] = true. dp[i] is true if some split j < i has dp[j] true and `s[j..i)` is a word.",
+    "Put the words in a `HashSet`, then `if (dp[j] && dict.contains(s.substring(j, i))) { dp[i] = true; break; }`"
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public boolean wordBreak(String s, List<String> wordDict) {\n        Set<String> words = new HashSet<>(wordDict);\n        int n = s.length();\n        boolean[] dp = new boolean[n + 1];\n        dp[0] = true;\n        for (int i = 1; i <= n; i++) {\n            for (int j = 0; j < i; j++) {\n                if (dp[j] && words.contains(s.substring(j, i))) {\n                    dp[i] = true;\n                    break;\n                }\n            }\n        }\n        return dp[n];\n    }\n}",
-    "explanation": "dp[i] asks 'is the prefix of length i segmentable?' — true when a reachable earlier boundary j is followed by a dictionary word ending at i. Building left to right, dp[n] answers the whole string. O(n²) substrings × set lookup."
+    "explanation": "Any valid split of the first i characters ends with a word `s[j..i)` right after a valid split of the first j characters. Trying every j therefore checks every possibility, and the whole string's answer is dp[n]. O(n²) substring checks, each O(n) to build and hash, so O(n³) worst case; O(n) space."
   }
 }

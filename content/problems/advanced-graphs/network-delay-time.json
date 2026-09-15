@@ -4,27 +4,134 @@
   "title": "Network Delay Time",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/network-delay-time/",
-  "prompt": "`times[i] = [u, v, w]`: a signal takes `w` time to travel from node `u` to node `v` (nodes are 1..n). A signal starts at node `k`. Return the time for ALL nodes to receive it, or `-1` if some node never does.\n\nThat's \"longest shortest-path from k\" — Dijkstra from the pattern lesson, then take the max distance.",
+  "prompt": "`times[i] = [u, v, w]` means a signal takes `w` time to travel from node `u` to node `v` (directed; nodes are `1..n`). A signal is sent from node `k`. Return the time it takes for **all** `n` nodes to receive it, or `-1` if some node never does.\n\n**Example**: `times = [[2,1,1],[2,3,1],[3,4,1]]`, `n = 4`, `k = 2` → `2`.\n\n**Constraints**: `1 <= n <= 100`, `1 <= times.length <= 6000`, `0 <= w <= 100`.",
   "method": {
     "name": "networkDelayTime",
-    "params": [ { "name": "times", "type": "int[][]" }, { "name": "n", "type": "int" }, { "name": "k", "type": "int" } ],
+    "params": [
+      {
+        "name": "times",
+        "type": "int[][]"
+      },
+      {
+        "name": "n",
+        "type": "int"
+      },
+      {
+        "name": "k",
+        "type": "int"
+      }
+    ],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int networkDelayTime(int[][] times, int n, int k) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[2, 1, 1], [2, 3, 1], [3, 4, 1]], 4, 2], "expected": 2 },
-    { "args": [[[1, 2, 1]], 2, 1], "expected": 1 },
-    { "args": [[[1, 2, 1]], 2, 2], "expected": -1, "note": "node 1 unreachable from 2" },
-    { "args": [[[1, 2, 1], [2, 3, 2], [1, 3, 4]], 3, 1], "expected": 3, "hidden": true, "note": "path through 2 beats the direct edge" },
-    { "args": [[[1, 2, 1], [2, 1, 3]], 2, 2], "expected": 3, "hidden": true }
+    {
+      "args": [
+        [
+          [
+            2,
+            1,
+            1
+          ],
+          [
+            2,
+            3,
+            1
+          ],
+          [
+            3,
+            4,
+            1
+          ]
+        ],
+        4,
+        2
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ]
+        ],
+        2,
+        1
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ]
+        ],
+        2,
+        2
+      ],
+      "expected": -1,
+      "note": "node 1 unreachable from 2"
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ],
+          [
+            2,
+            3,
+            2
+          ],
+          [
+            1,
+            3,
+            4
+          ]
+        ],
+        3,
+        1
+      ],
+      "expected": 3,
+      "hidden": true,
+      "note": "path through 2 beats the direct edge"
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2,
+            1
+          ],
+          [
+            2,
+            1,
+            3
+          ]
+        ],
+        2,
+        2
+      ],
+      "expected": 3,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Adjacency: node → list of {neighbor, weight}. Nodes are 1-indexed — size arrays n+1.",
-    "Dijkstra: dist[] filled with MAX_VALUE, dist[k]=0, PriorityQueue of {node, dist} by dist, skip stale entries (`d > dist[node]`).",
-    "Answer: the max over dist[1..n]; MAX_VALUE anywhere → -1."
+    "The signal reaches each node along its fastest route. Once you know every node's earliest arrival time, how do you get the answer?",
+    "Find single-source shortest paths from `k` with non-negative weights: a min-heap of `{dist, node}` that always expands the nearest unfinished node. Then take the maximum distance.",
+    "Nodes are 1-indexed, so size `dist` as `n + 1`. After polling, skip stale entries with `if (d > dist[node]) continue;`. If any `dist[1..n]` is still `MAX_VALUE`, return -1."
   ],
   "solution": {
-    "code": "import java.util.*;\n\nclass Solution {\n    public int networkDelayTime(int[][] times, int n, int k) {\n        Map<Integer, List<int[]>> adj = new HashMap<>();\n        for (int[] t : times) {\n            adj.computeIfAbsent(t[0], x -> new ArrayList<>()).add(new int[]{t[1], t[2]});\n        }\n        int[] dist = new int[n + 1];\n        Arrays.fill(dist, Integer.MAX_VALUE);\n        dist[k] = 0;\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));\n        pq.offer(new int[]{k, 0});\n        while (!pq.isEmpty()) {\n            int[] cur = pq.poll();\n            int node = cur[0], d = cur[1];\n            if (d > dist[node]) continue;   // stale\n            for (int[] edge : adj.getOrDefault(node, new ArrayList<>())) {\n                int nd = d + edge[1];\n                if (nd < dist[edge[0]]) {\n                    dist[edge[0]] = nd;\n                    pq.offer(new int[]{edge[0], nd});\n                }\n            }\n        }\n        int max = 0;\n        for (int i = 1; i <= n; i++) {\n            if (dist[i] == Integer.MAX_VALUE) return -1;\n            max = Math.max(max, dist[i]);\n        }\n        return max;\n    }\n}",
-    "explanation": "Dijkstra O(E log V). The lazy-deletion trick (`if (d > dist[node]) continue`) replaces a decrease-key operation Java's PriorityQueue doesn't have. The final scan converts \"all shortest paths\" into the problem's \"when does the last node hear it.\""
+    "code": "import java.util.*;\n\nclass Solution {\n    public int networkDelayTime(int[][] times, int n, int k) {\n        Map<Integer, List<int[]>> adj = new HashMap<>();\n        for (int[] t : times) {\n            adj.computeIfAbsent(t[0], x -> new ArrayList<>()).add(new int[]{t[1], t[2]});\n        }\n        int[] dist = new int[n + 1];\n        Arrays.fill(dist, Integer.MAX_VALUE);\n        dist[k] = 0;\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0])); // {dist, node}\n        pq.offer(new int[]{0, k});\n        while (!pq.isEmpty()) {\n            int[] cur = pq.poll();\n            int d = cur[0], node = cur[1];\n            if (d > dist[node]) continue;   // stale\n            for (int[] edge : adj.getOrDefault(node, List.of())) {\n                int nd = d + edge[1];\n                if (nd < dist[edge[0]]) {\n                    dist[edge[0]] = nd;\n                    pq.offer(new int[]{nd, edge[0]});\n                }\n            }\n        }\n        int max = 0;\n        for (int i = 1; i <= n; i++) {\n            if (dist[i] == Integer.MAX_VALUE) return -1;\n            max = Math.max(max, dist[i]);\n        }\n        return max;\n    }\n}",
+    "explanation": "The time at which every node has the signal is the largest of the shortest arrival times, so this is Dijkstra from k plus a max. Since weights are non-negative, a node's distance is final when it's popped. The stale check stands in for decrease-key, which Java's PriorityQueue doesn't have. O(E log E) time, O(n + E) space."
   }
 }

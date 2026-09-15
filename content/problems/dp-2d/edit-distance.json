@@ -4,28 +4,75 @@
   "title": "Edit Distance",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/edit-distance/",
-  "prompt": "Return the minimum number of single-character insertions, deletions, or replacements to convert `word1` into `word2`.\n\n**Example**: `\"horse\" → \"ros\"` → `3`.\n\nThe canonical 2-D DP: dp[i][j] = edit distance between the first i chars of word1 and first j of word2.",
+  "prompt": "Return the minimum number of operations to convert `word1` into `word2`. Each operation inserts one character, deletes one character, or replaces one character.\n\n**Example**: `\"horse\" → \"ros\"` → `3` (replace h→r, delete r, delete e).\n\n**Constraints**: `0 <= word1.length, word2.length <= 500`, lowercase letters.",
   "method": {
     "name": "minDistance",
-    "params": [ { "name": "word1", "type": "String" }, { "name": "word2", "type": "String" } ],
+    "params": [
+      {
+        "name": "word1",
+        "type": "String"
+      },
+      {
+        "name": "word2",
+        "type": "String"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int minDistance(String word1, String word2) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["horse", "ros"], "expected": 3 },
-    { "args": ["intention", "execution"], "expected": 5 },
-    { "args": ["", "abc"], "expected": 3 },
-    { "args": ["abc", "abc"], "expected": 0 },
-    { "args": ["a", ""], "expected": 1, "hidden": true },
-    { "args": ["zoologicoarchaeologist", "zoogeologist"], "expected": 10, "hidden": true }
+    {
+      "args": [
+        "horse",
+        "ros"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "intention",
+        "execution"
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        "",
+        "abc"
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        "abc",
+        "abc"
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        "a",
+        ""
+      ],
+      "expected": 1,
+      "hidden": true
+    },
+    {
+      "args": [
+        "zoologicoarchaeologist",
+        "zoogeologist"
+      ],
+      "expected": 10,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Base cases: converting to/from an empty string costs its length (dp[i][0] = i, dp[0][j] = j).",
-    "If the current chars match, dp[i][j] = dp[i-1][j-1] (no edit).",
-    "Otherwise 1 + min of replace (dp[i-1][j-1]), delete (dp[i-1][j]), insert (dp[i][j-1])."
+    "Focus on the last characters of both words. If they match, what does that save you? If not, which single operations could fix that last position, and what smaller problem does each one leave?",
+    "Let dp[i][j] = fewest edits to turn the first i characters of word1 into the first j of word2. Converting to or from an empty string costs its length: dp[i][0] = i, dp[0][j] = j.",
+    "Match: `dp[i][j] = dp[i-1][j-1]`. Otherwise `1 + min(dp[i-1][j-1] (replace), dp[i-1][j] (delete), dp[i][j-1] (insert))`."
   ],
   "solution": {
     "code": "class Solution {\n    public int minDistance(String word1, String word2) {\n        int m = word1.length(), n = word2.length();\n        int[][] dp = new int[m + 1][n + 1];\n        for (int i = 0; i <= m; i++) dp[i][0] = i;\n        for (int j = 0; j <= n; j++) dp[0][j] = j;\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {\n                    dp[i][j] = dp[i - 1][j - 1];\n                } else {\n                    dp[i][j] = 1 + Math.min(dp[i - 1][j - 1], Math.min(dp[i - 1][j], dp[i][j - 1]));\n                }\n            }\n        }\n        return dp[m][n];\n    }\n}",
-    "explanation": "Each cell asks how to align two prefixes: matching chars cost nothing (diagonal), otherwise pick the cheapest of the three edits — replace (diagonal), delete from word1 (up), insert into word1 (left). Row/column 0 encode the empty-string conversions. O(m·n)."
+    "explanation": "In an optimal edit sequence, the last characters are matched for free, replaced, deleted from word1, or inserted from word2. Each option leaves a smaller prefix problem that's already in the table, so the minimum over them is correct. Row and column 0 are the empty-string cases. O(m·n) time and space."
   }
 }

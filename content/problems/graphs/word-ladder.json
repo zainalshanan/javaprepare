@@ -4,27 +4,101 @@
   "title": "Word Ladder",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/word-ladder/",
-  "prompt": "Transform `beginWord` into `endWord` by changing one letter at a time, where every intermediate word must be in `wordList`. Return the number of words in the shortest such sequence (including both ends), or `0` if impossible.\n\n**Example**: `begin = \"hit\"`, `end = \"cog\"`, list `[\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]` → `5` (hit→hot→dot→dog→cog).\n\nBFS over words: neighbors are words differing by exactly one letter. BFS gives the shortest path.",
+  "prompt": "A transformation sequence from `beginWord` to `endWord` changes **one letter at a time**, and every intermediate word (and `endWord`) must be in `wordList`. `beginWord` doesn't need to be in the list. Return the number of words in the **shortest** sequence, including both ends, or `0` if none exists.\n\n**Example**: `beginWord = \"hit\"`, `endWord = \"cog\"`, `wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]` → `5` (hit → hot → dot → dog → cog).\n\n**Constraints**: all words have the same length (1–10), lowercase; `wordList` has up to 5000 words.",
   "method": {
     "name": "ladderLength",
-    "params": [ { "name": "beginWord", "type": "String" }, { "name": "endWord", "type": "String" }, { "name": "wordList", "type": "List<String>" } ],
+    "params": [
+      {
+        "name": "beginWord",
+        "type": "String"
+      },
+      {
+        "name": "endWord",
+        "type": "String"
+      },
+      {
+        "name": "wordList",
+        "type": "List<String>"
+      }
+    ],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int ladderLength(String beginWord, String endWord, List<String> wordList) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["hit", "cog", ["hot", "dot", "dog", "lot", "log", "cog"]], "expected": 5 },
-    { "args": ["hit", "cog", ["hot", "dot", "dog", "lot", "log"]], "expected": 0, "note": "endWord not in list" },
-    { "args": ["a", "c", ["a", "b", "c"]], "expected": 2 },
-    { "args": ["hot", "dog", ["hot", "dog"]], "expected": 0, "hidden": true, "note": "no valid intermediate" },
-    { "args": ["hit", "hot", ["hot"]], "expected": 2, "hidden": true }
+    {
+      "args": [
+        "hit",
+        "cog",
+        [
+          "hot",
+          "dot",
+          "dog",
+          "lot",
+          "log",
+          "cog"
+        ]
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        "hit",
+        "cog",
+        [
+          "hot",
+          "dot",
+          "dog",
+          "lot",
+          "log"
+        ]
+      ],
+      "expected": 0,
+      "note": "endWord not in list"
+    },
+    {
+      "args": [
+        "a",
+        "c",
+        [
+          "a",
+          "b",
+          "c"
+        ]
+      ],
+      "expected": 2
+    },
+    {
+      "args": [
+        "hot",
+        "dog",
+        [
+          "hot",
+          "dog"
+        ]
+      ],
+      "expected": 0,
+      "hidden": true,
+      "note": "no valid intermediate"
+    },
+    {
+      "args": [
+        "hit",
+        "hot",
+        [
+          "hot"
+        ]
+      ],
+      "expected": 2,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Put wordList in a HashSet. If endWord isn't there, return 0.",
-    "BFS level by level from beginWord; generate neighbors by trying each of 26 letters at each position.",
-    "Remove a word from the set when you enqueue it (marks it visited); the level counter is the answer when you dequeue endWord."
+    "Think of each word as a node. Which words are connected, and what kind of search finds the fewest hops?",
+    "Use BFS from `beginWord`, one layer at a time. Words one letter apart are neighbors. Put `wordList` in a `HashSet` for O(1) lookups and return 0 early if `endWord` isn't there.",
+    "Generate neighbors instead of comparing all pairs: for each position, try `'a'..'z'`. `if (words.remove(next)) q.offer(next);` both checks membership and marks visited."
   ],
   "solution": {
-    "code": "import java.util.*;\n\nclass Solution {\n    public int ladderLength(String beginWord, String endWord, List<String> wordList) {\n        Set<String> words = new HashSet<>(wordList);\n        if (!words.contains(endWord)) return 0;\n        Queue<String> q = new LinkedList<>();\n        q.offer(beginWord);\n        int level = 1;\n        while (!q.isEmpty()) {\n            int size = q.size();\n            for (int i = 0; i < size; i++) {\n                String word = q.poll();\n                if (word.equals(endWord)) return level;\n                char[] arr = word.toCharArray();\n                for (int j = 0; j < arr.length; j++) {\n                    char orig = arr[j];\n                    for (char c = 'a'; c <= 'z'; c++) {\n                        arr[j] = c;\n                        String next = new String(arr);\n                        if (words.contains(next)) {\n                            q.offer(next);\n                            words.remove(next);\n                        }\n                    }\n                    arr[j] = orig;\n                }\n            }\n            level++;\n        }\n        return 0;\n    }\n}",
-    "explanation": "Words are graph nodes; an edge joins words one letter apart. BFS explores by distance, so the first time endWord is reached is the shortest ladder. Generating neighbors by 26·length letter swaps (and deleting on visit) is faster than comparing every pair of words."
+    "code": "import java.util.*;\n\nclass Solution {\n    public int ladderLength(String beginWord, String endWord, List<String> wordList) {\n        Set<String> words = new HashSet<>(wordList);\n        if (!words.contains(endWord)) return 0;\n        Deque<String> q = new ArrayDeque<>();\n        q.offer(beginWord);\n        int level = 1;\n        while (!q.isEmpty()) {\n            int size = q.size();\n            for (int i = 0; i < size; i++) {\n                String word = q.poll();\n                if (word.equals(endWord)) return level;\n                char[] arr = word.toCharArray();\n                for (int j = 0; j < arr.length; j++) {\n                    char orig = arr[j];\n                    for (char c = 'a'; c <= 'z'; c++) {\n                        arr[j] = c;\n                        String next = new String(arr);\n                        if (words.contains(next)) {\n                            q.offer(next);\n                            words.remove(next);\n                        }\n                    }\n                    arr[j] = orig;\n                }\n            }\n            level++;\n        }\n        return 0;\n    }\n}",
+    "explanation": "Words are nodes and one-letter changes are edges. BFS visits words in order of distance, so the layer where `endWord` first appears is the shortest ladder, and starting the counter at 1 counts words rather than edges. Removing words from the set when enqueued stops them from being visited again. O(N·L²) time with 26·L candidates per word, each costing O(L) to build and hash; O(N·L) space."
   }
 }

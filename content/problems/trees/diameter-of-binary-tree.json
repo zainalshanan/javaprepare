@@ -7,7 +7,7 @@
   "prompt": "Return the diameter: the length (in **edges**) of the longest path between any two nodes. The path need not pass through the root.\n\n**Example**: `[1,2,3,4,5]` → `3` (path 4→2→1→3 or 5→2→1→3).\n\nDFS returns each node's height while a shared best tracks the longest through-node path (left height + right height).",
   "method": {
     "name": "diameterOfBinaryTree",
-    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }],
     "returns": "int"
   },
   "starter": "class Solution {\n    private int best = 0;\n\n    public int diameterOfBinaryTree(TreeNode root) {\n\n    }\n}\n",
@@ -19,12 +19,12 @@
     { "args": [[1, 2, null, 3, null, 4]], "expected": 3, "hidden": true, "note": "left-skewed chain" }
   ],
   "hints": [
-    "A helper returns the HEIGHT of a subtree (edges to its deepest leaf).",
-    "At each node, the longest path THROUGH it is leftHeight + rightHeight — update a shared best with that.",
-    "Return `1 + max(leftHeight, rightHeight)` upward."
+    "The longest path bends at some node. If you know how tall that node's left and right subtrees are, how long is the path through it?",
+    "Write a helper that returns a subtree's HEIGHT. At each node, `leftHeight + rightHeight` is the longest path bending there, so update a shared `best` with it.",
+    "The helper returns `1 + Math.max(l, r)` to its parent: a parent can only extend one arm. The answer is `best`, not the helper's return value."
   ],
   "solution": {
     "code": "class Solution {\n    private int best = 0;\n\n    public int diameterOfBinaryTree(TreeNode root) {\n        depth(root);\n        return best;\n    }\n\n    private int depth(TreeNode node) {\n        if (node == null) return 0;\n        int l = depth(node.left);\n        int r = depth(node.right);\n        best = Math.max(best, l + r);      // path through this node, in edges\n        return 1 + Math.max(l, r);\n    }\n}",
-    "explanation": "O(n), one DFS. The trick is separating the two quantities: the value returned (height) feeds the parent, while the diameter is a side-effect recorded at every node. Measuring in edges means an empty subtree has height 0, so a leaf's through-path is 0."
+    "explanation": "One DFS tracks two different quantities: the height it returns, which the parent needs, and the diameter, which is recorded at every node as a side effect (template (b)). Measuring in edges means an empty subtree has height 0, so a leaf's bent path has length 0. O(n) time, O(h) stack."
   }
 }

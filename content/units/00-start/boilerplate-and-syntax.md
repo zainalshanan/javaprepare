@@ -1,4 +1,4 @@
-Before any algorithm, your fingers need to produce the *scaffolding* without thinking. This lesson is a **redoable drill deck** — come back and repeat it until the boilerplate flows automatically. Every exercise here is a drill: get it right 3 times in a row to master it, and it'll resurface in Review to keep it sharp.
+Before any algorithm, your fingers need to produce the *scaffolding* without thinking. This lesson is a **redoable drill deck** — come back and repeat it until the boilerplate flows automatically. Most exercises here are drills: get them right 3 times in a row to master them, and they'll resurface in Review to keep them sharp.
 
 ## The two shapes
 
@@ -46,6 +46,15 @@ System.out.println("l=" + l + " r=" + r);   // glue values with +
 
 `System.out.println` is your debugger — sprinkle it inside a solution to watch variables, and this course captures that output next to your test results.
 
+One trap: `+` works **left to right**. Once a String is on the left, every following `+` glues text instead of adding numbers:
+
+```java
+System.out.println("sum = " + 2 + 3);    // sum = 23
+System.out.println("sum = " + (2 + 3));  // sum = 5
+```
+
+@exercise boiler-predict-concat
+
 ## Drill the scaffold
 
 Recall it first (fill the blanks), then write it from a blank editor. Repeat until it's muscle memory.
@@ -57,3 +66,11 @@ Recall it first (fill the blanks), then write it from a blank editor. Repeat unt
 @exercise boiler-fill-solution
 
 @exercise boiler-write-solution
+
+## Recap
+
+- Program: `public class Main { public static void main(String[] args) { ... } }`
+- LeetCode: `class Solution { public <type> name(<params>) { return ...; } }`
+- `import java.util.*;` at the top unlocks all collections.
+- `System.out.println("x=" + x);` is your debugger.
+- `"a" + 2 + 3` is `"a23"` — parenthesize math inside string concatenation.

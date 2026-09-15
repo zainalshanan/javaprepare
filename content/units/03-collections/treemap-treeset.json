@@ -20,10 +20,34 @@
     "prompt": "Fill in the TreeMap navigation for 'most recent snapshot at or before time t'.",
     "code": "TreeMap<Integer, String> snapshots = new TreeMap<>();\nInteger key = snapshots.{{1}}Key(t);   // largest key <= t\nif (key != {{2}}) {\n    String snap = snapshots.get(key);\n}",
     "blanks": {
-      "1": ["floor"],
-      "2": ["null"]
+      "1": [
+        "floor"
+      ],
+      "2": [
+        "null"
+      ]
     },
     "explanation": "This exact floorKey-then-null-check is the core of Time Based Key-Value Store (a NeetCode problem)."
+  },
+  {
+    "id": "tm-fill-poll",
+    "type": "fill-blank",
+    "title": "Recall: ends of a TreeMap",
+    "prompt": "`tm` holds `{1=a, 5=e, 9=i}`. Fill in the calls.",
+    "drill": true,
+    "code": "int lo = tm.{{1}}();                          // 1 — smallest key\nint hi = tm.{{2}}();                          // 9 — largest key\nMap.Entry<Integer, String> e = tm.{{3}}();    // returns 1=a AND removes it\nint next = tm.firstKey();                     // now 5",
+    "blanks": {
+      "1": [
+        "firstKey"
+      ],
+      "2": [
+        "lastKey"
+      ],
+      "3": [
+        "pollFirstEntry"
+      ]
+    },
+    "explanation": "`firstKey`/`lastKey` read the extremes without changing the map. `pollFirstEntry` returns the smallest entry and removes it, so the next `firstKey` is 5. (`firstEntry` would return 1=a but leave it in place.)"
   },
   {
     "id": "tm-closest",
@@ -32,22 +56,85 @@
     "prompt": "Return the value in `nums` closest to `target` (ties go to the smaller value). Load a TreeSet, then compare `floor(target)` and `ceiling(target)` — remember either can be null.",
     "method": {
       "name": "closest",
-      "params": [ { "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "target",
+          "type": "int"
+        }
+      ],
       "returns": "int"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int closest(int[] nums, int target) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 5, 10], 7], "expected": 5 },
-      { "args": [[1, 5, 10], 8], "expected": 10 },
-      { "args": [[1, 4, 6], 5], "expected": 4, "note": "tie → smaller" },
-      { "args": [[10], 1], "expected": 10, "note": "floor is null here" },
-      { "args": [[2, 20], 200], "expected": 20, "hidden": true, "note": "ceiling is null here" }
+      {
+        "args": [
+          [
+            1,
+            5,
+            10
+          ],
+          7
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          [
+            1,
+            5,
+            10
+          ],
+          8
+        ],
+        "expected": 10
+      },
+      {
+        "args": [
+          [
+            1,
+            4,
+            6
+          ],
+          5
+        ],
+        "expected": 4,
+        "note": "tie → smaller"
+      },
+      {
+        "args": [
+          [
+            10
+          ],
+          1
+        ],
+        "expected": 10,
+        "note": "floor is null here"
+      },
+      {
+        "args": [
+          [
+            2,
+            20
+          ],
+          200
+        ],
+        "expected": 20,
+        "hidden": true,
+        "note": "ceiling is null here"
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public int closest(int[] nums, int target) {\n        TreeSet<Integer> set = new TreeSet<>();\n        for (int x : nums) set.add(x);\n        Integer lo = set.floor(target);\n        Integer hi = set.ceiling(target);\n        if (lo == null) return hi;\n        if (hi == null) return lo;\n        return (target - lo <= hi - target) ? lo : hi;\n    }\n}",
       "explanation": "The two candidates bracket the target; null-checks first, then compare distances with <= so ties pick the smaller (floor) side."
     },
-    "hints": ["Only two candidates matter: floor and ceiling.", "Handle null before comparing distances."]
+    "hints": [
+      "Only two candidates matter: floor and ceiling.",
+      "Handle null before comparing distances."
+    ]
   },
   {
     "id": "tm-ref-set-fill",
@@ -56,7 +143,20 @@
     "prompt": "Fill in the sorted-set operations.",
     "drill": true,
     "code": "TreeSet<Integer> ts = new TreeSet<>();\nts.{{1}}(5);               // insert\nInteger lo = ts.{{2}}(4);  // largest element <= 4\nInteger hi = ts.{{3}}(4);  // smallest element >= 4\nint f = ts.{{4}}();        // smallest element",
-    "blanks": { "1": ["add"], "2": ["floor"], "3": ["ceiling"], "4": ["first"] },
+    "blanks": {
+      "1": [
+        "add"
+      ],
+      "2": [
+        "floor"
+      ],
+      "3": [
+        "ceiling"
+      ],
+      "4": [
+        "first"
+      ]
+    },
     "explanation": "`floor(x)` = largest ≤ x, `ceiling(x)` = smallest ≥ x (both can be null); `first()` is the minimum."
   },
   {
@@ -65,17 +165,64 @@
     "title": "Drill: smallest at least x",
     "prompt": "From memory: load `nums` into a TreeSet and return the smallest value ≥ `x` (its `ceiling`), or `-1` if none exists.",
     "drill": true,
-    "method": { "name": "atLeast", "params": [ { "name": "nums", "type": "int[]" }, { "name": "x", "type": "int" } ], "returns": "int" },
+    "method": {
+      "name": "atLeast",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "x",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int atLeast(int[] nums, int x) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 5, 10], 4], "expected": 5 },
-      { "args": [[1, 2], 9], "expected": -1 },
-      { "args": [[3, 7], 3], "expected": 3, "hidden": true, "note": "ceiling is inclusive" }
+      {
+        "args": [
+          [
+            1,
+            5,
+            10
+          ],
+          4
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ],
+          9
+        ],
+        "expected": -1
+      },
+      {
+        "args": [
+          [
+            3,
+            7
+          ],
+          3
+        ],
+        "expected": 3,
+        "hidden": true,
+        "note": "ceiling is inclusive"
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int atLeast(int[] nums, int x) {\n        TreeSet<Integer> ts = new TreeSet<>();\n        for (int v : nums) ts.add(v);\n        Integer c = ts.ceiling(x);\n        return c == null ? -1 : c;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int atLeast(int[] nums, int x) {\n        TreeSet<Integer> ts = new TreeSet<>();\n        for (int v : nums) ts.add(v);\n        Integer c = ts.ceiling(x);\n        return c == null ? -1 : c;\n    }\n}",
+      "explanation": "`ceiling(x)` walks the sorted tree in O(log n) and returns `null` when every element is below `x`, hence the null check before unboxing."
     },
-    "hints": ["`ts.ceiling(x)` is the smallest element ≥ x.", "Null-check before returning (nothing qualifies → -1)."]
+    "hints": [
+      "`ts.ceiling(x)` is the smallest element ≥ x.",
+      "Null-check before returning (nothing qualifies → -1)."
+    ]
   },
   {
     "id": "tm-ref-map-fill",
@@ -84,7 +231,17 @@
     "prompt": "Fill in the sorted-map key operations.",
     "drill": true,
     "code": "TreeMap<Integer, String> tm = new TreeMap<>();\ntm.{{1}}(3, \"c\");            // insert\nInteger k = tm.{{2}}(5);     // largest key <= 5\nInteger h = tm.{{3}}(5);     // smallest key >= 5",
-    "blanks": { "1": ["put"], "2": ["floorKey"], "3": ["ceilingKey"] },
+    "blanks": {
+      "1": [
+        "put"
+      ],
+      "2": [
+        "floorKey"
+      ],
+      "3": [
+        "ceilingKey"
+      ]
+    },
     "explanation": "`floorKey`/`ceilingKey` mirror TreeSet's floor/ceiling but return keys — the heart of Time Based Key-Value Store."
   },
   {
@@ -93,16 +250,63 @@
     "title": "Drill: largest key at most q",
     "prompt": "From memory: put every value of `keys` into a TreeMap (value → itself as a String), then return the largest key ≤ `q` (`floorKey`), or `-1` if none.",
     "drill": true,
-    "method": { "name": "floorOf", "params": [ { "name": "keys", "type": "int[]" }, { "name": "q", "type": "int" } ], "returns": "int" },
+    "method": {
+      "name": "floorOf",
+      "params": [
+        {
+          "name": "keys",
+          "type": "int[]"
+        },
+        {
+          "name": "q",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int floorOf(int[] keys, int q) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 5, 10], 7], "expected": 5 },
-      { "args": [[5, 10], 3], "expected": -1 },
-      { "args": [[2, 4, 6], 6], "expected": 6, "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            5,
+            10
+          ],
+          7
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          [
+            5,
+            10
+          ],
+          3
+        ],
+        "expected": -1
+      },
+      {
+        "args": [
+          [
+            2,
+            4,
+            6
+          ],
+          6
+        ],
+        "expected": 6,
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int floorOf(int[] keys, int q) {\n        TreeMap<Integer, String> tm = new TreeMap<>();\n        for (int k : keys) tm.put(k, String.valueOf(k));\n        Integer f = tm.floorKey(q);\n        return f == null ? -1 : f;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int floorOf(int[] keys, int q) {\n        TreeMap<Integer, String> tm = new TreeMap<>();\n        for (int k : keys) tm.put(k, String.valueOf(k));\n        Integer f = tm.floorKey(q);\n        return f == null ? -1 : f;\n    }\n}",
+      "explanation": "`floorKey(q)` finds the largest key ≤ q in O(log n); it returns `null` when every key is greater than q, so check before unboxing."
     },
-    "hints": ["`tm.floorKey(q)` is the largest key ≤ q.", "Null-check before returning."]
+    "hints": [
+      "`tm.floorKey(q)` is the largest key ≤ q.",
+      "Null-check before returning."
+    ]
   }
 ]

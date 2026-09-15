@@ -4,7 +4,7 @@
   "title": "Search in Rotated Sorted Array",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
-  "prompt": "A sorted array of distinct values was rotated at an unknown pivot. Return the index of `target`, or `-1`, in O(log n).\n\n**Example**: `nums = [4,5,6,7,0,1,2]`, `target = 0` → `4`.\n\nAt each step one half `[lo..mid]` or `[mid..hi]` is properly sorted — figure out which, then decide whether `target` lies inside it.",
+  "prompt": "An ascending array of **distinct** integers was possibly rotated at an unknown pivot (e.g. `[0,1,2,4,5,6,7]` → `[4,5,6,7,0,1,2]`). Given the rotated array `nums` and a `target`, return its index, or `-1` if absent. You must write an O(log n) algorithm.\n\n**Example 1**: `nums = [4,5,6,7,0,1,2]`, `target = 0` → `4`\n\n**Example 2**: `nums = [4,5,6,7,0,1,2]`, `target = 3` → `-1`\n\n**Example 3**: `nums = [1]`, `target = 0` → `-1`\n\n**Constraints**: `1 <= n <= 5000`, `-10^4 <= nums[i], target <= 10^4`, all values distinct.",
   "method": {
     "name": "search",
     "params": [ { "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" } ],
@@ -16,15 +16,16 @@
     { "args": [[4, 5, 6, 7, 0, 1, 2], 3], "expected": -1 },
     { "args": [[1], 0], "expected": -1 },
     { "args": [[5, 1, 3], 5], "expected": 0, "hidden": true },
-    { "args": [[4, 5, 6, 7, 8, 1, 2, 3], 8], "expected": 4, "hidden": true }
+    { "args": [[4, 5, 6, 7, 8, 1, 2, 3], 8], "expected": 4, "hidden": true },
+    { "args": [[3, 1], 1], "expected": 1, "hidden": true, "note": "two elements, target in rotated part" }
   ],
   "hints": [
-    "If `nums[lo] <= nums[mid]`, the LEFT half is sorted; otherwise the RIGHT half is.",
-    "In the sorted half, a simple range check tells you if target is there — go there, else go the other way.",
-    "Standard `while (lo <= hi)` with `mid` recomputed each iteration."
+    "Cut a rotated array at any midpoint. The rotation's 'drop' can only be on one side — so what can you always say about the other side?",
+    "One of `[lo..mid]` and `[mid..hi]` is normally sorted: the left one if `nums[lo] <= nums[mid]`. Within a sorted half, a simple range check tells you whether target can be there — go there, otherwise go to the other half.",
+    "Left half sorted: `if (nums[lo] <= target && target < nums[mid]) hi = mid - 1; else lo = mid + 1;` — mirror it with `nums[mid] < target && target <= nums[hi]` for the right half."
   ],
   "solution": {
     "code": "class Solution {\n    public int search(int[] nums, int target) {\n        int lo = 0, hi = nums.length - 1;\n        while (lo <= hi) {\n            int mid = lo + (hi - lo) / 2;\n            if (nums[mid] == target) return mid;\n            if (nums[lo] <= nums[mid]) {                 // left half sorted\n                if (nums[lo] <= target && target < nums[mid]) hi = mid - 1;\n                else lo = mid + 1;\n            } else {                                     // right half sorted\n                if (nums[mid] < target && target <= nums[hi]) lo = mid + 1;\n                else hi = mid - 1;\n            }\n        }\n        return -1;\n    }\n}",
-    "explanation": "A rotated array always has one sorted half around the midpoint. Identifying it lets you use an ordinary range test to keep or discard that half, preserving O(log n). The `<=` in `nums[lo] <= nums[mid]` correctly handles the two-element case where lo == mid."
+    "explanation": "Around any midpoint at least one half is properly sorted, and for a sorted half a range test decides for certain whether the target could be inside. So every step safely discards half the range, as in plain binary search. The `<=` in `nums[lo] <= nums[mid]` handles the two-element case where lo == mid. O(log n) time, O(1) space."
   }
 }

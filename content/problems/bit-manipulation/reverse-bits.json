@@ -4,27 +4,61 @@
   "title": "Reverse Bits",
   "difficulty": "Easy",
   "leetcodeUrl": "https://leetcode.com/problems/reverse-bits/",
-  "prompt": "Reverse the 32 bits of an integer.\n\n**Example**: input `43261596` (`00000010100101000001111010011100`) → `964176192` (`00111001011110000010100101000000`).\n\nBuild the result bit by bit: shift the result left, OR in the input's lowest bit, then shift the input right.\n\n*(Java `int` is signed, so results with bit 31 set appear negative — that's expected.)*",
+  "prompt": "Reverse the bits of a 32-bit integer.\n\n**Example**: input `43261596` (`00000010100101000001111010011100`) → `964176192` (`00111001011110000010100101000000`).\n\n*(Java `int` is signed, so results with bit 31 set appear negative. That is expected.)*",
   "method": {
     "name": "reverseBits",
-    "params": [ { "name": "n", "type": "int" } ],
+    "params": [
+      {
+        "name": "n",
+        "type": "int"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int reverseBits(int n) {\n\n    }\n}\n",
   "tests": [
-    { "args": [43261596], "expected": 964176192 },
-    { "args": [0], "expected": 0 },
-    { "args": [1], "expected": -2147483648, "note": "bit 0 moves to bit 31 (the sign bit)" },
-    { "args": [-2147483648], "expected": 1, "hidden": true, "note": "bit 31 moves to bit 0" },
-    { "args": [2147483647], "expected": -2, "hidden": true }
+    {
+      "args": [
+        43261596
+      ],
+      "expected": 964176192
+    },
+    {
+      "args": [
+        0
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        1
+      ],
+      "expected": -2147483648,
+      "note": "bit 0 moves to bit 31 (the sign bit)"
+    },
+    {
+      "args": [
+        -2147483648
+      ],
+      "expected": 1,
+      "hidden": true,
+      "note": "bit 31 moves to bit 0"
+    },
+    {
+      "args": [
+        2147483647
+      ],
+      "expected": -2,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Loop 32 times. Each step: `result = (result << 1) | (n & 1)`.",
-    "Then shift n right with the UNSIGNED shift `>>>` so no sign bit leaks in.",
-    "After 32 iterations the bit order is fully reversed."
+    "Picture taking bits off one end of `n` and adding them to the other end of `result`. How many times do you repeat?",
+    "Exactly 32 times: `result = (result << 1) | (n & 1)`.",
+    "Then shift n right with the unsigned `>>>` so the sign bit doesn't spread into it."
   ],
   "solution": {
     "code": "class Solution {\n    public int reverseBits(int n) {\n        int result = 0;\n        for (int i = 0; i < 32; i++) {\n            result = (result << 1) | (n & 1);\n            n >>>= 1;\n        }\n        return result;\n    }\n}",
-    "explanation": "The result is assembled left-to-right while the input is consumed right-to-left: the first bit pulled from n's bottom ends up at the top of result after 31 more left-shifts. Using the unsigned `>>>` is essential — `>>` would smear the sign bit and corrupt negative inputs."
+    "explanation": "The result is built from the left while n is used up from the right. The first bit taken from n's bottom ends at the top of result after 31 more left shifts. Looping exactly 32 times (with `>>>`) handles negative inputs correctly. O(1) time (32 steps), O(1) space."
   }
 }

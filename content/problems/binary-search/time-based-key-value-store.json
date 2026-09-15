@@ -4,7 +4,7 @@
   "title": "Time Based Key-Value Store",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/time-based-key-value-store/",
-  "prompt": "Design a store where each key maps to values stamped with increasing timestamps:\n\n- `TimeMap()` — construct\n- `void set(String key, String value, int timestamp)`\n- `String get(String key, int timestamp)` — the value set for `key` at the **largest timestamp ≤ the query**, or `\"\"` if none exists\n\nStamps for a key arrive strictly increasing. A `TreeMap` per key gives the floor query directly (see the TreeMap lesson).",
+  "prompt": "Design a time-based key-value store that can hold multiple values for the same key at different timestamps, and retrieve a key's value at a given time.\n\n- `TimeMap()` — construct\n- `void set(String key, String value, int timestamp)` — store `value` for `key` at `timestamp`\n- `String get(String key, int timestamp)` — return the value set for `key` at the **largest timestamp ≤ `timestamp`**, or `\"\"` if there is none\n\n**Example**: `set(\"foo\",\"bar\",1)`, `get(\"foo\",1)` → `\"bar\"`, `get(\"foo\",3)` → `\"bar\"`, `set(\"foo\",\"bar2\",4)`, `get(\"foo\",4)` → `\"bar2\"`, `get(\"foo\",5)` → `\"bar2\"`.\n\n**Constraints**: all `set` timestamps are strictly increasing; `1 <= timestamp <= 10^7`; at most `2·10^5` calls.",
   "className": "TimeMap",
   "methods": {
     "TimeMap": { "params": [], "returns": "void" },
@@ -24,15 +24,29 @@
       "expected": [null, "", null, "", "a"],
       "hidden": true,
       "note": "query before any set, and just-below the stamp, both return the earlier/empty value"
+    },
+    {
+      "ops": ["TimeMap", "set", "set", "set", "get", "get", "get", "get", "get"],
+      "args": [[], ["a", "x", 1], ["b", "y", 2], ["a", "z", 3], ["a", 2], ["b", 1], ["b", 100], ["c", 1], ["a", 3]],
+      "expected": [null, null, null, null, "x", "", "y", "", "z"],
+      "hidden": true,
+      "note": "keys are independent; unknown key returns empty"
+    },
+    {
+      "ops": ["TimeMap", "set", "set", "set", "get", "get", "get", "get"],
+      "args": [[], ["k", "v1", 10], ["k", "v2", 20], ["k", "v3", 30], ["k", 25], ["k", 35], ["k", 10], ["k", 19]],
+      "expected": [null, null, null, null, "v2", "v3", "v1", "v1"],
+      "hidden": true,
+      "note": "floor lookup between and after stamps"
     }
   ],
   "hints": [
-    "Map each key to a `TreeMap<Integer, String>` (timestamp → value).",
-    "`get` = `floorKey(timestamp)` on that key's TreeMap, then look up the value.",
-    "Null checks: unknown key, or a query earlier than every stored stamp, both return \"\"."
+    "For any one key, the timestamps you store are already in sorted order. 'Largest timestamp ≤ t' is a classic question to ask of sorted data — how fast can it be answered?",
+    "Keep a per-key sorted collection of timestamp → value, and answer `get` with a floor lookup: a `TreeMap` does it directly, or binary-search a list of (timestamp, value) pairs since stamps arrive sorted.",
+    "With a TreeMap: `Integer floor = tm.floorKey(timestamp);` — an unknown key or a `null` floor both mean return `\"\"`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass TimeMap {\n    private Map<String, TreeMap<Integer, String>> map = new HashMap<>();\n\n    public TimeMap() {\n    }\n\n    public void set(String key, String value, int timestamp) {\n        map.computeIfAbsent(key, k -> new TreeMap<>()).put(timestamp, value);\n    }\n\n    public String get(String key, int timestamp) {\n        TreeMap<Integer, String> tm = map.get(key);\n        if (tm == null) return \"\";\n        Integer floor = tm.floorKey(timestamp);\n        return floor == null ? \"\" : tm.get(floor);\n    }\n}",
-    "explanation": "`floorKey` is exactly 'largest timestamp ≤ query' in O(log n). A TreeMap per key keeps each key's history sorted automatically. (Since stamps arrive increasing, a plain list + binary search also works — but the TreeMap makes the intent obvious.)"
+    "explanation": "Each key's history is kept sorted by timestamp, so 'largest stamp ≤ query' is a floor lookup that `floorKey` answers in O(log n). Values are never overwritten or reordered, so the floor entry is exactly the value in effect at that time. `set` and `get` are O(log n) per key history (a list + binary search gives O(1) set since stamps arrive increasing); space is O(total sets)."
   }
 }

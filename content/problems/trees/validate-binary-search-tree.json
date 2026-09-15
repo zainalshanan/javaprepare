@@ -4,10 +4,10 @@
   "title": "Validate Binary Search Tree",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/validate-binary-search-tree/",
-  "prompt": "Determine if a binary tree is a valid BST: every node in a left subtree is **strictly less** than its ancestor, every node in a right subtree strictly greater — at ALL levels, not just parent-child.\n\n**Counterexample**: `[5,4,6,null,null,3,7]` is invalid — the 3 sits in 5's right subtree but is less than 5.\n\nPass allowed `(min, max)` bounds down the recursion.",
+  "prompt": "Determine whether a binary tree is a valid BST: every node in a node's left subtree is **strictly less** than it, and every node in its right subtree is **strictly greater**. This must hold at every level, not just between a parent and its children.\n\n**Counterexample**: `[5,4,6,null,null,3,7]` is invalid: the 3 is in 5's right subtree but is less than 5.\n\n**Constraints**: node values span the full `int` range, including `Integer.MIN_VALUE` and `Integer.MAX_VALUE`.",
   "method": {
     "name": "isValidBST",
-    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean isValidBST(TreeNode root) {\n\n    }\n}\n",
@@ -20,12 +20,12 @@
     { "args": [[2147483647]], "expected": true, "hidden": true, "note": "Integer.MAX_VALUE as a node — bounds must be long or null" }
   ],
   "hints": [
-    "Checking only `left.val < node.val < right.val` misses deep violations — you need range bounds.",
-    "Helper: `valid(node, min, max)` — node.val must be strictly inside (min, max); recurse left with (min, node.val), right with (node.val, max).",
-    "Use `long` bounds (or null-able Integers) so Integer.MIN_VALUE / MAX_VALUE node values don't break the comparison."
+    "Checking only `left.val < node.val < right.val` misses violations deeper down. What does a node actually need to know about ALL of its ancestors?",
+    "Each node must fall inside an open range `(low, high)` set by its ancestors. Going left, the node's value becomes the new `high`; going right, it becomes the new `low`.",
+    "Use `long` bounds (start with `Long.MIN_VALUE, Long.MAX_VALUE`) or nullable `Integer` bounds. `int` sentinels break when a node holds `Integer.MIN_VALUE` or `Integer.MAX_VALUE`."
   ],
   "solution": {
     "code": "class Solution {\n    public boolean isValidBST(TreeNode root) {\n        return valid(root, Long.MIN_VALUE, Long.MAX_VALUE);\n    }\n\n    private boolean valid(TreeNode node, long min, long max) {\n        if (node == null) return true;\n        if (node.val <= min || node.val >= max) return false;\n        return valid(node.left, min, node.val)\n            && valid(node.right, node.val, max);\n    }\n}",
-    "explanation": "Each node constrains its whole subtree, so the recursion narrows an allowed interval. Long bounds sidestep the edge case where a node holds Integer.MIN/MAX_VALUE. O(n) time, O(height) space."
+    "explanation": "Every ancestor constrains an entire subtree, so passing the tightest `(low, high)` range down checks each node against all its ancestors in O(1). `long` bounds lie strictly outside the `int` range, so extreme node values compare correctly. O(n) time, O(h) stack."
   }
 }

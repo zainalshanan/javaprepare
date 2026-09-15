@@ -4,10 +4,10 @@
   "title": "Permutations",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/permutations/",
-  "prompt": "Given an array of distinct integers, return all permutations, in any order.\n\n**Example**: `[1,2,3]` → `[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]`.\n\nThe backtracking variant with a `used[]` array instead of a `start` index.",
+  "prompt": "Given an array of distinct integers, return all of its permutations, in any order.\n\n**Example**: `[1,2,3]` → `[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]`.\n\n**Constraints**: 1 ≤ n ≤ 6.",
   "method": {
     "name": "permute",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [{ "name": "nums", "type": "int[]" }],
     "returns": "List<List<Integer>>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> permute(int[] nums) {\n\n    }\n}\n",
@@ -18,12 +18,12 @@
     { "args": [[5, 4, 6, 2]], "expected": [[5, 4, 6, 2], [5, 4, 2, 6], [5, 6, 4, 2], [5, 6, 2, 4], [5, 2, 4, 6], [5, 2, 6, 4], [4, 5, 6, 2], [4, 5, 2, 6], [4, 6, 5, 2], [4, 6, 2, 5], [4, 2, 5, 6], [4, 2, 6, 5], [6, 5, 4, 2], [6, 5, 2, 4], [6, 4, 5, 2], [6, 4, 2, 5], [6, 2, 5, 4], [6, 2, 4, 5], [2, 5, 4, 6], [2, 5, 6, 4], [2, 4, 5, 6], [2, 4, 6, 5], [2, 6, 5, 4], [2, 6, 4, 5]], "compare": "unordered", "hidden": true }
   ],
   "hints": [
-    "Every position may pick ANY unused element — loop i from 0, guarded by `used[i]`.",
-    "Record when `path.size() == nums.length`.",
-    "The un-choose must undo BOTH the path add and the used flag."
+    "Unlike subsets, [1,2] and [2,1] are different answers here. At each position, which elements are allowed?",
+    "Any element that isn't already in the path. Loop `i` from 0 and track a `boolean[] used`. Record when `path.size() == nums.length`.",
+    "The un-choose must undo both changes: `path.remove(path.size() - 1); used[i] = false;`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> permute(int[] nums) {\n        backtrack(new ArrayList<>(), new boolean[nums.length], nums);\n        return res;\n    }\n\n    private void backtrack(List<Integer> path, boolean[] used, int[] nums) {\n        if (path.size() == nums.length) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        for (int i = 0; i < nums.length; i++) {\n            if (used[i]) continue;\n            used[i] = true;\n            path.add(nums[i]);\n            backtrack(path, used, nums);\n            path.remove(path.size() - 1);\n            used[i] = false;\n        }\n    }\n}",
-    "explanation": "n! permutations. Order matters here (unlike subsets), so instead of a forward-only `start`, every unused element is a candidate at every level, tracked by `used[]`. Both mutations get their mirror-image undo."
+    "explanation": "Order matters, so every level considers every unused element instead of only looking forward from `start`. `used[]` stops an element from repeating within one permutation, and undoing both changes restores the state for the next choice. n! permutations, each copied in O(n): O(n·n!) time, O(n) space besides the output."
   }
 }

@@ -7,7 +7,7 @@
   "prompt": "Each turn, smash the two heaviest stones together: if unequal, the difference becomes a new stone. Return the weight of the last remaining stone (0 if none remain).\n\n**Example**: `[2,7,4,1,8,1]` → `1`.\n\nA max-heap gives you the two heaviest in O(log n) each turn.",
   "method": {
     "name": "lastStoneWeight",
-    "params": [ { "name": "stones", "type": "int[]" } ],
+    "params": [{ "name": "stones", "type": "int[]" }],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int lastStoneWeight(int[] stones) {\n\n    }\n}\n",
@@ -19,12 +19,12 @@
     { "args": [[3, 7, 2]], "expected": 2, "hidden": true }
   ],
   "hints": [
-    "Max-heap: `new PriorityQueue<>((a, b) -> Integer.compare(b, a))`.",
-    "While at least two stones remain, poll two; if they differ, offer the difference.",
-    "Return the last stone, or 0 if the heap emptied."
+    "Every turn needs the two heaviest stones, and the collection keeps changing. Which structure gives you the maximum again and again?",
+    "Put every stone in a max-heap: `new PriorityQueue<>((a, b) -> Integer.compare(b, a))`.",
+    "While `size() > 1`: poll two; if they differ, offer the difference. Return `peek()`, or 0 if the heap is empty."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int lastStoneWeight(int[] stones) {\n        PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> Integer.compare(b, a));\n        for (int s : stones) pq.offer(s);\n        while (pq.size() > 1) {\n            int a = pq.poll(), b = pq.poll();\n            if (a != b) pq.offer(a - b);\n        }\n        return pq.isEmpty() ? 0 : pq.peek();\n    }\n}",
-    "explanation": "O(n log n). The simulation needs the two largest each round, which is exactly what a max-heap serves in O(log n); equal stones vanish (offer nothing), unequal leave a remainder stone."
+    "explanation": "The simulation needs the two largest stones each round, which a max-heap provides in O(log n). Equal stones disappear, and unequal ones leave their difference as a new stone. At most n rounds, so O(n log n) time and O(n) space."
   }
 }

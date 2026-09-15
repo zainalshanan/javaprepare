@@ -40,10 +40,37 @@ a == b;        // false! different objects
 a.equals(b);   // true — same characters
 ```
 
-Rule: **primitives with `==`, objects with `.equals()`.** For `Integer`, `==` "works" for small values (-128..127 are cached) and silently breaks for big ones — never rely on it.
+Rule: **primitives with `==`, objects with `.equals()`.**
 
 @exercise gen-mcq-equals
 
+## The Integer cache trap
+
+`Integer` is an object too, so `==` between two `Integer`s compares references. Java caches the boxed values **-128 to 127**, so small numbers happen to share one object, and the bug hides in every small test:
+
+```java
+Integer a = 127, b = 127;
+a == b;           // true  — both point at the cached 127
+Integer c = 128, d = 128;
+c == d;           // false — two separate objects
+c.equals(d);      // true
+int e = 128;
+c == e;           // true  — one side is a primitive, so c unboxes
+```
+
+This shows up as "passes the examples, fails a hidden test" when comparing two map counts: `map1.get(ch) == map2.get(ch)`. Use `.equals`, or unbox into `int` variables first.
+
+@exercise gen-fill-integer-cache
+
 @exercise gen-fill-safe
 
-That's all the OOP theory you need. Next unit: the collections themselves.
+@exercise gen-code-boxing-bug
+
+That's all the equality theory you need. Next: making your own classes work as keys.
+
+## Recap
+
+- Generics need wrappers: `List<Integer>`, `Map<Character, Integer>`.
+- Unboxing `null` throws NPE; read maps with `getOrDefault(key, 0)` or guard with `containsKey`.
+- Primitives `==`; objects (String, Integer, lists) `.equals()`.
+- `Integer == Integer` is only "true" inside the -128..127 cache. Use `.equals` or compare `int`s.

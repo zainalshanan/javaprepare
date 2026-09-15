@@ -4,27 +4,85 @@
   "title": "Counting Bits",
   "difficulty": "Easy",
   "leetcodeUrl": "https://leetcode.com/problems/counting-bits/",
-  "prompt": "Given `n`, return an array `ans` of length `n+1` where `ans[i]` is the number of 1-bits in `i`.\n\n**Example**: `n = 5` → `[0,1,1,2,1,2]`.\n\nDP on bits: `bits[i] = bits[i >> 1] + (i & 1)` — i has the same bits as i/2 plus its own lowest bit.",
+  "prompt": "Given `n`, return an array `ans` of length `n + 1` where `ans[i]` is the number of 1-bits in `i`.\n\n**Example**: `n = 5` → `[0,1,1,2,1,2]`.\n\nAim for O(n) overall by reusing answers for smaller numbers.",
   "method": {
     "name": "countBits",
-    "params": [ { "name": "n", "type": "int" } ],
+    "params": [
+      {
+        "name": "n",
+        "type": "int"
+      }
+    ],
     "returns": "int[]"
   },
   "starter": "class Solution {\n    public int[] countBits(int n) {\n\n    }\n}\n",
   "tests": [
-    { "args": [2], "expected": [0, 1, 1] },
-    { "args": [5], "expected": [0, 1, 1, 2, 1, 2] },
-    { "args": [0], "expected": [0] },
-    { "args": [1], "expected": [0, 1], "hidden": true },
-    { "args": [8], "expected": [0, 1, 1, 2, 1, 2, 2, 3, 1], "hidden": true }
+    {
+      "args": [
+        2
+      ],
+      "expected": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "args": [
+        5
+      ],
+      "expected": [
+        0,
+        1,
+        1,
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "args": [
+        0
+      ],
+      "expected": [
+        0
+      ]
+    },
+    {
+      "args": [
+        1
+      ],
+      "expected": [
+        0,
+        1
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        8
+      ],
+      "expected": [
+        0,
+        1,
+        1,
+        2,
+        1,
+        2,
+        2,
+        3,
+        1
+      ],
+      "hidden": true
+    }
   ],
   "hints": [
-    "Dropping i's lowest bit gives i >> 1, whose bit count you already computed.",
-    "So bits[i] = bits[i >> 1] + (i & 1).",
-    "Fill the array left to right from bits[0] = 0."
+    "How does the binary form of `i` relate to the binary form of `i / 2`?",
+    "`i >> 1` is `i` with its lowest bit dropped. It is smaller than `i`, so you already know its answer.",
+    "`bits[i] = bits[i >> 1] + (i & 1)`, filled from `i = 1` upward."
   ],
   "solution": {
     "code": "class Solution {\n    public int[] countBits(int n) {\n        int[] bits = new int[n + 1];\n        for (int i = 1; i <= n; i++) {\n            bits[i] = bits[i >> 1] + (i & 1);\n        }\n        return bits;\n    }\n}",
-    "explanation": "`i >> 1` is i with its lowest bit removed, so it has exactly one fewer bit than i when i is odd, and the same count when i is even — captured by adding `i & 1`. Since i >> 1 < i, its answer is already known: O(n) total instead of O(n log n)."
+    "explanation": "Shifting right drops exactly the lowest bit, so i has the same set bits as i >> 1 plus `i & 1`. Since i >> 1 < i, its entry is already filled in. O(n) time, O(n) space for the output."
   }
 }

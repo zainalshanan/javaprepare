@@ -4,10 +4,10 @@
   "title": "Palindrome Partitioning",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/palindrome-partitioning/",
-  "prompt": "Partition string `s` so that every substring is a palindrome, and return all possible partitionings.\n\n**Example**: `\"aab\"` → `[[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]`.\n\nBacktracking: at each start position, try every prefix that is a palindrome, then recurse on the remainder.",
+  "prompt": "Split the string `s` into pieces so that every piece is a palindrome. Return all possible ways to do this, in any order.\n\n**Example**: `\"aab\"` → `[[\"a\",\"a\",\"b\"],[\"aa\",\"b\"]]`.\n\n**Constraints**: 1 ≤ s.length ≤ 16, lowercase letters.",
   "method": {
     "name": "partition",
-    "params": [ { "name": "s", "type": "String" } ],
+    "params": [{ "name": "s", "type": "String" }],
     "returns": "List<List<String>>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<String>> partition(String s) {\n\n    }\n}\n",
@@ -18,12 +18,12 @@
     { "args": ["aaa"], "expected": [["a", "a", "a"], ["a", "aa"], ["aa", "a"], ["aaa"]], "compare": "unordered", "hidden": true }
   ],
   "hints": [
-    "From index `start`, try each end so the substring `s[start..end)` is a palindrome.",
-    "If it's a palindrome, add it to the path and recurse from `end`; base case is `start == s.length()`.",
-    "A simple two-pointer check tells you if a substring is a palindrome."
+    "The first piece of any valid split is some palindromic prefix of `s`. Once you pick it, what problem is left?",
+    "Backtrack on a `start` index: try each `end` so that `s.substring(start, end)` is a palindrome, add it to the path, and recurse from `end`. When `start == s.length()`, record a copy.",
+    "Check palindromes with two pointers moving inward. Skip any prefix that isn't a palindrome, and remove the piece after recursing."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    private List<List<String>> res = new ArrayList<>();\n\n    public List<List<String>> partition(String s) {\n        backtrack(0, new ArrayList<>(), s);\n        return res;\n    }\n\n    private void backtrack(int start, List<String> path, String s) {\n        if (start == s.length()) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        for (int end = start + 1; end <= s.length(); end++) {\n            if (isPalindrome(s, start, end - 1)) {\n                path.add(s.substring(start, end));\n                backtrack(end, path, s);\n                path.remove(path.size() - 1);\n            }\n        }\n    }\n\n    private boolean isPalindrome(String s, int l, int r) {\n        while (l < r) {\n            if (s.charAt(l++) != s.charAt(r--)) return false;\n        }\n        return true;\n    }\n}",
-    "explanation": "Each recursion level commits to one palindromic prefix and delegates the rest — so the choices along a path concatenate back to `s` in order (which is why the pieces' order matters and we compare 'unordered' only at the outer list). Backtracking undoes each prefix to try the next longer one."
+    "explanation": "Each level commits to one palindromic piece and leaves the rest of the string to deeper calls, so every root-to-leaf path in the recursion is one valid split. Skipping prefixes that aren't palindromes prunes early. O(n·2ⁿ) time worst case (for example, all the same letter), O(n) recursion depth."
   }
 }

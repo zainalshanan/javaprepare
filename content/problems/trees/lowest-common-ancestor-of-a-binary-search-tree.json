@@ -4,10 +4,10 @@
   "title": "Lowest Common Ancestor of a BST",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
-  "prompt": "Given a BST and two of its values `p` and `q`, return the node that is their lowest common ancestor (the deepest node that has both in its subtree).\n\n*(LeetCode passes node references; here `p` and `q` are given as the two **values**, and you return the LCA node — its whole subtree is checked.)*\n\n**Example**: `root = [6,2,8,0,4,7,9,null,null,3,5]`, `p = 2`, `q = 8` → the node `6`.\n\nExploit the BST ordering: walk down, going left when both are smaller, right when both are larger; the first split point is the LCA.",
+  "prompt": "Given a BST and two of its values `p` and `q`, return the node that is their lowest common ancestor: the deepest node that has both in its subtree. A node counts as its own ancestor.\n\n*(LeetCode passes node references; here `p` and `q` are the two **values**, and you return the LCA node. The grader checks its whole subtree.)*\n\n**Example**: `root = [6,2,8,0,4,7,9,null,null,3,5]`, `p = 2`, `q = 8` → the node `6`; `p = 2`, `q = 4` → the node `2`.",
   "method": {
     "name": "lowestCommonAncestor",
-    "params": [ { "name": "root", "type": "TreeNode" }, { "name": "p", "type": "int" }, { "name": "q", "type": "int" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }, { "name": "p", "type": "int" }, { "name": "q", "type": "int" }],
     "returns": "TreeNode"
   },
   "starter": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, int p, int q) {\n\n    }\n}\n",
@@ -16,15 +16,16 @@
     { "args": [[6, 2, 8, 0, 4, 7, 9, null, null, 3, 5], 2, 4], "expected": [2, 0, 4, null, null, 3, 5] },
     { "args": [[2, 1], 2, 1], "expected": [2, 1] },
     { "args": [[5, 3, 8, 1, 4, 7, 9], 1, 4], "expected": [3, 1, 4], "hidden": true },
-    { "args": [[5, 3, 8, 1, 4, 7, 9], 7, 9], "expected": [8, 7, 9], "hidden": true }
+    { "args": [[5, 3, 8, 1, 4, 7, 9], 7, 9], "expected": [8, 7, 9], "hidden": true },
+    { "args": [[3, 2, null, 1], 1, 2], "expected": [2, 1], "hidden": true, "note": "left-skewed; one value is the ancestor" }
   ],
   "hints": [
-    "Start at the root. If both p and q are less than the current value, the LCA is in the left subtree.",
-    "If both are greater, go right.",
-    "Otherwise they split here (or one equals this node) — this node is the LCA."
+    "Compare `p` and `q` with the root's value. If both are smaller, where must their lowest common ancestor be?",
+    "Walk down from the root: both smaller → go left; both larger → go right.",
+    "The first node where they don't both go the same way (one on each side, or one equals the node) is the LCA. Return it."
   ],
   "solution": {
     "code": "class Solution {\n    public TreeNode lowestCommonAncestor(TreeNode root, int p, int q) {\n        TreeNode node = root;\n        while (node != null) {\n            if (p < node.val && q < node.val) node = node.left;\n            else if (p > node.val && q > node.val) node = node.right;\n            else return node;\n        }\n        return null;\n    }\n}",
-    "explanation": "O(height), O(1) space. In a BST the LCA is the unique node where p and q diverge — the first place one is ≤ and the other is ≥ the node's value. No full search needed; the ordering points the way at every step."
+    "explanation": "In a BST, the ordering tells you which subtree contains both values, so you never search both sides. The first node where p and q separate is the deepest node with both below it. O(h) time, O(1) space with the loop."
   }
 }

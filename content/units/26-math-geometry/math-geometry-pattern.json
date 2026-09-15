@@ -61,11 +61,12 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int gcd(int a, int b) {\n        return b == 0 ? a : gcd(b, a % b);\n    }\n}",
-      "explanation": "gcd(a, b) = gcd(b, a mod b), bottoming out when b reaches 0. Runs in O(log min(a,b))."
+      "explanation": "gcd(a, b) = gcd(b, a mod b) because any common divisor of a and b also divides the remainder. It stops when b reaches 0. The remainder at least halves every two steps, so O(log min(a, b)) time and O(log) recursion depth."
     },
     "hints": [
-      "Base case: `b == 0` → answer is `a`.",
-      "Recurse with `(b, a % b)`."
+      "Any common divisor of a and b also divides a % b. Can you shrink the problem?",
+      "gcd(a, b) = gcd(b, a % b). The numbers shrink until one of them is 0.",
+      "Base case: `b == 0` means the answer is `a`. One line: `return b == 0 ? a : gcd(b, a % b);`"
     ]
   },
   {
@@ -127,10 +128,53 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int reverseDigits(int x) {\n        int r = 0;\n        while (x > 0) {\n            r = r * 10 + x % 10;\n            x /= 10;\n        }\n        return r;\n    }\n}"
+      "code": "class Solution {\n    public int reverseDigits(int x) {\n        int r = 0;\n        while (x > 0) {\n            r = r * 10 + x % 10;\n            x /= 10;\n        }\n        return r;\n    }\n}",
+      "explanation": "Peeling from the right and appending on the right reverses the digit order. Trailing zeros disappear on their own (100 → 1). O(number of digits) time, O(1) space."
     },
     "hints": [
-      "`x % 10` is the last digit; `r = r * 10 + digit` appends it; `x /= 10` drops it."
+      "How do you get the last digit of a number, and how do you remove it?",
+      "`x % 10` is the last digit and `x /= 10` drops it. Loop until x is 0.",
+      "Append each digit to the result: `r = r * 10 + x % 10`."
     ]
+  },
+  {
+    "id": "pat-mg-mcq-zeroes",
+    "type": "mcq",
+    "title": "Zeroes: why row 0 last?",
+    "prompt": "In the O(1)-space Set Matrix Zeroes, row 0 stores the column markers (`m[0][c] == 0` means zero column c). Why must row 0 itself be zeroed at the very end?",
+    "options": [
+      "Zeroing it earlier would overwrite the column markers, and every column would look marked",
+      "Row 0 is always all zeros",
+      "Java requires the first row to be processed last",
+      "It doesn't matter when row 0 is zeroed"
+    ],
+    "answer": 0,
+    "explanation": "The markers ARE row 0 (and column 0). Zeroing row 0 before the interior pass makes `m[0][c] == 0` true for every c, which wipes the whole matrix. Apply the interior first, then column 0 (using `m[0][0]`), then row 0 (using the separate `row0` flag)."
+  },
+  {
+    "id": "pat-mg-fill-pow",
+    "type": "fill-blank",
+    "title": "Recall: fast exponentiation",
+    "prompt": "Fill in the O(log n) Pow(x, n) template, including the overflow-safe negative exponent.",
+    "drill": true,
+    "code": "long N = {{1}};\nif (N < 0) { x = 1 / x; N = -N; }\ndouble result = 1;\nwhile (N > 0) {\n    if ((N & 1) == 1) result {{2}} x;\n    x {{3}} x;\n    N {{4}} 1;\n}\nreturn result;",
+    "blanks": {
+      "1": [
+        "n",
+        "(long) n"
+      ],
+      "2": [
+        "*="
+      ],
+      "3": [
+        "*="
+      ],
+      "4": [
+        ">>=",
+        ">>>=",
+        "/="
+      ]
+    },
+    "explanation": "Widen to `long` so `-Integer.MIN_VALUE` fits. Each iteration looks at the lowest bit of N. If it is set, multiply the current power into the result. Then square the base (x, x², x⁴, …) and halve N. That is O(log n) multiplications."
   }
 ]

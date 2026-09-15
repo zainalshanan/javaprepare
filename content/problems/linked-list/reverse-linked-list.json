@@ -15,15 +15,17 @@
     { "args": [[1, 2, 3, 4, 5]], "expected": [5, 4, 3, 2, 1] },
     { "args": [[1, 2]], "expected": [2, 1] },
     { "args": [[]], "expected": [], "note": "empty list → null" },
-    { "args": [[7]], "expected": [7], "hidden": true }
+    { "args": [[7]], "expected": [7], "hidden": true },
+    { "args": [[1, 1, 2]], "expected": [2, 1, 1], "hidden": true, "note": "duplicate values" },
+    { "args": [[-1, 0, 1]], "expected": [1, 0, -1], "hidden": true, "note": "negatives" }
   ],
   "hints": [
-    "Two travelers: `prev` (starts null) and `curr` (starts head).",
-    "Loop body, exactly this order: save `curr.next`, point `curr.next` at prev, advance prev to curr, advance curr to the saved node.",
-    "When curr hits null, `prev` is the new head."
+    "Every arrow needs to point the other way. But the moment you redirect `curr.next`, you lose your only way to the rest of the list — unless you do something first.",
+    "Two travelers: `prev` (starts null) and `curr` (starts at head). Each step turns `curr`'s arrow back toward `prev`, then both move forward one node.",
+    "Loop body, exactly this order: `ListNode next = curr.next; curr.next = prev; prev = curr; curr = next;` When curr hits null, `prev` is the new head."
   ],
   "solution": {
     "code": "class Solution {\n    public ListNode reverseList(ListNode head) {\n        ListNode prev = null, curr = head;\n        while (curr != null) {\n            ListNode next = curr.next;\n            curr.next = prev;\n            prev = curr;\n            curr = next;\n        }\n        return prev;\n    }\n}",
-    "explanation": "O(n)/O(1). `prev == null` initially makes the old head become the new tail (its next becomes null) with zero special-casing. The recursive version is elegant but the iterative one is the interview default."
+    "explanation": "After each iteration, `prev` heads the already-reversed prefix and `curr` heads the untouched suffix; saving `curr.next` before flipping keeps the suffix reachable. Starting with `prev = null` makes the old head the new tail with no special case, and an empty list returns null naturally. O(n) time, O(1) space (the recursive version uses O(n) stack)."
   }
 }

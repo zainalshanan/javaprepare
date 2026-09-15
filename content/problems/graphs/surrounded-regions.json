@@ -4,26 +4,149 @@
   "title": "Surrounded Regions",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/surrounded-regions/",
-  "prompt": "Given a board of `'X'` and `'O'`, flip every `'O'` that is **completely surrounded** by `'X'` to `'X'`. An `'O'` region connected to the border is safe. Modify the board in place.\n\nThe trick is inverted: find the O's that ARE connected to the border (those survive) and flip everything else.",
+  "prompt": "Given an `m x n` board of `'X'` and `'O'`, capture every region of `'O'`s that is **completely surrounded** by `'X'` by flipping it to `'X'`. A region is 4-directionally connected. Any region with a cell on the border is not surrounded. Modify the board in place.\n\n**Example**:\n```\nX X X X        X X X X\nX O O X   →    X X X X\nX X O X        X X X X\nX O X X        X O X X\n```\n\n**Constraints**: `1 <= m, n <= 200`.",
   "method": {
     "name": "solve",
-    "params": [ { "name": "board", "type": "char[][]" } ],
+    "params": [
+      {
+        "name": "board",
+        "type": "char[][]"
+      }
+    ],
     "returns": "void"
   },
   "starter": "class Solution {\n    public void solve(char[][] board) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[["X", "X", "X", "X"], ["X", "O", "O", "X"], ["X", "X", "O", "X"], ["X", "O", "X", "X"]]], "expected": [["X", "X", "X", "X"], ["X", "X", "X", "X"], ["X", "X", "X", "X"], ["X", "O", "X", "X"]] },
-    { "args": [[["O"]]], "expected": [["O"]], "note": "border O survives" },
-    { "args": [[["X", "X"], ["X", "X"]]], "expected": [["X", "X"], ["X", "X"]], "hidden": true },
-    { "args": [[["O", "O"], ["O", "O"]]], "expected": [["O", "O"], ["O", "O"]], "hidden": true, "note": "all touch the border" }
+    {
+      "args": [
+        [
+          [
+            "X",
+            "X",
+            "X",
+            "X"
+          ],
+          [
+            "X",
+            "O",
+            "O",
+            "X"
+          ],
+          [
+            "X",
+            "X",
+            "O",
+            "X"
+          ],
+          [
+            "X",
+            "O",
+            "X",
+            "X"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "X",
+          "X",
+          "X",
+          "X"
+        ],
+        [
+          "X",
+          "X",
+          "X",
+          "X"
+        ],
+        [
+          "X",
+          "X",
+          "X",
+          "X"
+        ],
+        [
+          "X",
+          "O",
+          "X",
+          "X"
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            "O"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "O"
+        ]
+      ],
+      "note": "border O survives"
+    },
+    {
+      "args": [
+        [
+          [
+            "X",
+            "X"
+          ],
+          [
+            "X",
+            "X"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "X",
+          "X"
+        ],
+        [
+          "X",
+          "X"
+        ]
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            "O",
+            "O"
+          ],
+          [
+            "O",
+            "O"
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          "O",
+          "O"
+        ],
+        [
+          "O",
+          "O"
+        ]
+      ],
+      "hidden": true,
+      "note": "all touch the border"
+    }
   ],
   "hints": [
-    "DFS from every border cell, marking border-connected O's with a temporary symbol like 'S'.",
-    "Then sweep the board: remaining 'O' (surrounded) → 'X', and 'S' (safe) → back to 'O'.",
-    "Only O's reachable from the edge are safe."
+    "Checking each region for 'fully enclosed' is awkward. What's a simple property that makes an `O` region **safe**?",
+    "Only regions connected to the border survive. Flood from every border `O` and mark those cells with a temporary symbol.",
+    "After marking border-connected cells as `'S'`, sweep once: `'O'` → `'X'` (captured) and `'S'` → `'O'` (restored)."
   ],
   "solution": {
     "code": "class Solution {\n    public void solve(char[][] board) {\n        int rows = board.length, cols = board[0].length;\n        for (int r = 0; r < rows; r++) {\n            mark(board, r, 0);\n            mark(board, r, cols - 1);\n        }\n        for (int c = 0; c < cols; c++) {\n            mark(board, 0, c);\n            mark(board, rows - 1, c);\n        }\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (board[r][c] == 'O') board[r][c] = 'X';\n                else if (board[r][c] == 'S') board[r][c] = 'O';\n            }\n        }\n    }\n\n    private void mark(char[][] b, int r, int c) {\n        if (r < 0 || r >= b.length || c < 0 || c >= b[0].length || b[r][c] != 'O') return;\n        b[r][c] = 'S';\n        mark(b, r + 1, c);\n        mark(b, r - 1, c);\n        mark(b, r, c + 1);\n        mark(b, r, c - 1);\n    }\n}",
-    "explanation": "Directly testing each region for 'surrounded' is fiddly. Flipping the question — anything touching the border is NOT surrounded — lets a border-seeded DFS mark the survivors ('S'), after which the final sweep flips true interior O's and restores the safe ones."
+    "explanation": "An `O` region escapes capture exactly when it touches the border, so a flood from the border cells finds every survivor. Everything still `O` afterward must be enclosed. Each cell is marked at most once and swept once. O(m·n) time, O(m·n) worst-case recursion depth."
   }
 }

@@ -4,27 +4,167 @@
   "title": "Cheapest Flights Within K Stops",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
-  "prompt": "`flights[i] = [from, to, price]`. Find the cheapest price from `src` to `dst` using at most `k` stops (so at most k+1 flights). Return `-1` if unreachable.\n\n**Example**: `n = 4`, flights `[[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]]`, `src = 0`, `dst = 3`, `k = 1` → `700`.\n\nBellman-Ford limited to `k+1` relaxation rounds — the round count naturally caps the number of edges used.",
+  "prompt": "There are `n` cities. `flights[i] = [from, to, price]` is a one-way flight. Return the cheapest price from `src` to `dst` with **at most `k` stops** (at most `k + 1` flights), or `-1` if there's no such route.\n\n**Example**: `n = 4`, `flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]]`, `src = 0`, `dst = 3`, `k = 1` → `700` (0 → 1 → 3; the cheaper 0 → 1 → 2 → 3 uses 2 stops).\n\n**Constraints**: `1 <= n <= 100`, `0 <= k < n`, no duplicate flights.",
   "method": {
     "name": "findCheapestPrice",
-    "params": [ { "name": "n", "type": "int" }, { "name": "flights", "type": "int[][]" }, { "name": "src", "type": "int" }, { "name": "dst", "type": "int" }, { "name": "k", "type": "int" } ],
+    "params": [
+      {
+        "name": "n",
+        "type": "int"
+      },
+      {
+        "name": "flights",
+        "type": "int[][]"
+      },
+      {
+        "name": "src",
+        "type": "int"
+      },
+      {
+        "name": "dst",
+        "type": "int"
+      },
+      {
+        "name": "k",
+        "type": "int"
+      }
+    ],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {\n\n    }\n}\n",
   "tests": [
-    { "args": [4, [[0, 1, 100], [1, 2, 100], [2, 0, 100], [1, 3, 600], [2, 3, 200]], 0, 3, 1], "expected": 700 },
-    { "args": [3, [[0, 1, 100], [1, 2, 100], [0, 2, 500]], 0, 2, 1], "expected": 200 },
-    { "args": [3, [[0, 1, 100], [1, 2, 100], [0, 2, 500]], 0, 2, 0], "expected": 500, "note": "no stops allowed → direct flight only" },
-    { "args": [2, [[0, 1, 50]], 0, 1, 0], "expected": 50, "hidden": true },
-    { "args": [3, [[0, 1, 100]], 0, 2, 1], "expected": -1, "hidden": true, "note": "unreachable" }
+    {
+      "args": [
+        4,
+        [
+          [
+            0,
+            1,
+            100
+          ],
+          [
+            1,
+            2,
+            100
+          ],
+          [
+            2,
+            0,
+            100
+          ],
+          [
+            1,
+            3,
+            600
+          ],
+          [
+            2,
+            3,
+            200
+          ]
+        ],
+        0,
+        3,
+        1
+      ],
+      "expected": 700
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1,
+            100
+          ],
+          [
+            1,
+            2,
+            100
+          ],
+          [
+            0,
+            2,
+            500
+          ]
+        ],
+        0,
+        2,
+        1
+      ],
+      "expected": 200
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1,
+            100
+          ],
+          [
+            1,
+            2,
+            100
+          ],
+          [
+            0,
+            2,
+            500
+          ]
+        ],
+        0,
+        2,
+        0
+      ],
+      "expected": 500,
+      "note": "no stops allowed → direct flight only"
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            0,
+            1,
+            50
+          ]
+        ],
+        0,
+        1,
+        0
+      ],
+      "expected": 50,
+      "hidden": true
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1,
+            100
+          ]
+        ],
+        0,
+        2,
+        1
+      ],
+      "expected": -1,
+      "hidden": true,
+      "note": "unreachable"
+    }
   ],
   "hints": [
-    "dist[] of prices, all infinity except dist[src] = 0.",
-    "Relax all edges k+1 times, but each round must read from a SNAPSHOT of the previous round (clone dist) so one round can't chain multiple flights.",
-    "The clone is the key subtlety — it enforces the ≤ k+1 edges limit."
+    "The cheapest route overall might use too many flights. How could you compute the cheapest cost using at most 1 flight, then at most 2, and so on?",
+    "Do k + 1 rounds. In each round, try extending every flight from the costs found so far. After round i, you know the cheapest prices using at most i flights.",
+    "Each round must read last round's values: `int[] tmp = dist.clone();` then relax `if (dist[u] != MAX && dist[u] + w < tmp[v]) tmp[v] = dist[u] + w;` and set `dist = tmp`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int findCheapestPrice(int n, int[][] flights, int src, int dst, int k) {\n        int[] dist = new int[n];\n        Arrays.fill(dist, Integer.MAX_VALUE);\n        dist[src] = 0;\n        for (int i = 0; i <= k; i++) {\n            int[] tmp = dist.clone();\n            for (int[] f : flights) {\n                int u = f[0], v = f[1], w = f[2];\n                if (dist[u] != Integer.MAX_VALUE && dist[u] + w < tmp[v]) {\n                    tmp[v] = dist[u] + w;\n                }\n            }\n            dist = tmp;\n        }\n        return dist[dst] == Integer.MAX_VALUE ? -1 : dist[dst];\n    }\n}",
-    "explanation": "Round i of Bellman-Ford settles shortest paths using at most i edges. Relaxing from a cloned snapshot prevents a newly-updated node from being used again within the same round, so after k+1 rounds dist holds the cheapest path of at most k+1 flights = k stops. O((k+1)·E)."
+    "explanation": "This is Bellman-Ford with a fixed number of rounds. Round i extends only the round i-1 costs by one flight, so after k + 1 rounds `dist` holds the cheapest price using at most k + 1 flights. The clone matters: without it, a price updated earlier in the same round could be extended again, sneaking in extra flights. O((k + 1)·E) time, O(n) space."
   }
 }

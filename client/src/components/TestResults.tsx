@@ -1,8 +1,8 @@
 import type { GradeResult } from '../types';
 
-function StatusBanner({ result }: { result: GradeResult }) {
+function StatusBanner({ result, examplesOnly }: { result: GradeResult; examplesOnly?: boolean }) {
   const map: Record<GradeResult['status'], { label: string; cls: string }> = {
-    'pass': { label: 'All tests passed', cls: 'bg-pass/15 text-pass border-pass/40' },
+    'pass': { label: examplesOnly ? 'All examples pass' : 'All tests passed', cls: 'bg-pass/15 text-pass border-pass/40' },
     'fail': { label: 'Not quite', cls: 'bg-fail/10 text-fail border-fail/40' },
     'compile-error': { label: "Doesn't compile", cls: 'bg-fail/10 text-fail border-fail/40' },
     'runtime-error': { label: 'Crashed while running', cls: 'bg-fail/10 text-fail border-fail/40' },
@@ -11,31 +11,31 @@ function StatusBanner({ result }: { result: GradeResult }) {
   };
   const { label, cls } = map[result.status];
   return (
-    <div className={`flex items-baseline justify-between rounded-md border px-3 py-2 text-sm font-medium ${cls}`}>
-      <span>{label}</span>
+    <div className={`flex flex-wrap items-baseline justify-between gap-2 rounded-md border px-3 py-2 text-sm font-medium ${cls}`}>
+      <span>
+        {label}
+        {examplesOnly && <span className="ml-2 text-xs font-normal text-dim">examples only — not graded, not an attempt</span>}
+      </span>
       {result.total !== undefined && (
-        <span className="font-mono text-xs opacity-80">{result.passed}/{result.total} tests</span>
+        <span className="font-mono text-xs opacity-80">{result.passed}/{result.total} {examplesOnly ? 'examples' : 'tests'}</span>
       )}
     </div>
   );
 }
 
-export function TestResults({ result }: { result: GradeResult }) {
+export function TestResults({ result, examplesOnly }: { result: GradeResult; examplesOnly?: boolean }) {
   return (
     <div className="space-y-2">
-      <StatusBanner result={result} />
+      <StatusBanner result={result} examplesOnly={examplesOnly} />
 
       {result.message && (
-        <pre className="overflow-x-auto whitespace-pre-wrap rounded-md border border-line bg-[#10182a] p-3 font-mono text-xs leading-relaxed text-paper/90">
+        <pre className="overflow-x-auto whitespace-pre-wrap rounded-md border border-line bg-code p-3 font-mono text-xs leading-relaxed text-paper/90">
           {result.message}
         </pre>
       )}
 
       {result.actualOutput !== undefined && result.status !== 'pass' && (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <OutputBox label="Your output" value={result.actualOutput || '(nothing printed)'} bad />
-          <OutputBox label="Expected output" value={result.expectedOutput ?? ''} />
-        </div>
+        <OutputDiff actual={result.actualOutput} expected={result.expectedOutput ?? ''} />
       )}
 
       {result.results && (
@@ -43,7 +43,8 @@ export function TestResults({ result }: { result: GradeResult }) {
           {result.results.map((t) => (
             <li key={t.index} className={`rounded-md border px-3 py-2 text-xs ${t.pass ? 'border-pass/25 bg-pass/5' : 'border-fail/25 bg-fail/5'}`}>
               <div className="flex items-center gap-2 font-medium">
-                <span className={t.pass ? 'text-pass' : 'text-fail'}>{t.pass ? '✓' : '✗'}</span>
+                <span className={t.pass ? 'text-pass' : 'text-fail'} aria-hidden="true">{t.pass ? '✓' : '✗'}</span>
+                <span className="sr-only">{t.pass ? 'passed' : 'failed'}:</span>
                 <span className="text-paper/90">
                   {t.hidden ? `Hidden test ${t.index + 1}` : `Test ${t.index + 1}`}
                   {t.note ? <span className="ml-1 text-dim">— {t.note}</span> : null}
@@ -72,11 +73,47 @@ export function TestResults({ result }: { result: GradeResult }) {
   );
 }
 
-function OutputBox({ label, value, bad }: { label: string; value: string; bad?: boolean }) {
+/** Line-by-line comparison of program output; differing lines are highlighted. */
+function OutputDiff({ actual, expected }: { actual: string; expected: string }) {
+  const a = actual === '' ? [] : actual.split('\n');
+  const e = expected === '' ? [] : expected.split('\n');
+  const n = Math.max(a.length, e.length, 1);
+  const firstDiff = Array.from({ length: n }, (_, i) => i).find((i) => a[i] !== e[i]);
   return (
-    <div>
-      <div className={`mb-1 text-[11px] font-medium uppercase tracking-wide ${bad ? 'text-fail/80' : 'text-dim'}`}>{label}</div>
-      <pre className="overflow-x-auto whitespace-pre-wrap rounded-md border border-line bg-[#10182a] p-2.5 font-mono text-xs leading-relaxed">{value}</pre>
+    <div className="overflow-hidden rounded-md border border-line">
+      <div className="flex flex-wrap items-baseline gap-x-3 border-b border-line bg-panel px-3 py-1.5 text-[11px] text-dim">
+        <span className="font-medium uppercase tracking-wide">Output diff</span>
+        {firstDiff !== undefined && <span>first difference on line {firstDiff + 1}</span>}
+        {actual === '' && <span className="text-fail">your program printed nothing</span>}
+      </div>
+      <div className="overflow-x-auto bg-code">
+        <table className="w-full border-collapse font-mono text-xs leading-relaxed">
+          <thead>
+            <tr className="text-left text-[10px] uppercase tracking-wide text-dim">
+              <th className="w-8 px-2 py-1 font-medium">#</th>
+              <th className="px-2 py-1 font-medium">Your output</th>
+              <th className="px-2 py-1 font-medium">Expected</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: n }, (_, i) => {
+              const same = a[i] === e[i];
+              return (
+                <tr key={i} className={same ? '' : 'bg-fail/10'}>
+                  <td className="px-2 align-top text-dim">{i + 1}</td>
+                  <td className={`whitespace-pre px-2 align-top ${same ? 'text-paper/80' : 'text-fail'}`}>
+                    {a[i] ?? <span className="italic text-dim">(missing)</span>}
+                  </td>
+                  <td className={`whitespace-pre px-2 align-top ${same ? 'text-paper/80' : 'text-pass'}`}>
+                    {e[i] ?? <span className="italic text-dim">(no line)</span>}
+                    {!same && <span className="sr-only"> (differs)</span>}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

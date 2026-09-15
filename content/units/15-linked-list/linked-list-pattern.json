@@ -90,7 +90,9 @@
       "explanation": "Fast moves twice as far, so when it exhausts the list, slow is halfway. The `fast != null && fast.next != null` guard order is load-bearing."
     },
     "hints": [
-      "Both start at head; the while guard checks fast AND fast.next."
+      "If one walker moves twice as fast as another, where is the slow one when the fast one finishes?",
+      "Start both at head; move slow one step and fast two steps per iteration.",
+      "`while (fast != null && fast.next != null) { slow = slow.next; fast = fast.next.next; }`"
     ]
   },
   {
@@ -172,11 +174,146 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public ListNode removeValue(ListNode head, int val) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode cur = dummy;\n        while (cur.next != null) {\n            if (cur.next.val == val) cur.next = cur.next.next;\n            else cur = cur.next;\n        }\n        return dummy.next;\n    }\n}"
+      "code": "class Solution {\n    public ListNode removeValue(ListNode head, int val) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode cur = dummy;\n        while (cur.next != null) {\n            if (cur.next.val == val) cur.next = cur.next.next;\n            else cur = cur.next;\n        }\n        return dummy.next;\n    }\n}",
+      "explanation": "With a dummy in front, every node — including the original head — has a predecessor, so one splice rule covers all cases. Not advancing after a splice handles runs like `7,7,7`. O(n) time, O(1) space."
     },
     "hints": [
-      "Walk with `cur`; when `cur.next` matches, splice it out (don't advance).",
-      "Return `dummy.next`."
+      "Removing the head is a special case... unless the head also has a node in front of it.",
+      "Put a dummy node before head and look one node ahead: decide about `cur.next`, not `cur`.",
+      "Match → `cur.next = cur.next.next;` (stay put, the new next may match too); else `cur = cur.next;`. Return `dummy.next`."
+    ]
+  },
+  {
+    "id": "pat-ll-fill-reverse",
+    "type": "fill-blank",
+    "title": "Template recall: reverse a list",
+    "prompt": "From memory: save → flip → advance ×2.",
+    "drill": true,
+    "code": "ListNode prev = null, curr = head;\nwhile (curr != null) {\n    ListNode next = {{1}};\n    curr.next = {{2}};\n    prev = {{3}};\n    curr = {{4}};\n}\nreturn {{5}};",
+    "blanks": {
+      "1": [
+        "curr.next"
+      ],
+      "2": [
+        "prev"
+      ],
+      "3": [
+        "curr"
+      ],
+      "4": [
+        "next"
+      ],
+      "5": [
+        "prev"
+      ]
+    },
+    "explanation": "Save the forward link before flipping it, point the current node back at `prev`, then advance both pointers. When `curr` falls off the end, `prev` is the old tail — the new head. O(n) time, O(1) space."
+  },
+  {
+    "id": "pat-ll-drill-kth",
+    "type": "code-method",
+    "title": "Drill: k-th node from the end",
+    "prompt": "From memory (a gap of k): return the k-th node from the END of the list (`k = 1` is the last node; `1 ≤ k ≤ length`), in one pass. The grader compares the list from the node you return.",
+    "drill": true,
+    "method": {
+      "name": "kthFromEnd",
+      "params": [
+        {
+          "name": "head",
+          "type": "ListNode"
+        },
+        {
+          "name": "k",
+          "type": "int"
+        }
+      ],
+      "returns": "ListNode"
+    },
+    "starter": "class Solution {\n    public ListNode kthFromEnd(ListNode head, int k) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          2
+        ],
+        "expected": [
+          4,
+          5
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          3
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ],
+        "note": "k = length → the head"
+      },
+      {
+        "args": [
+          [
+            7
+          ],
+          1
+        ],
+        "expected": [
+          7
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2
+          ],
+          1
+        ],
+        "expected": [
+          2
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          4
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public ListNode kthFromEnd(ListNode head, int k) {\n        ListNode fast = head;\n        for (int i = 0; i < k; i++) fast = fast.next;   // open a gap of k\n        ListNode slow = head;\n        while (fast != null) {\n            slow = slow.next;\n            fast = fast.next;\n        }\n        return slow;\n    }\n}",
+      "explanation": "After fast moves k steps, slow and fast are k nodes apart; moving them together keeps the gap, so when fast falls off the end (null), slow is exactly k nodes from it. One pass, O(n) time, O(1) space."
+    },
+    "hints": [
+      "Two pointers a fixed distance apart stay that distance apart as they move together.",
+      "Advance one pointer k steps first, then move both until the leader runs off the end.",
+      "`for (int i = 0; i < k; i++) fast = fast.next;` then `while (fast != null) { slow = slow.next; fast = fast.next; }`."
     ]
   }
 ]

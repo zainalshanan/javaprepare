@@ -69,8 +69,9 @@
       "explanation": "A StringBuilder IS a char stack: append = push, deleteCharAt(last) = pop, charAt(last) = peek — and the final answer needs no reversal."
     },
     "hints": [
-      "Compare each char with the current last char of the StringBuilder.",
-      "Equal → delete the last char; different → append."
+      "A deletion can make two earlier characters adjacent. Which character does each new char need to be compared against?",
+      "Compare with the most recently kept character — treat the StringBuilder as a stack.",
+      "Equal to the last char → `deleteCharAt(len - 1)`; otherwise `append(c)`."
     ]
   },
   {
@@ -148,11 +149,161 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[] nextGreater(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        Arrays.fill(res, -1);\n        Deque<Integer> st = new ArrayDeque<>();\n        for (int i = 0; i < n; i++) {\n            while (!st.isEmpty() && nums[i] > nums[st.peek()]) {\n                res[st.pop()] = nums[i];\n            }\n            st.push(i);\n        }\n        return res;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] nextGreater(int[] nums) {\n        int n = nums.length;\n        int[] res = new int[n];\n        Arrays.fill(res, -1);\n        Deque<Integer> st = new ArrayDeque<>();\n        for (int i = 0; i < n; i++) {\n            while (!st.isEmpty() && nums[i] > nums[st.peek()]) {\n                res[st.pop()] = nums[i];\n            }\n            st.push(i);\n        }\n        return res;\n    }\n}",
+      "explanation": "The stack holds indices still waiting for a greater element, in decreasing value order; a new value pops exactly the ones it beats. Anything never popped keeps -1. Each index is pushed and popped at most once: O(n) time, O(n) space."
     },
     "hints": [
-      "Push indices; when nums[i] beats the top, it's that index's answer.",
-      "Anything left on the stack keeps -1."
+      "When a big number arrives, which earlier elements has it just \"answered\"?",
+      "Keep indices of elements still waiting for an answer; a new value resolves every waiting element smaller than it.",
+      "`while (!st.isEmpty() && nums[i] > nums[st.peek()]) res[st.pop()] = nums[i];` then `st.push(i);`"
+    ]
+  },
+  {
+    "id": "pat-st-fill-rpn",
+    "type": "fill-blank",
+    "title": "RPN: operand order",
+    "prompt": "Complete the subtraction case and the number case of the RPN evaluator.",
+    "code": "Deque<Integer> st = new ArrayDeque<>();\nfor (String tok : tokens) {\n    switch (tok) {\n        case \"+\" -> st.push(st.pop() + st.pop());\n        case \"-\" -> { int b = st.{{1}}(), a = st.pop(); st.push({{2}}); }\n        default  -> st.push(Integer.{{3}}(tok));\n    }\n}\nreturn st.pop();",
+    "blanks": {
+      "1": [
+        "pop"
+      ],
+      "2": [
+        "a - b"
+      ],
+      "3": [
+        "parseInt",
+        "valueOf"
+      ]
+    },
+    "explanation": "The operand pushed last is popped first, so the first pop is the RIGHT operand `b`. `[\"5\",\"3\",\"-\"]` must give `5 - 3 = 2`, i.e. `a - b`. Numbers are parsed with `Integer.parseInt`."
+  },
+  {
+    "id": "pat-st-fill-mono",
+    "type": "fill-blank",
+    "title": "Template recall: monotonic stack",
+    "prompt": "From memory: Daily Temperatures — days until a warmer temperature.",
+    "drill": true,
+    "code": "Deque<Integer> stack = new ArrayDeque<>();\nint[] res = new int[temps.length];\nfor (int i = 0; i < temps.length; i++) {\n    while (!stack.isEmpty() && temps[i] > temps[stack.{{1}}()]) {\n        int idx = stack.{{2}}();\n        res[idx] = {{3}};\n    }\n    stack.{{4}}(i);\n}",
+    "blanks": {
+      "1": [
+        "peek",
+        "peekFirst"
+      ],
+      "2": [
+        "pop",
+        "pollFirst",
+        "removeFirst"
+      ],
+      "3": [
+        "i - idx"
+      ],
+      "4": [
+        "push",
+        "addFirst",
+        "offerFirst"
+      ]
+    },
+    "explanation": "The stack holds indices of days still waiting for a warmer day. `temps[i]` resolves every waiting day colder than it (`peek` to compare, `pop` to resolve) with distance `i - idx`, then waits itself. O(n) amortized."
+  },
+  {
+    "id": "pat-st-drill-prevsmaller",
+    "type": "code-method",
+    "title": "Drill: previous smaller element index",
+    "prompt": "From memory: for each `i`, return the index of the nearest element to the LEFT that is **strictly smaller** than `nums[i]`, or -1 if none. This is the \"left boundary\" half of Largest Rectangle in Histogram.\n\n`[3,1,4,2,5]` → `[-1,-1,1,1,3]`",
+    "drill": true,
+    "method": {
+      "name": "previousSmaller",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] previousSmaller(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            3,
+            1,
+            4,
+            2,
+            5
+          ]
+        ],
+        "expected": [
+          -1,
+          -1,
+          1,
+          1,
+          3
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          -1,
+          0,
+          1
+        ],
+        "note": "increasing: the previous index every time"
+      },
+      {
+        "args": [
+          [
+            2,
+            2,
+            2
+          ]
+        ],
+        "expected": [
+          -1,
+          -1,
+          -1
+        ],
+        "note": "equal is not smaller"
+      },
+      {
+        "args": [
+          [
+            5,
+            4,
+            3
+          ]
+        ],
+        "expected": [
+          -1,
+          -1,
+          -1
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "hidden": true,
+        "note": "empty array"
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] previousSmaller(int[] nums) {\n        int[] res = new int[nums.length];\n        Deque<Integer> st = new ArrayDeque<>();   // indices, values strictly increasing\n        for (int i = 0; i < nums.length; i++) {\n            while (!st.isEmpty() && nums[st.peek()] >= nums[i]) st.pop();\n            res[i] = st.isEmpty() ? -1 : st.peek();\n            st.push(i);\n        }\n        return res;\n    }\n}",
+      "explanation": "Any earlier element >= nums[i] can never be the \"previous smaller\" for i or anything after i (nums[i] is closer and no larger), so pop it. What remains on top is the answer. Each index is pushed and popped once: O(n) time, O(n) space."
+    },
+    "hints": [
+      "If an earlier element is at least as big as nums[i], can it ever be the answer for any index at or after i?",
+      "Keep a stack of indices with increasing values; discard ones that are no longer useful before reading the answer.",
+      "`while (!st.isEmpty() && nums[st.peek()] >= nums[i]) st.pop();` then the top (or -1) is the answer."
     ]
   }
 ]

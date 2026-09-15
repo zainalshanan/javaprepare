@@ -2,7 +2,7 @@
   {
     "id": "pat-trie-fill-walk",
     "type": "fill-blank",
-    "title": "The trie walk",
+    "title": "Template: the trie walk",
     "prompt": "Complete the insert walk — this loop is the entire data structure.",
     "code": "TrieNode node = root;\nfor (char c : word.toCharArray()) {\n    int i = c - {{1}};\n    if (node.children[i] == {{2}}) {\n        node.children[i] = new TrieNode();\n    }\n    node = {{3}};\n}\nnode.isEnd = true;",
     "blanks": {
@@ -16,7 +16,8 @@
         "node.children[i]"
       ]
     },
-    "explanation": "Map the letter to a slot, create the child if missing, descend. Search is the same walk that returns null/false instead of creating."
+    "explanation": "Map the letter to a slot, create the child if missing, descend. Search is the same walk that returns null/false instead of creating.",
+    "drill": true
   },
   {
     "id": "pat-trie-mcq-why",
@@ -124,11 +125,33 @@
       }
     ],
     "solution": {
-      "code": "class PrefixTree {\n    private PrefixTree[] children = new PrefixTree[26];\n\n    public PrefixTree() {\n    }\n\n    public void insert(String word) {\n        PrefixTree node = this;\n        for (char c : word.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) node.children[i] = new PrefixTree();\n            node = node.children[i];\n        }\n    }\n\n    public boolean startsWith(String prefix) {\n        PrefixTree node = this;\n        for (char c : prefix.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) return false;\n            node = node.children[i];\n        }\n        return true;\n    }\n}"
+      "code": "class PrefixTree {\n    private PrefixTree[] children = new PrefixTree[26];\n\n    public PrefixTree() {\n    }\n\n    public void insert(String word) {\n        PrefixTree node = this;\n        for (char c : word.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) node.children[i] = new PrefixTree();\n            node = node.children[i];\n        }\n    }\n\n    public boolean startsWith(String prefix) {\n        PrefixTree node = this;\n        for (char c : prefix.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) return false;\n            node = node.children[i];\n        }\n        return true;\n    }\n}",
+      "explanation": "The class itself is the root node: `children[c - 'a']` is the next letter. insert creates missing children as it walks; startsWith follows the same path and fails at the first null. Both run in O(length) time, and insert allocates at most O(length) new nodes."
     },
     "hints": [
-      "A node is a 26-way children array. insert creates missing children while walking.",
-      "startsWith walks the same way; a missing child means the prefix isn't present."
+      "Words that share a prefix should share a path. What does each node need so that you can step to the next letter?",
+      "Each node holds 26 child slots indexed by `c - 'a'`. insert walks the word, creating any missing child; startsWith walks the prefix without creating.",
+      "In startsWith: `if (node.children[i] == null) return false; node = node.children[i];`, then return true after the loop."
     ]
+  },
+  {
+    "id": "pat-trie-fill-wild",
+    "type": "fill-blank",
+    "title": "Template: wildcard trie search",
+    "prompt": "Complete the DFS for a search where `.` matches any single letter.",
+    "drill": true,
+    "code": "private boolean dfs(String word, int i, TrieNode node) {\n    if (i == word.length()) return {{1}};\n    char c = word.charAt(i);\n    if (c == '.') {\n        for (TrieNode child : node.children) {\n            if (child != null && {{2}}) return true;\n        }\n        return {{3}};\n    }\n    TrieNode child = node.children[c - 'a'];\n    return child != null && dfs(word, i + 1, child);\n}",
+    "blanks": {
+      "1": [
+        "node.isEnd"
+      ],
+      "2": [
+        "dfs(word, i + 1, child)"
+      ],
+      "3": [
+        "false"
+      ]
+    },
+    "explanation": "Once every character has been matched, the match only counts if a word ends at this node (`node.isEnd`). A `.` tries each existing child with the next index and succeeds if any branch does; if none do, the result is `false`."
   }
 ]

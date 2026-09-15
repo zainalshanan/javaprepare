@@ -4,27 +4,81 @@
   "title": "Best Time to Buy and Sell Stock with Cooldown",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/",
-  "prompt": "Maximize profit with as many transactions as you like, but after selling you must **cool down one day** before buying again. You can't hold more than one share.\n\n**Example**: `[1,2,3,0,2]` → `3` (buy, sell, cooldown, buy, sell).\n\nA state machine over three states each day: holding, just-sold, and resting.",
+  "prompt": "`prices[i]` is a stock's price on day `i`. You can complete as many buy/sell transactions as you like, but you may hold at most one share, and **after you sell you can't buy on the next day** (a one-day cooldown). Return the maximum profit.\n\n**Example**: `[1,2,3,0,2]` → `3` (buy, sell, cooldown, buy, sell).\n\n**Constraints**: `1 <= prices.length <= 5000`, `0 <= prices[i] <= 1000`.",
   "method": {
     "name": "maxProfit",
-    "params": [ { "name": "prices", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "prices",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int maxProfit(int[] prices) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[1, 2, 3, 0, 2]], "expected": 3 },
-    { "args": [[1]], "expected": 0 },
-    { "args": [[2, 1]], "expected": 0 },
-    { "args": [[1, 4, 2]], "expected": 3, "hidden": true },
-    { "args": [[6, 1, 3, 2, 4, 7]], "expected": 6, "hidden": true }
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          0,
+          2
+        ]
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          2,
+          1
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          1,
+          4,
+          2
+        ]
+      ],
+      "expected": 3,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          6,
+          1,
+          3,
+          2,
+          4,
+          7
+        ]
+      ],
+      "expected": 6,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Three running values: `hold` (best profit while holding a share), `sold` (just sold today), `rest` (idle, free to buy).",
-    "hold = max(hold, rest - price); sold = hold + price; rest = max(rest, previous sold).",
-    "The cooldown is baked in: you can only buy from `rest`, and selling moves you to `sold` (not `rest`) for a day."
+    "At the end of each day, what different 'situations' can you be in? Which moves between them are allowed from one day to the next?",
+    "Three states: holding a share, just sold today, and resting (free to buy). Track the best profit for each state, updating all three every day from the previous day's values.",
+    "`sold = hold + p; hold = max(hold, rest - p); rest = max(rest, prevSold);` Buying only happens from `rest`, which is what enforces the cooldown."
   ],
   "solution": {
     "code": "class Solution {\n    public int maxProfit(int[] prices) {\n        int hold = Integer.MIN_VALUE, sold = 0, rest = 0;\n        for (int p : prices) {\n            int prevSold = sold;\n            sold = hold + p;                    // sell what we held\n            hold = Math.max(hold, rest - p);    // keep holding, or buy from rest\n            rest = Math.max(rest, prevSold);    // stay resting, or become rested after a sell\n        }\n        return Math.max(sold, rest);\n    }\n}",
-    "explanation": "Buying is only allowed from `rest`, and a sale lands in `sold` for exactly one day before it can transition to `rest` — that one-day gap is the cooldown. Tracking the best value of each state per day gives O(n) time, O(1) space. The answer is the best of not-holding states at the end."
+    "explanation": "Every valid trading history is a walk through the hold, sold, and rest states, where you can buy only from rest and a sale has to pass through sold for a day. Keeping the best profit for each state per day covers every history. The answer is the better of the two states where you don't hold a share. O(n) time, O(1) space."
   }
 }

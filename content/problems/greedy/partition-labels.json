@@ -4,27 +4,73 @@
   "title": "Partition Labels",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/partition-labels/",
-  "prompt": "Partition string `s` into as many parts as possible so that each letter appears in at most one part. Return the sizes of the parts in order.\n\n**Example**: `\"ababcbacadefegdehijhklij\"` → `[9,7,8]`.\n\nGreedy: a part must extend to the last occurrence of every letter it contains.",
+  "prompt": "Partition the lowercase string `s` into as many parts as possible so that each letter appears in at most one part. Return the sizes of the parts, in order.\n\n**Example**: `\"ababcbacadefegdehijhklij\"` → `[9,7,8]` (`\"ababcbaca\"`, `\"defegde\"`, `\"hijhklij\"`).\n\n**Constraints**: `1 ≤ s.length ≤ 500`.",
   "method": {
     "name": "partitionLabels",
-    "params": [ { "name": "s", "type": "String" } ],
+    "params": [
+      {
+        "name": "s",
+        "type": "String"
+      }
+    ],
     "returns": "List<Integer>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> partitionLabels(String s) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["ababcbacadefegdehijhklij"], "expected": [9, 7, 8] },
-    { "args": ["eccbbbbdec"], "expected": [10] },
-    { "args": ["a"], "expected": [1] },
-    { "args": ["abc"], "expected": [1, 1, 1], "hidden": true },
-    { "args": ["qiejxqfnnabjjb"], "expected": [14], "hidden": true }
+    {
+      "args": [
+        "ababcbacadefegdehijhklij"
+      ],
+      "expected": [
+        9,
+        7,
+        8
+      ]
+    },
+    {
+      "args": [
+        "eccbbbbdec"
+      ],
+      "expected": [
+        10
+      ]
+    },
+    {
+      "args": [
+        "a"
+      ],
+      "expected": [
+        1
+      ]
+    },
+    {
+      "args": [
+        "abc"
+      ],
+      "expected": [
+        1,
+        1,
+        1
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        "qiejxqfnnabjjb"
+      ],
+      "expected": [
+        14
+      ],
+      "hidden": true
+    }
   ],
   "hints": [
-    "Precompute the last index of each letter.",
-    "Scan with a running `end` = max last-index of every letter seen in the current part.",
-    "When the scan index reaches `end`, close the part and record its size."
+    "If a part contains the letter 'a', what is the earliest position where that part can end?",
+    "At or after the last occurrence of 'a'. Precompute the last index of every letter, then sweep, stretching the current part's end to cover every letter you have seen.",
+    "`end = Math.max(end, last[c]); if (i == end) { sizes.add(end - start + 1); start = i + 1; }`"
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> partitionLabels(String s) {\n        int[] last = new int[26];\n        for (int i = 0; i < s.length(); i++) last[s.charAt(i) - 'a'] = i;\n        List<Integer> res = new ArrayList<>();\n        int start = 0, end = 0;\n        for (int i = 0; i < s.length(); i++) {\n            end = Math.max(end, last[s.charAt(i) - 'a']);\n            if (i == end) {\n                res.add(end - start + 1);\n                start = i + 1;\n            }\n        }\n        return res;\n    }\n}",
-    "explanation": "A part can end only after the last appearance of every letter inside it, so `end` grows to the farthest such index. Reaching `end` means no letter in this part appears later — the greedy earliest possible cut, which maximizes the number of parts. O(n)."
+    "explanation": "A part must reach the last occurrence of every letter it contains, so `end` is the smallest valid end of the current part. Cutting as soon as `i == end` is the earliest legal cut, which leaves the most room for later parts and gives the most parts. O(n) time, O(1) space (a 26-slot table)."
   }
 }

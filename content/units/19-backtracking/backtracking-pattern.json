@@ -14,68 +14,29 @@
     "explanation": "`path` is ONE shared list threaded through the whole recursion. Every add must be mirrored by a remove on the way back out, or state leaks between branches."
   },
   {
-    "id": "pat-bt-drill-binary",
-    "type": "code-method",
-    "title": "Drill: all binary strings",
-    "prompt": "From memory: return all binary strings of length `n` in the order produced by choosing '0' before '1' at each position (e.g. n=2 → [\"00\",\"01\",\"10\",\"11\"]). Backtrack with a StringBuilder: append, recurse, deleteCharAt.",
+    "id": "pat-bt-fill-perm",
+    "type": "fill-blank",
+    "title": "Template: permutations with used[]",
+    "prompt": "Complete the permutations template.",
     "drill": true,
-    "method": {
-      "name": "binaryStrings",
-      "params": [
-        {
-          "name": "n",
-          "type": "int"
-        }
+    "code": "private void backtrack(List<Integer> path, boolean[] used, int[] nums) {\n    if ({{1}}) {\n        res.add({{2}});\n        return;\n    }\n    for (int i = {{3}}; i < nums.length; i++) {\n        if (used[i]) continue;\n        used[i] = true;\n        path.add(nums[i]);\n        backtrack(path, used, nums);\n        path.remove(path.size() - 1);\n        {{4}};\n    }\n}",
+    "blanks": {
+      "1": [
+        "path.size() == nums.length",
+        "nums.length == path.size()"
       ],
-      "returns": "List<String>"
+      "2": [
+        "new ArrayList<>(path)",
+        "new ArrayList<Integer>(path)"
+      ],
+      "3": [
+        "0"
+      ],
+      "4": [
+        "used[i] = false"
+      ]
     },
-    "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> binaryStrings(int n) {\n\n    }\n}\n",
-    "tests": [
-      {
-        "args": [
-          2
-        ],
-        "expected": [
-          "00",
-          "01",
-          "10",
-          "11"
-        ]
-      },
-      {
-        "args": [
-          1
-        ],
-        "expected": [
-          "0",
-          "1"
-        ]
-      },
-      {
-        "args": [
-          3
-        ],
-        "expected": [
-          "000",
-          "001",
-          "010",
-          "011",
-          "100",
-          "101",
-          "110",
-          "111"
-        ],
-        "hidden": true
-      }
-    ],
-    "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    private List<String> res = new ArrayList<>();\n\n    public List<String> binaryStrings(int n) {\n        backtrack(n, new StringBuilder());\n        return res;\n    }\n\n    private void backtrack(int n, StringBuilder path) {\n        if (path.length() == n) {\n            res.add(path.toString());\n            return;\n        }\n        for (char c : new char[]{'0', '1'}) {\n            path.append(c);                          // choose\n            backtrack(n, path);                      // explore\n            path.deleteCharAt(path.length() - 1);    // un-choose\n        }\n    }\n}",
-      "explanation": "Same skeleton as subsets, with a length base case instead of record-everywhere. `deleteCharAt(length-1)` is StringBuilder's un-choose."
-    },
-    "hints": [
-      "Base case: `path.length() == n` → record and return.",
-      "Choose/explore/un-choose for '0', then for '1'."
-    ]
+    "explanation": "A permutation is complete when it uses every element. Record a copy, because `path` keeps changing. Order matters, so every position may take any unused element: loop from 0 and skip used ones. Both mutations need undoing, the `path.remove` and `used[i] = false`."
   },
   {
     "id": "pat-bt-drill-combos",
@@ -179,11 +140,113 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> combine(int n, int k) {\n        backtrack(1, n, k, new ArrayList<>());\n        return res;\n    }\n\n    private void backtrack(int start, int n, int k, List<Integer> path) {\n        if (path.size() == k) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        for (int i = start; i <= n; i++) {\n            path.add(i);\n            backtrack(i + 1, n, k, path);\n            path.remove(path.size() - 1);\n        }\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> combine(int n, int k) {\n        backtrack(1, n, k, new ArrayList<>());\n        return res;\n    }\n\n    private void backtrack(int start, int n, int k, List<Integer> path) {\n        if (path.size() == k) {\n            res.add(new ArrayList<>(path));\n            return;\n        }\n        for (int i = start; i <= n; i++) {\n            path.add(i);\n            backtrack(i + 1, n, k, path);\n            path.remove(path.size() - 1);\n        }\n    }\n}",
+      "explanation": "The `start` index keeps each path strictly increasing, so every set of k numbers is built exactly once. Stopping at size k turns the subsets tree into a combinations tree. There are C(n, k) results, each copied in O(k): O(k·C(n, k)) time, O(k) recursion depth."
     },
     "hints": [
-      "Record when `path.size() == k`.",
-      "Loop from `start` to n, recurse with `i + 1`, then un-choose."
+      "A combination doesn't care about order, so [1,2] and [2,1] are the same. How do you make sure you only ever build one of them?",
+      "Backtrack with a `start` value: loop `i` from `start` to `n`, and recurse with `i + 1` so later picks are always larger.",
+      "Record `new ArrayList<>(path)` when `path.size() == k`, then return. Un-choose with `path.remove(path.size() - 1)`."
+    ]
+  },
+  {
+    "id": "pat-bt-mcq-reuse",
+    "type": "mcq",
+    "title": "Allowing reuse",
+    "prompt": "In Combination Sum, each candidate may be chosen **any number of times**. Inside `for (int i = start; i < nums.length; i++)`, which recursive call is correct?",
+    "options": [
+      "`backtrack(i, remaining - nums[i], path, nums)`",
+      "`backtrack(i + 1, remaining - nums[i], path, nums)`",
+      "`backtrack(0, remaining - nums[i], path, nums)`",
+      "`backtrack(start, remaining - nums[i], path, nums)`"
+    ],
+    "answer": 0,
+    "explanation": "Passing `i` lets the next level pick `nums[i]` again while still ignoring earlier indices. `i + 1` forbids reuse, which is the rule for Combination Sum II. Passing `0` or `start` lets later levels go back to earlier indices, so `[2,2,3]` would also appear as `[2,3,2]` and `[3,2,2]`."
+  },
+  {
+    "id": "pat-bt-fill-dup",
+    "type": "fill-blank",
+    "title": "Template: skip duplicates at the same depth",
+    "prompt": "Complete Subsets II: `nums` has already been sorted.",
+    "drill": true,
+    "code": "private void backtrack(int start, List<Integer> path, int[] nums) {\n    res.add(new ArrayList<>(path));\n    for (int i = start; i < nums.length; i++) {\n        if ({{1}} && nums[i] == {{2}}) continue;\n        path.add(nums[i]);\n        backtrack({{3}}, path, nums);\n        path.remove(path.size() - 1);\n    }\n}",
+    "blanks": {
+      "1": [
+        "i > start",
+        "start < i"
+      ],
+      "2": [
+        "nums[i - 1]"
+      ],
+      "3": [
+        "i + 1"
+      ]
+    },
+    "explanation": "`i > start` means \"not the first candidate in this loop,\" so only a repeated value in the same loop is skipped. The first copy still recurses, which is how `[2,2]` gets built. `i + 1` uses each index at most once. Without sorting first, equal values wouldn't sit next to each other and the check would miss them."
+  },
+  {
+    "id": "pat-bt-drill-binary",
+    "type": "code-method",
+    "title": "Drill: all binary strings",
+    "prompt": "From memory: return all binary strings of length `n` in the order produced by choosing '0' before '1' at each position (e.g. n=2 → [\"00\",\"01\",\"10\",\"11\"]). Backtrack with a StringBuilder: append, recurse, deleteCharAt.",
+    "drill": true,
+    "method": {
+      "name": "binaryStrings",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "returns": "List<String>"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> binaryStrings(int n) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          2
+        ],
+        "expected": [
+          "00",
+          "01",
+          "10",
+          "11"
+        ]
+      },
+      {
+        "args": [
+          1
+        ],
+        "expected": [
+          "0",
+          "1"
+        ]
+      },
+      {
+        "args": [
+          3
+        ],
+        "expected": [
+          "000",
+          "001",
+          "010",
+          "011",
+          "100",
+          "101",
+          "110",
+          "111"
+        ],
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    private List<String> res = new ArrayList<>();\n\n    public List<String> binaryStrings(int n) {\n        backtrack(n, new StringBuilder());\n        return res;\n    }\n\n    private void backtrack(int n, StringBuilder path) {\n        if (path.length() == n) {\n            res.add(path.toString());\n            return;\n        }\n        for (char c : new char[]{'0', '1'}) {\n            path.append(c);                          // choose\n            backtrack(n, path);                      // explore\n            path.deleteCharAt(path.length() - 1);    // un-choose\n        }\n    }\n}",
+      "explanation": "The same skeleton as subsets, with a length base case instead of recording at every call. `deleteCharAt(length - 1)` is the un-choose for a StringBuilder, so the next branch starts from the right prefix. There are 2ⁿ strings of length n, so O(n·2ⁿ) time including building each string, and O(n) recursion depth."
+    },
+    "hints": [
+      "Each position is a choice between two characters. How do you build a string one choice at a time and then try the other choice?",
+      "Recurse with a shared `StringBuilder`: when its length reaches n, record `path.toString()` and return.",
+      "For each of '0' and '1': `path.append(c); backtrack(n, path); path.deleteCharAt(path.length() - 1);`"
     ]
   }
 ]

@@ -32,9 +32,13 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int maxValue(int[] nums) {\n        int max = nums[0];\n        for (int x : nums) {\n            max = Math.max(max, x);\n        }\n        return max;\n    }\n}",
-      "explanation": "Seeding with `nums[0]` (not 0) handles all-negative arrays — a classic hidden-test trap."
+      "explanation": "Seeding with `nums[0]` (or `Integer.MIN_VALUE`, not 0) handles all-negative arrays — a classic hidden-test trap. One pass: O(n)."
     },
-    "hints": ["Start `max` at `nums[0]`, not 0.", "`max = Math.max(max, x)` inside the loop."]
+    "hints": [
+      "Keep a 'best so far' variable and update it as you walk the array.",
+      "Start `max` at `nums[0]`, not 0 — think about an all-negative array.",
+      "`max = Math.max(max, x)` inside the loop."
+    ]
   },
   {
     "id": "arr-mcq-reference",
@@ -49,6 +53,62 @@
     ],
     "answer": 0,
     "explanation": "Assignment copies the reference, not the data. For an independent copy: `int[] b = Arrays.copyOf(a, a.length);`"
+  },
+  {
+    "id": "arr-predict-equals",
+    "type": "fill-blank",
+    "title": "Predict the output: comparing arrays",
+    "prompt": "Predict exactly what each line prints.",
+    "code": "int[] a = {1, 2, 3};\nint[] b = {1, 2, 3};\nint[] c = a;\nSystem.out.println(a == b);               // prints: {{1}}\nSystem.out.println(a == c);               // prints: {{2}}\nSystem.out.println(Arrays.equals(a, b));  // prints: {{3}}\nSystem.out.println(Arrays.toString(a));   // prints: {{4}}",
+    "blanks": {
+      "1": ["false"],
+      "2": ["true"],
+      "3": ["true"],
+      "4": ["[1, 2, 3]"]
+    },
+    "explanation": "`a` and `b` are two separate array objects, so `==` (same reference?) is false even with equal contents. `c = a` copies the reference, so `a == c` is true. `Arrays.equals` compares element by element → true. `Arrays.toString` formats as `[1, 2, 3]`."
+  },
+  {
+    "id": "arr-mcq-sortdesc",
+    "type": "mcq",
+    "title": "Sorting an int[] descending",
+    "prompt": "You have an `int[] nums` and need it in descending order. What works?",
+    "options": [
+      "`Arrays.sort(nums);` then reverse it with a two-pointer swap",
+      "`Arrays.sort(nums, Collections.reverseOrder());`",
+      "`Arrays.sortDescending(nums);`",
+      "`Arrays.sort(nums, true);`"
+    ],
+    "answer": 0,
+    "explanation": "For primitive arrays `Arrays.sort` only sorts ascending. The comparator overload `Arrays.sort(arr, comparator)` only accepts object arrays like `Integer[]` — passing an `int[]` doesn't compile. The other two methods don't exist. Sort ascending, then reverse in O(n)."
+  },
+  {
+    "id": "arr-same-sorted",
+    "type": "code-method",
+    "title": "Same elements, any order",
+    "prompt": "Return whether `a` and `b` contain exactly the same values with the same counts, in any order. Sort both, then compare with `Arrays.equals`. (Modifying the inputs is fine.)",
+    "method": {
+      "name": "sameElements",
+      "params": [ { "name": "a", "type": "int[]" }, { "name": "b", "type": "int[]" } ],
+      "returns": "boolean"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public boolean sameElements(int[] a, int[] b) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[3, 1, 2], [1, 2, 3]], "expected": true },
+      { "args": [[1, 1, 2], [1, 2, 2]], "expected": false, "note": "same values, different counts" },
+      { "args": [[], []], "expected": true, "note": "both empty" },
+      { "args": [[1, 2], [1, 2, 3]], "expected": false, "hidden": true },
+      { "args": [[-1, 5, -1], [5, -1, -1]], "expected": true, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean sameElements(int[] a, int[] b) {\n        Arrays.sort(a);\n        Arrays.sort(b);\n        return Arrays.equals(a, b);\n    }\n}",
+      "explanation": "Sorting puts equal multisets into identical order, and `Arrays.equals` checks length plus every position. `a == b` would compare references and always be false here. O(n log n) for the sorts."
+    },
+    "hints": [
+      "If two arrays hold the same values, what do they look like once both are put in order?",
+      "`Arrays.sort` both arrays first.",
+      "Compare contents with `Arrays.equals(a, b)` — not `==`."
+    ]
   },
   {
     "id": "arr-count-2d",
@@ -69,9 +129,57 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int countCells(int[][] grid, int target) {\n        int count = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                if (grid[r][c] == target) count++;\n            }\n        }\n        return count;\n    }\n}",
-      "explanation": "`grid.length` is the row count; `grid[0].length` is the column count."
+      "explanation": "`grid.length` is the row count; `grid[0].length` is the column count. Every cell is visited once: O(rows x cols)."
     },
-    "hints": ["Outer loop `r` over `grid.length`, inner loop `c` over `grid[0].length`."]
+    "hints": [
+      "Visit every cell once and keep a counter.",
+      "Outer loop `r` over `grid.length`, inner loop `c` over `grid[0].length`."
+    ]
+  },
+  {
+    "id": "arr-fill-dirs",
+    "type": "fill-blank",
+    "title": "Recall: the dirs loop",
+    "prompt": "Complete the 4-direction neighbor loop with its bounds check.",
+    "drill": true,
+    "code": "int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\nfor (int[] d : dirs) {\n    int nr = r + d[{{1}}], nc = c + d[{{2}}];\n    if (nr < 0 || nr >= grid.{{3}} || nc < 0 || nc >= grid[0].length) {{4}};\n    // grid[nr][nc] is safe here\n}",
+    "blanks": {
+      "1": ["0"],
+      "2": ["1"],
+      "3": ["length"],
+      "4": ["continue"]
+    },
+    "explanation": "Each direction is `{rowDelta, colDelta}`, so `d[0]` moves the row and `d[1]` the column. Rows are bounded by `grid.length`, columns by `grid[0].length`, and `continue` skips neighbors that fall off the grid."
+  },
+  {
+    "id": "arr-drill-neighbors",
+    "type": "code-method",
+    "title": "Drill: count land neighbors",
+    "prompt": "From memory: return how many of the 4 neighbors (up, down, left, right) of cell `(r, c)` are inside the grid and equal `1`. Use the `dirs` table and a single bounds check.",
+    "drill": true,
+    "method": {
+      "name": "countNeighbors",
+      "params": [ { "name": "grid", "type": "int[][]" }, { "name": "r", "type": "int" }, { "name": "c", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int countNeighbors(int[][] grid, int r, int c) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[[1, 1, 0], [0, 1, 1], [1, 0, 1]], 1, 1], "expected": 2, "note": "center cell" },
+      { "args": [[[1, 1, 0], [0, 1, 1], [1, 0, 1]], 0, 0], "expected": 1, "note": "corner: two neighbors are off the grid" },
+      { "args": [[[1]], 0, 0], "expected": 0, "note": "1x1 grid" },
+      { "args": [[[1, 1, 0], [0, 1, 1], [1, 0, 1]], 2, 2], "expected": 1, "hidden": true },
+      { "args": [[[0, 1, 0], [1, 1, 1], [0, 1, 0]], 1, 1], "expected": 4, "hidden": true },
+      { "args": [[[1, 0, 1, 1]], 0, 3], "expected": 1, "hidden": true, "note": "single row" }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int countNeighbors(int[][] grid, int r, int c) {\n        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n        int count = 0;\n        for (int[] d : dirs) {\n            int nr = r + d[0], nc = c + d[1];\n            if (nr < 0 || nr >= grid.length || nc < 0 || nc >= grid[0].length) continue;\n            if (grid[nr][nc] == 1) count++;\n        }\n        return count;\n    }\n}",
+      "explanation": "The direction table turns four near-identical blocks into one loop. The bounds check runs before any read, and `||` short-circuits, so an off-grid index is never used. O(1) per cell — this is the inner step of every grid BFS/DFS."
+    },
+    "hints": [
+      "Describe the four moves as data (row change, column change) and loop over them.",
+      "`int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};` then compute `nr = r + d[0]`, `nc = c + d[1]`.",
+      "Skip the neighbor if `nr` or `nc` is outside `[0, grid.length)` / `[0, grid[0].length)`; otherwise count it when it's 1."
+    ]
   },
   {
     "id": "arr-drill-sum",
@@ -91,9 +199,13 @@
       { "args": [[-5, 5, -5]], "expected": -5, "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public int sum(int[] nums) {\n        int total = 0;\n        for (int x : nums) {\n            total += x;\n        }\n        return total;\n    }\n}"
+      "code": "class Solution {\n    public int sum(int[] nums) {\n        int total = 0;\n        for (int x : nums) {\n            total += x;\n        }\n        return total;\n    }\n}",
+      "explanation": "Accumulator declared before the loop, updated inside, returned after. An empty array skips the loop and returns 0. O(n)."
     },
-    "hints": ["`for (int x : nums) total += x;`"]
+    "hints": [
+      "You need a running total that exists before the loop starts.",
+      "Enhanced for: `for (int x : nums)` — add each `x` to the total."
+    ]
   },
   {
     "id": "arr-drill-reverse",
@@ -115,9 +227,13 @@
     ],
     "solution": {
       "code": "class Solution {\n    public void reverse(int[] nums) {\n        for (int l = 0, r = nums.length - 1; l < r; l++, r--) {\n            int t = nums[l];\n            nums[l] = nums[r];\n            nums[r] = t;\n        }\n    }\n}",
-      "explanation": "The three-line swap with a temp variable is pure muscle memory — you'll write it hundreds of times."
+      "explanation": "Each swap fixes both ends; stopping at `l < r` leaves an odd middle untouched. The three-line swap with a temp variable is pure muscle memory. O(n) time, O(1) space."
     },
-    "hints": ["Swap needs a temp: `int t = nums[l]; nums[l] = nums[r]; nums[r] = t;`"]
+    "hints": [
+      "Swap the outermost pair, then move both pointers one step inward.",
+      "Loop header: `for (int l = 0, r = nums.length - 1; l < r; l++, r--)`.",
+      "Swap needs a temp: `int t = nums[l]; nums[l] = nums[r]; nums[r] = t;`"
+    ]
   },
   {
     "id": "arr-ref-create-fill",
@@ -143,9 +259,13 @@
       { "args": [1, -5], "expected": [-5], "hidden": true }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[] make(int n, int val) {\n        int[] a = new int[n];\n        Arrays.fill(a, val);\n        return a;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] make(int n, int val) {\n        int[] a = new int[n];\n        Arrays.fill(a, val);\n        return a;\n    }\n}",
+      "explanation": "`new int[n]` allocates n zeros; `Arrays.fill` overwrites every slot. `n = 0` gives an empty array, which is valid. O(n)."
     },
-    "hints": ["`new int[n]`, then `Arrays.fill(a, val)`."]
+    "hints": [
+      "Two steps: allocate the right size, then set every slot.",
+      "Allocate with `new int[n]`; the `Arrays` toolbox has a one-call way to set every slot."
+    ]
   },
   {
     "id": "arr-ref-sort-fill",
@@ -171,8 +291,12 @@
       { "args": [[5, -1, 5, 0]], "expected": [-1, 0, 5, 5], "hidden": true }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[] sortAsc(int[] nums) {\n        Arrays.sort(nums);\n        return nums;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] sortAsc(int[] nums) {\n        Arrays.sort(nums);\n        return nums;\n    }\n}",
+      "explanation": "`Arrays.sort` works in place and returns `void`, so sort first and then return the same array reference. O(n log n)."
     },
-    "hints": ["`Arrays.sort(nums); return nums;`"]
+    "hints": [
+      "The `Arrays` toolbox sorts in place — it doesn't hand back a new array.",
+      "Call the sort on `nums` as its own statement, then `return nums;`."
+    ]
   }
 ]

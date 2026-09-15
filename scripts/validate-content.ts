@@ -3,6 +3,8 @@
  *  - structural integrity (ids, references, schema basics)
  *  - every code exercise's reference solution actually passes its own tests
  * Run: npm run validate-content   (from repo root)
+ * Limit to some units: UNITS=16-trees,17-tries npm run validate-content
+ *   (course-wide structural errors — missing files, bad references — are always reported)
  */
 import { loadContent } from '../server/src/content.ts';
 import { gradeCodeDesign, gradeCodeMethod, gradeCodeOutput } from '../server/src/java/grade.ts';
@@ -77,7 +79,10 @@ async function checkSolution(ex: Exercise): Promise<string | null> {
   return null;
 }
 
-const all = [...content.exercises.values()];
+const onlyUnits = process.env.UNITS?.split(',').map((u) => u.trim()).filter(Boolean);
+const all = [...content.exercises.values()].filter(
+  (ex) => !onlyUnits?.length || onlyUnits.includes(content.exerciseUnit.get(ex.id) ?? ''),
+);
 for (const ex of all) structural(ex);
 
 const jdk = await checkJdk();
