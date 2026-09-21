@@ -1,0 +1,144 @@
+[
+  {
+    "id": "pat-tr-mcq-size",
+    "type": "mcq",
+    "title": "Freezing the level size",
+    "prompt": "In level-order BFS, what goes wrong if you replace\n\n```java\nint size = q.size();\nfor (int i = 0; i < size; i++) { ... }\n```\n\nwith `for (int i = 0; i < q.size(); i++) { ... }`?",
+    "options": [
+      "The loop bound changes as nodes are polled and children are offered, so a level ends early or late and nodes from different levels get mixed together",
+      "Nothing: `q.size()` is re-evaluated but gives the same number",
+      "It throws `ConcurrentModificationException`",
+      "The traversal becomes depth-first"
+    ],
+    "answer": 0,
+    "explanation": "Take `[3,9,20,null,null,15,7]`. Level 1 starts with the queue `[9, 20]`. With a live bound: poll 9 (i=0), then check `1 < q.size()`, which is `1 < 1`, false, so the loop stops and 20 slips into the next \"level\". That next level then polls 20 and also 15. Reading the size once before the loop fixes which nodes belong to the current level."
+  },
+  {
+    "id": "pat-tr-fill-bfs",
+    "type": "fill-blank",
+    "title": "Template: level-order BFS",
+    "prompt": "Fill in the level-order template (root is already known to be non-null).",
+    "drill": true,
+    "code": "Deque<TreeNode> q = new ArrayDeque<>();\nq.offer(root);\nwhile (!q.isEmpty()) {\n    int size = {{1}};\n    List<Integer> level = new ArrayList<>();\n    for (int i = 0; i < {{2}}; i++) {\n        TreeNode node = {{3}};\n        level.add(node.val);\n        if ({{4}}) q.offer(node.left);\n        if (node.right != null) q.offer(node.right);\n    }\n    res.add(level);\n}",
+    "blanks": {
+      "1": [
+        "q.size()"
+      ],
+      "2": [
+        "size"
+      ],
+      "3": [
+        "q.poll()",
+        "q.remove()",
+        "q.pollFirst()",
+        "q.removeFirst()"
+      ],
+      "4": [
+        "node.left != null",
+        "null != node.left"
+      ]
+    },
+    "explanation": "Freeze the level size before the loop, poll exactly that many nodes, and enqueue only non-null children. `ArrayDeque` throws on `offer(null)`, and the null check also keeps empty slots out of the level lists."
+  },
+  {
+    "id": "pat-tr-drill-levelsums",
+    "type": "code-method",
+    "title": "Drill: sum of each level",
+    "prompt": "From memory (level-order BFS): return a list with the sum of the node values on each level, top to bottom. An empty tree returns `[]`.",
+    "drill": true,
+    "method": {
+      "name": "levelSums",
+      "params": [
+        {
+          "name": "root",
+          "type": "TreeNode"
+        }
+      ],
+      "returns": "List<Integer>"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> levelSums(TreeNode root) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            3,
+            9,
+            20,
+            null,
+            null,
+            15,
+            7
+          ]
+        ],
+        "expected": [
+          3,
+          29,
+          22
+        ]
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "note": "empty tree"
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": [
+          1
+        ]
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4,
+            null,
+            null,
+            5
+          ]
+        ],
+        "expected": [
+          1,
+          5,
+          9
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            1,
+            -2,
+            -3,
+            null,
+            4
+          ]
+        ],
+        "expected": [
+          1,
+          -5,
+          4
+        ],
+        "hidden": true,
+        "note": "negatives"
+      }
+    ],
+    "hints": [
+      "You need to know where one level ends and the next begins. What can you record right before you start processing a level?",
+      "BFS with a queue: `int size = q.size();`, then poll exactly `size` nodes, adding each value to a running sum.",
+      "Reset `sum = 0` at the top of each while-iteration and `res.add(sum)` after the inner for loop. Null-check the root and each child before offering."
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> levelSums(TreeNode root) {\n        List<Integer> res = new ArrayList<>();\n        if (root == null) return res;\n        Deque<TreeNode> q = new ArrayDeque<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size();\n            int sum = 0;\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                sum += node.val;\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(sum);\n        }\n        return res;\n    }\n}",
+      "explanation": "The frozen `size` makes each outer iteration handle exactly one level, so you accumulate inside the for loop and record after it. O(n) time; the queue holds at most one level plus part of the next, O(w) space where w is the tree's maximum width."
+    }
+  }
+]

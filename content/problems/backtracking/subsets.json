@@ -4,10 +4,10 @@
   "title": "Subsets",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/subsets/",
-  "prompt": "Given an array of **unique** integers, return all possible subsets (the power set), in any order, no duplicates.\n\n**Example**: `[1,2,3]` → `[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]`.\n\nThe backtracking template exactly as written in the pattern lesson.",
+  "prompt": "Given an array of **unique** integers, return all possible subsets (the power set), in any order, with no duplicate subsets.\n\n**Example**: `[1,2,3]` → `[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]`.\n\n**Constraints**: 1 ≤ n ≤ 10.",
   "method": {
     "name": "subsets",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [{ "name": "nums", "type": "int[]" }],
     "returns": "List<List<Integer>>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> subsets(int[] nums) {\n\n    }\n}\n",
@@ -18,12 +18,12 @@
     { "args": [[4, 7, 9, 2]], "expected": [[], [4], [7], [9], [2], [4, 7], [4, 9], [4, 2], [7, 9], [7, 2], [9, 2], [4, 7, 9], [4, 7, 2], [4, 9, 2], [7, 9, 2], [4, 7, 9, 2]], "compare": "unordered-deep", "hidden": true }
   ],
   "hints": [
-    "Record a COPY of path at every recursion node — every state along the way is a subset.",
-    "The `start` parameter prevents picking earlier elements again — that's what makes them subsets, not permutations.",
-    "choose → explore(i + 1) → un-choose."
+    "Each element is either in a subset or not. How can you build subsets one choice at a time without producing both [1,2] and [2,1]?",
+    "Backtrack with a `start` index: record the current `path` at every call, then for `i` from `start`, add `nums[i]`, recurse with `i + 1`, and remove it.",
+    "Record with `res.add(new ArrayList<>(path))`. If you add `path` itself, every entry points at the same list, which ends up empty."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> subsets(int[] nums) {\n        backtrack(0, new ArrayList<>(), nums);\n        return res;\n    }\n\n    private void backtrack(int start, List<Integer> path, int[] nums) {\n        res.add(new ArrayList<>(path));\n        for (int i = start; i < nums.length; i++) {\n            path.add(nums[i]);\n            backtrack(i + 1, path, nums);\n            path.remove(path.size() - 1);\n        }\n    }\n}",
-    "explanation": "2ⁿ subsets, O(n · 2ⁿ) total. Every node of the recursion tree IS a subset (record unconditionally); `start` enforces increasing indices so each combination appears exactly once."
+    "explanation": "Every call in the recursion tree corresponds to exactly one subset, so recording at every call collects them all. `start` keeps indices increasing, so each subset is built only once. 2ⁿ subsets, each copied in O(n): O(n·2ⁿ) time, O(n) recursion depth."
   }
 }

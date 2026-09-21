@@ -4,27 +4,108 @@
   "title": "Longest Consecutive Sequence",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/longest-consecutive-sequence/",
-  "prompt": "Given an unsorted array, return the length of the longest run of **consecutive integers** (e.g. 1,2,3,4). Must run in O(n) — so no sorting.\n\n**Example**: `[100,4,200,1,3,2]` → `4` (the run 1,2,3,4).\n\nDump everything into a HashSet, then only start counting from numbers that are the START of a run.",
+  "prompt": "Given an unsorted array, return the length of the longest run of **consecutive integers** (e.g. 1,2,3,4). Must run in O(n) — so no sorting.\n\n**Example**: `[100,4,200,1,3,2]` → `4` (the run 1,2,3,4).\n\n**Constraints**: `0 <= nums.length <= 10^5`, `-10^9 <= nums[i] <= 10^9`.",
   "method": {
     "name": "longestConsecutive",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int longestConsecutive(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[100, 4, 200, 1, 3, 2]], "expected": 4 },
-    { "args": [[0, 3, 7, 2, 5, 8, 4, 6, 0, 1]], "expected": 9, "note": "duplicates present" },
-    { "args": [[]], "expected": 0 },
-    { "args": [[1, 2, 0, 1]], "expected": 3, "hidden": true },
-    { "args": [[9, 1, 4, 7, 3, -1, 0, 5, 8, -1, 6]], "expected": 7, "hidden": true }
+    {
+      "args": [
+        [
+          100,
+          4,
+          200,
+          1,
+          3,
+          2
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          0,
+          3,
+          7,
+          2,
+          5,
+          8,
+          4,
+          6,
+          0,
+          1
+        ]
+      ],
+      "expected": 9,
+      "note": "duplicates present"
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          0,
+          1
+        ]
+      ],
+      "expected": 3,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          9,
+          1,
+          4,
+          7,
+          3,
+          -1,
+          0,
+          5,
+          8,
+          -1,
+          6
+        ]
+      ],
+      "expected": 7,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          -3,
+          -2,
+          -1,
+          5
+        ]
+      ],
+      "expected": 3,
+      "hidden": true,
+      "note": "negatives"
+    }
   ],
   "hints": [
-    "Put all numbers in a HashSet for O(1) membership.",
-    "A number `x` starts a run only if `x - 1` is NOT in the set — otherwise skip it (something earlier will count it).",
-    "From each run-start, walk `x+1, x+2, …` while they're in the set; that guarantees O(n) total work."
+    "Sorting would make this easy but costs O(n log n). If you could instantly ask \"is x + 1 in the array?\", how would you measure a run — and which numbers are worth starting from?",
+    "Put every number in a HashSet. Only count a run from its smallest element, walking x+1, x+2, … while they exist.",
+    "`x` is a run start exactly when `!set.contains(x - 1)` — skip every other x, and the total walking across all runs is O(n)."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int longestConsecutive(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        for (int x : nums) set.add(x);\n        int best = 0;\n        for (int x : set) {\n            if (!set.contains(x - 1)) {          // x is the start of a run\n                int len = 1;\n                while (set.contains(x + len)) len++;\n                best = Math.max(best, len);\n            }\n        }\n        return best;\n    }\n}",
-    "explanation": "O(n). The `x - 1` guard is what keeps it linear: each run is walked exactly once, from its smallest element, so the inner while-loop across the whole algorithm does at most n steps total — not O(n) per element."
+    "explanation": "Insight: with O(1) membership tests, a run can be measured by walking upward from its first element. The `x - 1` guard means each run is walked once, from its smallest value, so its length is counted correctly and no element is revisited from a non-start. Iterating the set (not the array) also ignores duplicates. O(n) time, O(n) space."
   }
 }

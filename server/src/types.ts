@@ -157,4 +157,8 @@ export interface GradeResult {
   /** For code-output: what the program printed vs expected. */
   actualOutput?: string;
   expectedOutput?: string;
+  /** fill-blank: keys of blanks that were wrong. */
+  wrongBlanks?: string[];
+  /** Compile errors located in the learner's file (1-based lines). */
+  diagnostics?: { line: number; message: string }[];
 }

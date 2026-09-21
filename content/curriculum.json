@@ -32,7 +32,8 @@
       "lessons": [
         { "id": "classes-and-objects", "title": "Classes & Objects" },
         { "id": "generics-boxing-equality", "title": "Generics, Boxing & Equality" },
-        { "id": "equals-and-hashcode", "title": "equals() & hashCode()" }
+        { "id": "equals-and-hashcode", "title": "equals() & hashCode()" },
+        { "id": "lambdas-and-method-references", "title": "Lambdas & Method References" }
       ]
     },
     {
@@ -55,7 +56,6 @@
       "description": "Custom sort orders, and enough complexity analysis to reason about solutions.",
       "lessons": [
         { "id": "comparators", "title": "Sorting with Comparators" },
-        { "id": "comparable", "title": "Comparable (Natural Ordering)" },
         { "id": "big-o", "title": "Big-O Essentials" }
       ]
     },
@@ -113,7 +113,11 @@
       "id": "16-trees",
       "title": "Pattern: Trees",
       "description": "DFS recursion and BFS level-order.",
-      "lessons": [{ "id": "trees-pattern", "title": "The Tree Patterns" }],
+      "lessons": [
+        { "id": "trees-pattern", "title": "Tree DFS: Recursion That Returns Values" },
+        { "id": "trees-bst-pattern", "title": "BSTs & Inorder Traversal" },
+        { "id": "trees-bfs-pattern", "title": "Tree BFS & Level Order" }
+      ],
       "problems": ["invert-binary-tree", "maximum-depth-of-binary-tree", "binary-tree-level-order-traversal", "validate-binary-search-tree", "diameter-of-binary-tree", "balanced-binary-tree", "same-tree", "subtree-of-another-tree", "lowest-common-ancestor-of-a-binary-search-tree", "binary-tree-right-side-view", "count-good-nodes-in-binary-tree", "kth-smallest-element-in-a-bst", "construct-binary-tree-from-preorder-and-inorder-traversal", "binary-tree-maximum-path-sum", "serialize-and-deserialize-binary-tree"]
     },
     {
@@ -148,7 +152,10 @@
       "id": "21-advanced-graphs",
       "title": "Pattern: Advanced Graphs",
       "description": "Union-Find, topological sort, Dijkstra.",
-      "lessons": [{ "id": "advanced-graphs-pattern", "title": "Union-Find, Topo Sort & Dijkstra" }],
+      "lessons": [
+        { "id": "advanced-graphs-pattern", "title": "Union-Find & Topological Sort" },
+        { "id": "shortest-paths-mst-pattern", "title": "Dijkstra, Bellman-Ford & Prim" }
+      ],
       "problems": ["course-schedule", "network-delay-time", "course-schedule-ii", "number-of-connected-components-in-an-undirected-graph", "redundant-connection", "graph-valid-tree", "min-cost-to-connect-points", "cheapest-flights-within-k-stops", "swim-in-rising-water", "reconstruct-itinerary", "alien-dictionary"]
     },
     {

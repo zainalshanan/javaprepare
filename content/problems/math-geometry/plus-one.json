@@ -7,24 +7,90 @@
   "prompt": "`digits` represents a non-negative integer, most-significant digit first. Add one and return the resulting digits.\n\n**Example**: `[1,2,3]` → `[1,2,4]`; `[9,9]` → `[1,0,0]`.\n\nAdd from the right, carrying; if every digit was 9, the result grows by one digit.",
   "method": {
     "name": "plusOne",
-    "params": [ { "name": "digits", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "digits",
+        "type": "int[]"
+      }
+    ],
     "returns": "int[]"
   },
   "starter": "class Solution {\n    public int[] plusOne(int[] digits) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[1, 2, 3]], "expected": [1, 2, 4] },
-    { "args": [[4, 3, 2, 1]], "expected": [4, 3, 2, 2] },
-    { "args": [[9]], "expected": [1, 0] },
-    { "args": [[9, 9]], "expected": [1, 0, 0], "hidden": true },
-    { "args": [[0]], "expected": [1], "hidden": true }
+    {
+      "args": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "expected": [
+        1,
+        2,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          4,
+          3,
+          2,
+          1
+        ]
+      ],
+      "expected": [
+        4,
+        3,
+        2,
+        2
+      ]
+    },
+    {
+      "args": [
+        [
+          9
+        ]
+      ],
+      "expected": [
+        1,
+        0
+      ]
+    },
+    {
+      "args": [
+        [
+          9,
+          9
+        ]
+      ],
+      "expected": [
+        1,
+        0,
+        0
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          0
+        ]
+      ],
+      "expected": [
+        1
+      ],
+      "hidden": true
+    }
   ],
   "hints": [
-    "Scan right to left. If a digit is < 9, increment it and you're done — return immediately.",
-    "If it's 9, set it to 0 and carry to the next digit.",
-    "If you carry off the front (all 9s), allocate a new array one longer with a leading 1."
+    "When does adding one change more than the last digit?",
+    "Only when that digit is 9. Scan right to left: a digit below 9 gets incremented and you return immediately, while a 9 becomes 0 and the carry moves left.",
+    "If the carry falls off the front (every digit was 9), return a new array one longer: `res[0] = 1`, the rest zeros."
   ],
   "solution": {
     "code": "class Solution {\n    public int[] plusOne(int[] digits) {\n        for (int i = digits.length - 1; i >= 0; i--) {\n            if (digits[i] < 9) {\n                digits[i]++;\n                return digits;\n            }\n            digits[i] = 0;\n        }\n        int[] res = new int[digits.length + 1];\n        res[0] = 1;\n        return res;\n    }\n}",
-    "explanation": "Most numbers just bump the last digit. A trailing run of 9s becomes 0s with the carry propagating left; only when the entire number is 9s (like 99 → 100) does the length grow, which the fresh array with a leading 1 handles. O(n)."
+    "explanation": "Adding one only turns a run of trailing 9s into 0s and bumps the first non-9 digit. The number only gets longer when every digit is 9 (99 → 100), and that fresh array is all zeros except a leading 1. O(n) time, O(1) extra space except in the all-9s case."
   }
 }

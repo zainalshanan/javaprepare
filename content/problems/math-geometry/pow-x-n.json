@@ -4,28 +4,93 @@
   "title": "Pow(x, n)",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/powx-n/",
-  "prompt": "Compute `x` raised to the power `n` (n can be negative). Do it in O(log n).\n\n**Example**: `myPow(2.0, 10)` → `1024.0`; `myPow(2.0, -2)` → `0.25`.\n\nFast exponentiation (binary exponentiation): square the base and halve the exponent, multiplying in the base whenever the current bit is set.",
+  "prompt": "Implement `pow(x, n)`, which returns `x` raised to the integer power `n`. `n` may be negative. Do it in O(log |n|) multiplications.\n\n**Example**: `myPow(2.0, 10)` → `1024.0`; `myPow(2.0, -2)` → `0.25`.\n\n**Constraints**: `-100.0 < x < 100.0`, `-2^31 ≤ n ≤ 2^31 - 1`.",
   "method": {
     "name": "myPow",
-    "params": [ { "name": "x", "type": "double" }, { "name": "n", "type": "int" } ],
+    "params": [
+      {
+        "name": "x",
+        "type": "double"
+      },
+      {
+        "name": "n",
+        "type": "int"
+      }
+    ],
     "returns": "double"
   },
   "starter": "class Solution {\n    public double myPow(double x, int n) {\n\n    }\n}\n",
   "tests": [
-    { "args": [2.0, 10], "expected": 1024.0 },
-    { "args": [2.1, 3], "expected": 9.261 },
-    { "args": [2.0, -2], "expected": 0.25 },
-    { "args": [1.0, 2147483647], "expected": 1.0 },
-    { "args": [2.0, 0], "expected": 1.0, "hidden": true },
-    { "args": [0.5, 2], "expected": 0.25, "hidden": true }
+    {
+      "args": [
+        2,
+        10
+      ],
+      "expected": 1024
+    },
+    {
+      "args": [
+        2.1,
+        3
+      ],
+      "expected": 9.261
+    },
+    {
+      "args": [
+        2,
+        -2
+      ],
+      "expected": 0.25
+    },
+    {
+      "args": [
+        1,
+        2147483647
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        2,
+        0
+      ],
+      "expected": 1,
+      "hidden": true
+    },
+    {
+      "args": [
+        0.5,
+        2
+      ],
+      "expected": 0.25,
+      "hidden": true
+    },
+    {
+      "args": [
+        2,
+        -2147483648
+      ],
+      "expected": 0,
+      "hidden": true,
+      "note": "n = Integer.MIN_VALUE"
+    },
+    {
+      "args": [
+        -2,
+        3
+      ],
+      "expected": -8,
+      "hidden": true,
+      "note": "negative base, odd exponent"
+    }
   ],
   "hints": [
-    "Handle a negative exponent by inverting x and using |n| — store n in a `long` first so -Integer.MIN_VALUE doesn't overflow.",
-    "Loop while the exponent > 0: if its lowest bit is 1, multiply the result by the current base.",
-    "Each step: square the base, shift the exponent right by one."
+    "x^n = (x^(n/2))², so each step can halve the exponent. How do you handle an odd exponent, and a negative one?",
+    "Loop while the exponent is > 0: if its lowest bit is 1, multiply the result by the current base, then square the base and halve the exponent. For negative n, use 1/x and |n|.",
+    "Store `long N = n` before negating. `-Integer.MIN_VALUE` does not fit in an `int`."
   ],
   "solution": {
     "code": "class Solution {\n    public double myPow(double x, int n) {\n        long N = n;\n        if (N < 0) {\n            x = 1 / x;\n            N = -N;\n        }\n        double result = 1;\n        while (N > 0) {\n            if ((N & 1) == 1) result *= x;\n            x *= x;\n            N >>= 1;\n        }\n        return result;\n    }\n}",
-    "explanation": "Writing n in binary, x^n is the product of x^(2^k) for each set bit k. Squaring the base each iteration produces those powers of two, and the bit test decides whether to include each. That's O(log n) multiplications instead of n. Widening n to long avoids the -Integer.MIN_VALUE overflow trap."
+    "explanation": "Written in binary, n = Σ 2^k over its set bits, so x^n is the product of x^(2^k) for those bits. Squaring the base each iteration produces x, x², x⁴, …, and the low-bit test decides which to include. Widening n to `long` avoids the `-Integer.MIN_VALUE` overflow. O(log |n|) time, O(1) space."
   }
 }

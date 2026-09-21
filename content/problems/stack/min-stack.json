@@ -4,7 +4,7 @@
   "title": "Min Stack",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/min-stack/",
-  "prompt": "Design a stack that supports `push`, `pop`, `top`, and retrieving the minimum element — **all in O(1)**.\n\n- `MinStack()` — construct\n- `void push(int val)`\n- `void pop()`\n- `int top()`\n- `int getMin()` — the minimum across the whole stack\n\nThe trick: store, alongside each value, the minimum *as of that element* — popping then automatically \"rewinds\" the minimum.",
+  "prompt": "Design a stack that supports `push`, `pop`, `top`, and retrieving the minimum element — **all in O(1)**.\n\n- `MinStack()` — construct\n- `void push(int val)`\n- `void pop()`\n- `int top()`\n- `int getMin()` — the minimum across the whole stack\n\n**Constraints**: `pop`, `top`, and `getMin` are only called on a non-empty stack; values fit in an `int`.",
   "className": "MinStack",
   "methods": {
     "MinStack": { "params": [], "returns": "void" },
@@ -36,12 +36,12 @@
     }
   ],
   "hints": [
-    "Push pairs: `{value, minSoFar}` where minSoFar = min(value, previous minSoFar).",
-    "An `int[2]` per entry in a `Deque<int[]>` works nicely.",
-    "getMin is just `stack.peek()[1]` — no searching."
+    "A single `min` variable breaks on pop: if you pop the current minimum, what was the minimum before it was pushed? What if each entry remembered that?",
+    "Store with every value the minimum of the stack at the moment it was pushed (or keep a second stack of those minimums). Popping then restores the old minimum automatically.",
+    "Push `new int[]{val, stack.isEmpty() ? val : Math.min(val, stack.peek()[1])}` onto a `Deque<int[]>`; getMin is `stack.peek()[1]`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass MinStack {\n    private Deque<int[]> stack = new ArrayDeque<>();   // {value, min-so-far}\n\n    public MinStack() {\n    }\n\n    public void push(int val) {\n        int min = stack.isEmpty() ? val : Math.min(val, stack.peek()[1]);\n        stack.push(new int[]{val, min});\n    }\n\n    public void pop() {\n        stack.pop();\n    }\n\n    public int top() {\n        return stack.peek()[0];\n    }\n\n    public int getMin() {\n        return stack.peek()[1];\n    }\n}",
-    "explanation": "Each entry snapshots the minimum of everything at or below it, so popping restores the previous minimum for free. All four operations are O(1); space is O(n)."
+    "explanation": "Insight: a stack's contents below any entry never change while that entry is on top, so the minimum at push time stays correct for as long as the entry exists. Each entry stores the minimum of itself and everything below it, so after a pop the new top already holds the previous minimum. Duplicate minimums work because each copy stores its own snapshot. All operations O(1) time; space O(n)."
   }
 }

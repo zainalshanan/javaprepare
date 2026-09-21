@@ -1,0 +1,108 @@
+[
+  {
+    "id": "lam-mcq-forms",
+    "type": "mcq",
+    "title": "Which lambda compiles?",
+    "prompt": "Which of these is a **valid** comparator lambda?",
+    "options": [
+      "`(a, b) -> { return Integer.compare(a, b); }`",
+      "`(a, b) -> { Integer.compare(a, b) }`",
+      "`a, b -> Integer.compare(a, b)`",
+      "`(a, b) -> return Integer.compare(a, b);`"
+    ],
+    "answer": 0,
+    "explanation": "A block body `{ ... }` needs a `return` and semicolons, like a method. An expression body (no braces) returns automatically and must NOT contain `return`. Two or more parameters always need parentheses: `(a, b)`."
+  },
+  {
+    "id": "lam-fill-methodref",
+    "type": "fill-blank",
+    "title": "Lambda → method reference",
+    "prompt": "Replace each lambda with the equivalent method reference.",
+    "drill": true,
+    "code": "count.merge(c, 1, (a, b) -> Integer.sum(a, b));\ncount.merge(c, 1, {{1}});\n\nwords.sort(Comparator.comparingInt(s -> s.length()));\nwords.sort(Comparator.comparingInt({{2}}));\n\nSupplier<List<Integer>> make = () -> new ArrayList<>();\nSupplier<List<Integer>> make2 = {{3}};",
+    "blanks": {
+      "1": ["Integer::sum"],
+      "2": ["String::length"],
+      "3": ["ArrayList::new"]
+    },
+    "explanation": "`Class::staticMethod` passes both arguments through (`Integer::sum`). `Class::instanceMethod` calls the method on the parameter (`s.length()` → `String::length`). `Class::new` calls a constructor."
+  },
+  {
+    "id": "lam-mcq-capture",
+    "type": "mcq",
+    "title": "Why won't it compile?",
+    "prompt": "```java\nint total = 0;\nnums.forEach(x -> total += x);\n```\nThis fails to compile. Why?",
+    "options": [
+      "Locals used inside a lambda must be effectively final, and `total` is reassigned",
+      "`forEach` lambdas can't use `+=`",
+      "Lambdas can't read any variables from the enclosing method",
+      "`total` must be declared as `Integer`, not `int`"
+    ],
+    "answer": 0,
+    "explanation": "Lambdas may READ enclosing locals, but only ones never reassigned. Workarounds: `int[] total = {0};` then `total[0] += x`, or simply use a `for` loop."
+  },
+  {
+    "id": "lam-fill-usage",
+    "type": "fill-blank",
+    "title": "Recall: lambdas in collection APIs",
+    "prompt": "Fill in the lambda pieces for grouping, removing, and a max-heap.",
+    "drill": true,
+    "code": "groups.computeIfAbsent(len, k -> {{1}}).add(word);\n\nlist.removeIf(x -> x {{2}} 0);    // remove negatives\n\nPriorityQueue<Integer> maxHeap =\n    new PriorityQueue<>((a, b) -> Integer.compare({{3}}, {{4}}));",
+    "blanks": {
+      "1": ["new ArrayList<>()", "new ArrayList<String>()"],
+      "2": ["<"],
+      "3": ["b"],
+      "4": ["a"]
+    },
+    "explanation": "`computeIfAbsent` takes a Function from the key to a new value, so the lambda body builds the empty list to store the first time a key is seen. `removeIf` takes a Predicate: keep the test `x < 0`. Swapping to `Integer.compare(b, a)` reverses the natural order, so the largest polls first."
+  },
+  {
+    "id": "lam-code-sort-second",
+    "type": "code-method",
+    "title": "Sort pairs by second element",
+    "prompt": "Each row of `pairs` is `[a, b]`. Sort `pairs` in place **ascending by the second element** (`b`) using `Arrays.sort` with a lambda, and return it. Ties keep their original order (Java's object sort is stable).",
+    "drill": true,
+    "method": { "name": "sortBySecond", "params": [ { "name": "pairs", "type": "int[][]" } ], "returns": "int[][]" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[][] sortBySecond(int[][] pairs) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[[1, 9], [2, 3], [3, 5]]], "expected": [[2, 3], [3, 5], [1, 9]] },
+      { "args": [[[4, 1]]], "expected": [[4, 1]] },
+      { "args": [[]], "expected": [], "hidden": true, "note": "empty input" },
+      { "args": [[[7, 2], [1, 2], [0, -5]]], "expected": [[0, -5], [7, 2], [1, 2]], "hidden": true, "note": "negative key, stable ties" },
+      { "args": [[[1, 2147483647], [2, -2147483648]]], "expected": [[2, -2147483648], [1, 2147483647]], "hidden": true, "note": "a[1] - b[1] would overflow" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] sortBySecond(int[][] pairs) {\n        Arrays.sort(pairs, (a, b) -> Integer.compare(a[1], b[1]));\n        return pairs;\n    }\n}",
+      "explanation": "`int[][]` is an array of objects (each row is an `int[]`), so `Arrays.sort` accepts a Comparator. The lambda receives two rows and compares their index-1 values. `Integer.compare` avoids the overflow that `a[1] - b[1]` hits on extreme values. O(n log n)."
+    },
+    "hints": [
+      "`Arrays.sort` takes a second argument: a comparator lambda that receives two rows `a` and `b`.",
+      "Compare the rows' second elements, `a[1]` and `b[1]`, in that order for ascending.",
+      "Use `Integer.compare(a[1], b[1])` rather than subtraction, which can overflow."
+    ]
+  },
+  {
+    "id": "lam-code-group-length",
+    "type": "code-method",
+    "title": "Group words by length",
+    "prompt": "Group `words` by their length. Return a `List<List<String>>` with one inner list per distinct length; inside each group keep the words in input order. The order of the groups doesn't matter.\n\nUse a `Map<Integer, List<String>>` and `computeIfAbsent`.",
+    "drill": true,
+    "method": { "name": "groupByLength", "params": [ { "name": "words", "type": "String[]" } ], "returns": "List<List<String>>" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<String>> groupByLength(String[] words) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [["hi", "cat", "ok", "dog", "a"]], "expected": [["hi", "ok"], ["cat", "dog"], ["a"]], "compare": "unordered-deep" },
+      { "args": [["same", "size", "word"]], "expected": [["same", "size", "word"]], "compare": "unordered-deep" },
+      { "args": [[]], "expected": [], "compare": "unordered-deep", "hidden": true, "note": "no words → no groups" },
+      { "args": [["abc", "", "x", "yz", ""]], "expected": [["abc"], ["", ""], ["x"], ["yz"]], "compare": "unordered-deep", "hidden": true, "note": "empty strings have length 0" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public List<List<String>> groupByLength(String[] words) {\n        Map<Integer, List<String>> groups = new HashMap<>();\n        for (String w : words) {\n            groups.computeIfAbsent(w.length(), k -> new ArrayList<>()).add(w);\n        }\n        return new ArrayList<>(groups.values());\n    }\n}",
+      "explanation": "`computeIfAbsent` returns the list already stored for that length, or runs the lambda to create and store an empty one first, so a single line handles both new and existing groups. `new ArrayList<>(groups.values())` copies the groups into the return type. O(n) map operations."
+    },
+    "hints": [
+      "The map's key is the word length; the value is the list of words with that length.",
+      "`computeIfAbsent(key, k -> new ArrayList<>())` gives you the list for that key, creating it on first touch — chain `.add(w)` onto it.",
+      "At the end, `groups.values()` holds every group; wrap it in `new ArrayList<>(...)`."
+    ]
+  }
+]

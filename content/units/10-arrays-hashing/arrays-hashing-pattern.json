@@ -76,11 +76,12 @@
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public int countEqualPairs(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        int pairs = 0;\n        for (int x : nums) {\n            pairs += count.getOrDefault(x, 0);\n            count.put(x, count.getOrDefault(x, 0) + 1);\n        }\n        return pairs;\n    }\n}",
-      "explanation": "Check-then-record, one pass, O(n). The same accumulate-before-insert ordering as Two Sum."
+      "explanation": "Each x pairs with every earlier copy of itself, so adding the count BEFORE recording x counts each pair exactly once (i < j). Same check-then-record ordering as Two Sum. O(n) time, O(n) space."
     },
     "hints": [
-      "When you meet x, every earlier x forms one new pair: `pairs += count.getOrDefault(x, 0)`.",
-      "Then record x with the counting idiom."
+      "When you reach a value x, how many new pairs does it complete? Only the copies that came before it.",
+      "Keep a running count per value; add the current count to the answer before incrementing it.",
+      "`pairs += count.getOrDefault(x, 0);` then `count.put(x, count.getOrDefault(x, 0) + 1);`"
     ]
   },
   {
@@ -149,10 +150,131 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public boolean hasPairSum(int[] nums, int target) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) {\n            if (seen.contains(target - x)) return true;\n            seen.add(x);\n        }\n        return false;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean hasPairSum(int[] nums, int target) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) {\n            if (seen.contains(target - x)) return true;\n            seen.add(x);\n        }\n        return false;\n    }\n}",
+      "explanation": "The partner of x is `target - x`; a HashSet of earlier values answers \"have I seen it?\" in O(1). Checking before inserting means a single 3 with target 6 is not matched with itself, while `[3,3]` still works. O(n) time, O(n) space."
     },
     "hints": [
-      "Check `seen.contains(target - x)` before adding x."
+      "For each x, exactly one other value would complete the pair. What is it?",
+      "Remember every value you have already passed in a set, and look the partner up.",
+      "Check `seen.contains(target - x)` BEFORE `seen.add(x)`, so x never pairs with itself."
+    ]
+  },
+  {
+    "id": "pat-ah-fill-group",
+    "type": "fill-blank",
+    "title": "Template recall: group by sorted key",
+    "prompt": "From memory: complete the Group Anagrams grouping template (sorted `char[]` key + `computeIfAbsent`).",
+    "drill": true,
+    "code": "Map<String, List<String>> groups = new HashMap<>();\nfor (String w : strs) {\n    char[] chars = w.{{1}}();\n    Arrays.{{2}}(chars);\n    String key = new String(chars);\n    groups.{{3}}(key, k -> new ArrayList<>()).add(w);\n}\nreturn new ArrayList<>(groups.{{4}}());",
+    "blanks": {
+      "1": [
+        "toCharArray"
+      ],
+      "2": [
+        "sort"
+      ],
+      "3": [
+        "computeIfAbsent"
+      ],
+      "4": [
+        "values"
+      ]
+    },
+    "explanation": "Sorting the letters gives a canonical key shared by exactly the anagrams. `computeIfAbsent` creates the list on first sight and returns it either way, so `.add(w)` always works; `values()` is the collection of groups."
+  },
+  {
+    "id": "pat-ah-drill-prefix",
+    "type": "code-method",
+    "title": "Drill: prefix products (exclusive)",
+    "prompt": "From memory: return `out` where `out[i]` is the product of every element **before** index `i` (`out[0] = 1`). One pass with a running product — this is the first half of Product of Array Except Self.\n\n`[1,2,3,4]` → `[1,1,2,6]`",
+    "drill": true,
+    "method": {
+      "name": "prefixProducts",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "class Solution {\n    public int[] prefixProducts(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "expected": [
+          1,
+          1,
+          2,
+          6
+        ]
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": [
+          1
+        ],
+        "note": "nothing before index 0"
+      },
+      {
+        "args": [
+          [
+            2,
+            -3,
+            4
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          -6
+        ],
+        "note": "negatives"
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "hidden": true,
+        "note": "empty array"
+      },
+      {
+        "args": [
+          [
+            0,
+            5,
+            2
+          ]
+        ],
+        "expected": [
+          1,
+          0,
+          0
+        ],
+        "hidden": true,
+        "note": "a zero wipes everything after it"
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int[] prefixProducts(int[] nums) {\n        int[] out = new int[nums.length];\n        int running = 1;\n        for (int i = 0; i < nums.length; i++) {\n            out[i] = running;      // product of nums[0..i-1]\n            running *= nums[i];    // now include nums[i] for the next slot\n        }\n        return out;\n    }\n}",
+      "explanation": "Write the running product into `out[i]` before multiplying `nums[i]` in — that ordering is what excludes index i. Run the same loop right-to-left and multiply, and you have Product of Array Except Self. O(n) time, O(n) output space."
+    },
+    "hints": [
+      "out[i+1] differs from out[i] by exactly one factor. Which one?",
+      "Keep a running product starting at 1 and walk left to right.",
+      "Order matters: `out[i] = running;` first, then `running *= nums[i];`."
     ]
   }
 ]

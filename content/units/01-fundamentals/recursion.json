@@ -24,7 +24,73 @@
       "2": ["+"],
       "3": ["n - 2", "n-2"]
     },
-    "explanation": "fib(0)=0 and fib(1)=1, which `return n` covers in one line. Each call branches into two — that exponential blowup is exactly what dynamic programming will fix later."
+    "explanation": "fib(0)=0 and fib(1)=1, which `return n` covers in one line. Each call branches into two — that exponential blowup is exactly what memoization fixes next."
+  },
+  {
+    "id": "rec-predict-calls",
+    "type": "fill-blank",
+    "title": "Predict the output: counting calls",
+    "prompt": "`demo()` is called on a fresh `Solution`. How many times does `fib` run in total? (The tree above shows `fib(4)` makes 9 calls.)",
+    "code": "class Solution {\n    int calls = 0;\n\n    int fib(int n) {\n        calls++;\n        if (n <= 1) return n;\n        return fib(n - 1) + fib(n - 2);\n    }\n\n    void demo() {\n        fib(5);\n        System.out.println(calls);   // prints: {{1}}\n    }\n}",
+    "blanks": {
+      "1": ["15"]
+    },
+    "explanation": "calls(n) = 1 + calls(n-1) + calls(n-2), with calls(0) = calls(1) = 1. So calls(2) = 3, calls(3) = 5, calls(4) = 9, and calls(5) = 1 + 9 + 5 = 15. The count grows almost as fast as Fibonacci itself — that's the exponential blowup."
+  },
+  {
+    "id": "rec-fib-memo",
+    "type": "code-method",
+    "title": "Fibonacci with memoization",
+    "prompt": "Return the n-th Fibonacci number (`fib(0) = 0`, `fib(1) = 1`) for `0 ≤ n ≤ 50`. Plain recursion is far too slow for n = 50 — use a `long[] memo` passed to a recursive helper. The result needs `long`.",
+    "method": {
+      "name": "fib",
+      "params": [ { "name": "n", "type": "int" } ],
+      "returns": "long"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public long fib(int n) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [10], "expected": 55 },
+      { "args": [0], "expected": 0, "note": "base case" },
+      { "args": [1], "expected": 1, "note": "base case" },
+      { "args": [40], "expected": 102334155, "hidden": true },
+      { "args": [50], "expected": 12586269025, "hidden": true, "note": "too slow without memo; needs long" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public long fib(int n) {\n        long[] memo = new long[n + 1];\n        Arrays.fill(memo, -1);\n        return fibMemo(n, memo);\n    }\n\n    private long fibMemo(int n, long[] memo) {\n        if (n <= 1) return n;\n        if (memo[n] != -1) return memo[n];\n        memo[n] = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);\n        return memo[n];\n    }\n}",
+      "explanation": "Each `fibMemo(k)` computes its value once and stores it; every later request is an O(1) lookup. That cuts the call tree from O(2ⁿ) to O(n) time, with O(n) memo space and recursion depth. `-1` is a safe 'not computed' marker because Fibonacci values are never negative."
+    },
+    "hints": [
+      "The slow part is solving the same `fib(k)` over and over — store each answer the first time.",
+      "Make a `long[] memo` of size `n + 1`, fill it with `-1`, and pass it to a private recursive helper.",
+      "In the helper, after the base case: `if (memo[n] != -1) return memo[n];` — otherwise compute, store in `memo[n]`, and return it."
+    ]
+  },
+  {
+    "id": "rec-helper-sum",
+    "type": "code-method",
+    "title": "Recursive array sum with a helper",
+    "prompt": "Return the sum of `nums` recursively — no loops. The given signature has no index, so write a private helper `sumFrom(int[] nums, int i)` that returns the sum of `nums[i..end]`, and call it with `i = 0`.",
+    "method": {
+      "name": "sumArray",
+      "params": [ { "name": "nums", "type": "int[]" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int sumArray(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3]], "expected": 6 },
+      { "args": [[]], "expected": 0, "note": "empty array: base case immediately" },
+      { "args": [[5, -5, 10]], "expected": 10, "hidden": true },
+      { "args": [[7]], "expected": 7, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int sumArray(int[] nums) {\n        return sumFrom(nums, 0);\n    }\n\n    private int sumFrom(int[] nums, int i) {\n        if (i == nums.length) return 0;\n        return nums[i] + sumFrom(nums, i + 1);\n    }\n}",
+      "explanation": "The helper's extra parameter `i` tracks where the unsolved part starts. Base case: past the end, the sum is 0. Otherwise take `nums[i]` and trust the call for the rest. O(n) time and O(n) stack depth."
+    },
+    "hints": [
+      "The public method can't say 'the rest of the array' — a helper with an index can.",
+      "Base case: when `i == nums.length`, there's nothing left to add.",
+      "Recursive case: `nums[i] + sumFrom(nums, i + 1)`; the public method just returns `sumFrom(nums, 0)`."
+    ]
   },
   {
     "id": "rec-power",
@@ -45,9 +111,12 @@
     ],
     "solution": {
       "code": "class Solution {\n    public long power(int base, int exp) {\n        if (exp == 0) return 1;\n        return base * power(base, exp - 1);\n    }\n}",
-      "explanation": "The return type is `long` because 2^40 overflows int. (Fast exponentiation halves exp instead — an optimization you'll meet later.)"
+      "explanation": "The return type is `long` because 2^40 overflows int; since `power(...)` returns a long, `base * power(...)` multiplies in long. O(exp) calls. (Fast exponentiation halves exp instead — an optimization you'll meet later.)"
     },
-    "hints": ["`if (exp == 0) return 1;` then one recursive call."]
+    "hints": [
+      "Which exponent has an answer you know without any work? That's your base case.",
+      "`if (exp == 0) return 1;` — then express `base^exp` using `base^(exp - 1)`."
+    ]
   },
   {
     "id": "rec-drill-countdown",
@@ -68,8 +137,13 @@
       { "args": [1000000], "expected": 7, "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public int digits(int n) {\n        if (n < 10) return 1;\n        return 1 + digits(n / 10);\n    }\n}"
+      "code": "class Solution {\n    public int digits(int n) {\n        if (n < 10) return 1;\n        return 1 + digits(n / 10);\n    }\n}",
+      "explanation": "`n / 10` drops one digit, so each call counts one and recurses on the rest. The base case `n < 10` covers 0-9 (including 0, which has one digit). O(number of digits)."
     },
-    "hints": ["Base case handles 0-9 in one line."]
+    "hints": [
+      "Which inputs obviously have exactly one digit? Stop there.",
+      "Base case handles 0-9 in one line: `if (n < 10) return 1;`",
+      "Otherwise count this digit and recurse on `n / 10`."
+    ]
   }
 ]

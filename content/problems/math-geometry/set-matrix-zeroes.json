@@ -4,27 +4,163 @@
   "title": "Set Matrix Zeroes",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/set-matrix-zeroes/",
-  "prompt": "If an element is 0, set its entire row and column to 0. Do it in place.\n\n**Example**: `[[1,1,1],[1,0,1],[1,1,1]]` → `[[1,0,1],[0,0,0],[1,0,1]]`.\n\nFirst record which rows and columns must be zeroed (so you don't cascade), then apply.",
+  "prompt": "Given an `m x n` integer matrix, if an element is `0`, set its entire row and column to `0`. Do it **in place**.\n\n**Example**: `[[1,1,1],[1,0,1],[1,1,1]]` → `[[1,0,1],[0,0,0],[1,0,1]]`.\n\n**Follow-up**: O(m + n) extra space is straightforward. Can you do it with O(1) extra space?",
   "method": {
     "name": "setZeroes",
-    "params": [ { "name": "matrix", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "matrix",
+        "type": "int[][]"
+      }
+    ],
     "returns": "void"
   },
   "starter": "class Solution {\n    public void setZeroes(int[][] matrix) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[1, 1, 1], [1, 0, 1], [1, 1, 1]]], "expected": [[1, 0, 1], [0, 0, 0], [1, 0, 1]] },
-    { "args": [[[0, 1, 2, 0], [3, 4, 5, 2], [1, 3, 1, 5]]], "expected": [[0, 0, 0, 0], [0, 4, 5, 0], [0, 3, 1, 0]] },
-    { "args": [[[1]]], "expected": [[1]] },
-    { "args": [[[0]]], "expected": [[0]], "hidden": true },
-    { "args": [[[1, 0], [1, 1]]], "expected": [[0, 0], [1, 0]], "hidden": true }
+    {
+      "args": [
+        [
+          [
+            1,
+            1,
+            1
+          ],
+          [
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            1,
+            2,
+            0
+          ],
+          [
+            3,
+            4,
+            5,
+            2
+          ],
+          [
+            1,
+            3,
+            1,
+            5
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          4,
+          5,
+          0
+        ],
+        [
+          0,
+          3,
+          1,
+          0
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            0
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          0
+        ]
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          0,
+          0
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "hidden": true
+    }
   ],
   "hints": [
-    "Don't zero as you scan — that would spread zeros into cells you haven't checked.",
-    "First pass: mark which rows and which columns contain a zero (boolean arrays).",
-    "Second pass: set matrix[r][c] = 0 if its row or column was marked."
+    "Why can't you zero a row and column the moment you find a 0?",
+    "The zeros you write would look like original zeros and spread. Mark first, apply second. The marker arrays can live inside the matrix: row 0 can mark columns and column 0 can mark rows.",
+    "Row 0 and column 0 both want `matrix[0][0]`. Give it to column 0 and keep a separate boolean for row 0. Apply the interior first, then column 0, then row 0 last."
   ],
   "solution": {
-    "code": "class Solution {\n    public void setZeroes(int[][] matrix) {\n        int rows = matrix.length, cols = matrix[0].length;\n        boolean[] zeroRow = new boolean[rows], zeroCol = new boolean[cols];\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (matrix[r][c] == 0) { zeroRow[r] = true; zeroCol[c] = true; }\n            }\n        }\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (zeroRow[r] || zeroCol[c]) matrix[r][c] = 0;\n            }\n        }\n    }\n}",
-    "explanation": "Separating detection from mutation is the whole trick: recording the zero rows/columns first means the second pass can't be fooled by zeros it just wrote. O(rows·cols) time, O(rows+cols) space. (An O(1)-space variant reuses the first row/column as the marker arrays.)"
+    "code": "class Solution {\n    public void setZeroes(int[][] matrix) {\n        int rows = matrix.length, cols = matrix[0].length;\n        boolean row0 = false;\n        for (int r = 0; r < rows; r++) {\n            for (int c = 0; c < cols; c++) {\n                if (matrix[r][c] == 0) {\n                    matrix[0][c] = 0;              // mark column c\n                    if (r == 0) row0 = true;\n                    else matrix[r][0] = 0;         // mark row r\n                }\n            }\n        }\n        for (int r = 1; r < rows; r++) {\n            for (int c = 1; c < cols; c++) {\n                if (matrix[0][c] == 0 || matrix[r][0] == 0) matrix[r][c] = 0;\n            }\n        }\n        if (matrix[0][0] == 0) {\n            for (int r = 0; r < rows; r++) matrix[r][0] = 0;\n        }\n        if (row0) {\n            for (int c = 0; c < cols; c++) matrix[0][c] = 0;\n        }\n    }\n}",
+    "explanation": "Row 0 and column 0 act as the marker arrays: `matrix[0][c] == 0` means zero column c, and `matrix[r][0] == 0` means zero row r. `matrix[0][0]` marks column 0 and a boolean marks row 0. Each marker is written only after its own cell has been read, and the markers are cleared last (column 0, then row 0), so no marker is lost. O(m·n) time, O(1) extra space."
   }
 }

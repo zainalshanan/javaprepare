@@ -4,27 +4,85 @@
   "title": "Min Cost Climbing Stairs",
   "difficulty": "Easy",
   "leetcodeUrl": "https://leetcode.com/problems/min-cost-climbing-stairs/",
-  "prompt": "`cost[i]` is the price to step on stair `i`. You may start at index 0 or 1, and from a stair climb 1 or 2 steps. Return the minimum cost to reach the top (just past the last stair).\n\n**Example**: `[10,15,20]` → `15` (start at index 1, pay 15, step 2 to the top).\n\ndp[i] = min cost to reach stair i = cost[i] + min(dp[i-1], dp[i-2]).",
+  "prompt": "`cost[i]` is the price of stepping on stair `i`. After paying, you can climb 1 or 2 stairs. You may start on stair 0 or stair 1. Return the minimum cost to reach the top, which is one step past the last stair.\n\n**Example**: `[10,15,20]` → `15` (start at stair 1, pay 15, climb 2 to the top).\n\n**Constraints**: `2 <= cost.length <= 1000`, `0 <= cost[i] <= 999`.\n\nTip: like Climbing Stairs, but minimize instead of count.",
   "method": {
     "name": "minCostClimbingStairs",
-    "params": [ { "name": "cost", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "cost",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int minCostClimbingStairs(int[] cost) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[10, 15, 20]], "expected": 15 },
-    { "args": [[1, 100, 1, 1, 1, 100, 1, 1, 100, 1]], "expected": 6 },
-    { "args": [[1, 2]], "expected": 1 },
-    { "args": [[0, 0, 0, 0]], "expected": 0, "hidden": true },
-    { "args": [[10, 15]], "expected": 10, "hidden": true }
+    {
+      "args": [
+        [
+          10,
+          15,
+          20
+        ]
+      ],
+      "expected": 15
+    },
+    {
+      "args": [
+        [
+          1,
+          100,
+          1,
+          1,
+          1,
+          100,
+          1,
+          1,
+          100,
+          1
+        ]
+      ],
+      "expected": 6
+    },
+    {
+      "args": [
+        [
+          1,
+          2
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "expected": 0,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          10,
+          15
+        ]
+      ],
+      "expected": 10,
+      "hidden": true
+    }
   ],
   "hints": [
-    "The top is one step beyond the last stair — index n.",
-    "Cost to reach step i is cost[i] plus the cheaper of arriving from i-1 or i-2.",
-    "Two rolling variables suffice; the answer is the cost to reach index n (top), where stepping on 'n' itself is free."
+    "To stand at position i (the top counts as position n), which positions could you have just left, and what did leaving each one cost?",
+    "Let dp[i] = min cost to stand at position i. dp[0] = dp[1] = 0 (free starts), and dp[i] = min(dp[i-1] + cost[i-1], dp[i-2] + cost[i-2]).",
+    "Only the last two values matter: `int cur = Math.min(prev1 + cost[i - 1], prev2 + cost[i - 2]);` for i from 2 to n. The answer is the value for i = n."
   ],
   "solution": {
     "code": "class Solution {\n    public int minCostClimbingStairs(int[] cost) {\n        int n = cost.length;\n        int prev2 = 0, prev1 = 0;   // cost to reach the two stairs below the current\n        for (int i = 2; i <= n; i++) {\n            int cur = Math.min(prev1 + cost[i - 1], prev2 + cost[i - 2]);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
-    "explanation": "Defining dp[i] as 'min cost to stand at position i' (with position n being the top) means the top costs nothing to stand on, and you pay for the stair you leave from. Starting both variables at 0 encodes the free start at index 0 or 1. O(n)/O(1)."
+    "explanation": "Let dp[i] be the cost to *stand* at position i, where you pay for the stair you step off. The top (position n) then needs no special case, and starting both variables at 0 encodes the free start at stair 0 or 1. O(n) time, O(1) space."
   }
 }

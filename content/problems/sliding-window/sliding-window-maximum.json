@@ -4,7 +4,7 @@
   "title": "Sliding Window Maximum",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/sliding-window-maximum/",
-  "prompt": "Given `nums` and a window size `k`, return an array of the maximum in each window of `k` consecutive elements as the window slides left to right.\n\n**Example**: `nums = [1,3,-1,-3,5,3,6,7]`, `k = 3` → `[3,3,5,5,6,7]`.\n\nA **monotonic deque** of indices: keep it decreasing so the front is always the window's max, in O(n) total.",
+  "prompt": "Given `nums` and a window size `k`, return an array of the maximum in each window of `k` consecutive elements as the window slides left to right.\n\n**Example**: `nums = [1,3,-1,-3,5,3,6,7]`, `k = 3` → `[3,3,5,5,6,7]`.\n\n**Constraints**: `1 <= nums.length <= 10^5`, `-10^4 <= nums[i] <= 10^4`, `1 <= k <= nums.length`. Aim for O(n) — O(n·k) is too slow.",
   "method": {
     "name": "maxSlidingWindow",
     "params": [ { "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" } ],
@@ -16,15 +16,16 @@
     { "args": [[1], 1], "expected": [1] },
     { "args": [[9, 8, 7, 6], 2], "expected": [9, 8, 7], "note": "decreasing input" },
     { "args": [[1, 2, 3, 4, 5], 5], "expected": [5], "hidden": true },
-    { "args": [[7, 2, 4], 2], "expected": [7, 4], "hidden": true }
+    { "args": [[7, 2, 4], 2], "expected": [7, 4], "hidden": true },
+    { "args": [[-4, -2, -5, -1], 2], "expected": [-2, -2, -1], "hidden": true, "note": "all negative" }
   ],
   "hints": [
-    "Store INDICES in a deque, kept so their values are strictly decreasing front→back.",
-    "Before pushing i, pop from the back every index whose value is ≤ nums[i] (they can never be a max again).",
-    "Pop the front if it has slid out of the window (`front <= i - k`). Once `i >= k-1`, the front index holds this window's max."
+    "If an element arrives that is bigger than some earlier element still in the window, can that earlier element ever be the maximum of any future window?",
+    "Keep only the elements that could still become a maximum, as indices in decreasing order of value. A new element evicts smaller candidates from the back; the oldest candidate leaves from the front once it slides out of range. The front is always the current max.",
+    "Per step: `while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) dq.pollLast();` then `dq.offerLast(i);` and `if (dq.peekFirst() <= i - k) dq.pollFirst();`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int[] maxSlidingWindow(int[] nums, int k) {\n        int n = nums.length;\n        int[] res = new int[n - k + 1];\n        Deque<Integer> dq = new ArrayDeque<>();   // indices, values decreasing\n        for (int i = 0; i < n; i++) {\n            while (!dq.isEmpty() && nums[dq.peekLast()] <= nums[i]) {\n                dq.pollLast();\n            }\n            dq.offerLast(i);\n            if (dq.peekFirst() <= i - k) dq.pollFirst();   // drop out-of-window\n            if (i >= k - 1) res[i - k + 1] = nums[dq.peekFirst()];\n        }\n        return res;\n    }\n}",
-    "explanation": "O(n): each index is pushed and popped at most once. Smaller values behind a bigger one are useless (the bigger one outlives them and dominates), so evicting them keeps the deque a decreasing sequence whose front is always the current window maximum."
+    "explanation": "Insight: an element that has a larger element to its right in the same window can never be a maximum again, because the larger one stays in the window at least as long. Evicting those elements keeps the deque's values decreasing, and removing the front once it leaves the window guarantees the front is always the current maximum. Time O(n), since each index enters and leaves the deque at most once; space O(k)."
   }
 }

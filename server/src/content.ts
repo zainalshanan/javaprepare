@@ -135,16 +135,18 @@ function findProblemFile(dir: string, id: string): string | null {
 }
 
 /** Strip answers/solutions/hidden-test details before sending to the client. */
-export function sanitizeExercise(ex: Exercise): Record<string, unknown> {
+export function mcqOptions(ex: Extract<Exercise, { type: 'mcq' }>, round = 0): string[] {
+  return optionOrder(ex.id, ex.options.length, round).map((i) => ex.options[i]);
+}
+
+export function sanitizeExercise(ex: Exercise, round = 0): Record<string, unknown> {
   const base: Record<string, unknown> = {
     id: ex.id, title: ex.title, type: ex.type, prompt: ex.prompt,
     drill: ex.drill ?? false, drillTarget: ex.drillTarget ?? 3,
   };
   switch (ex.type) {
-    case 'mcq': {
-      const order = optionOrder(ex.id, ex.options.length);
-      return { ...base, options: order.map((i) => ex.options[i]), multi: Array.isArray(ex.answer) };
-    }
+    case 'mcq':
+      return { ...base, options: mcqOptions(ex, round), round, multi: Array.isArray(ex.answer) };
     case 'fill-blank':
       return { ...base, code: ex.code };
     case 'code-output':

@@ -20,9 +20,15 @@
     "prompt": "Complete the frequency-count loop. This must be automatic.",
     "code": "Map<Character, Integer> count = new HashMap<>();\nfor (char c : s.toCharArray()) {\n    count.put(c, count.{{1}}(c, {{2}}) + {{3}});\n}",
     "blanks": {
-      "1": ["getOrDefault"],
-      "2": ["0"],
-      "3": ["1"]
+      "1": [
+        "getOrDefault"
+      ],
+      "2": [
+        "0"
+      ],
+      "3": [
+        "1"
+      ]
     },
     "explanation": "Read (defaulting to 0), add 1, write back. You will type this in a third of all NeetCode problems."
   },
@@ -33,21 +39,84 @@
     "prompt": "Return the first value that appears a second time while scanning left to right, or `-1` if all values are distinct. Track seen values in a map or set as you go.",
     "method": {
       "name": "firstRepeat",
-      "params": [ { "name": "nums", "type": "int[]" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
       "returns": "int"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int firstRepeat(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[2, 5, 3, 5, 2]], "expected": 5, "note": "5 repeats before 2 does" },
-      { "args": [[1, 2, 3]], "expected": -1 },
-      { "args": [[7, 7]], "expected": 7 },
-      { "args": [[]], "expected": -1, "hidden": true }
+      {
+        "args": [
+          [
+            2,
+            5,
+            3,
+            5,
+            2
+          ]
+        ],
+        "expected": 5,
+        "note": "5 repeats before 2 does"
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": -1
+      },
+      {
+        "args": [
+          [
+            7,
+            7
+          ]
+        ],
+        "expected": 7
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": -1,
+        "hidden": true
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public int firstRepeat(int[] nums) {\n        Map<Integer, Boolean> seen = new HashMap<>();\n        for (int x : nums) {\n            if (seen.containsKey(x)) return x;\n            seen.put(x, true);\n        }\n        return -1;\n    }\n}",
       "explanation": "Check before insert — the scan order guarantees the FIRST repeat wins. (A HashSet is the leaner tool here; next lesson.)"
     },
-    "hints": ["Check `containsKey` BEFORE putting, and return immediately on a hit."]
+    "hints": [
+      "Remember what you've seen so far as you scan left to right.",
+      "Check `containsKey` BEFORE putting, and return immediately on a hit."
+    ]
+  },
+  {
+    "id": "hm-fill-sort-entries",
+    "type": "fill-blank",
+    "title": "Rank entries by value",
+    "prompt": "Copy a count map's entries into a list, sort by count (highest first), and read the top key.",
+    "drill": true,
+    "code": "List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(count.{{1}}());\nentries.sort((a, b) -> Integer.compare(b.{{2}}(), a.getValue()));\nint topKey = entries.get(0).{{3}}();",
+    "blanks": {
+      "1": [
+        "entrySet"
+      ],
+      "2": [
+        "getValue"
+      ],
+      "3": [
+        "getKey"
+      ]
+    },
+    "explanation": "`entrySet()` gives the key/value pairs; copying them into an `ArrayList` makes them sortable. Comparing `b.getValue()` before `a.getValue()` puts the highest count first, and `getKey()` reads the value that count belongs to."
   },
   {
     "id": "hm-drill-count",
@@ -57,20 +126,51 @@
     "drill": true,
     "method": {
       "name": "wordCount",
-      "params": [ { "name": "sentence", "type": "String" }, { "name": "target", "type": "String" } ],
+      "params": [
+        {
+          "name": "sentence",
+          "type": "String"
+        },
+        {
+          "name": "target",
+          "type": "String"
+        }
+      ],
       "returns": "int"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int wordCount(String sentence, String target) {\n\n    }\n}\n",
     "tests": [
-      { "args": ["the cat and the dog", "the"], "expected": 2 },
-      { "args": ["a b c", "z"], "expected": 0 },
-      { "args": ["go go go go", "go"], "expected": 4, "hidden": true }
+      {
+        "args": [
+          "the cat and the dog",
+          "the"
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          "a b c",
+          "z"
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          "go go go go",
+          "go"
+        ],
+        "expected": 4,
+        "hidden": true
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public int wordCount(String sentence, String target) {\n        Map<String, Integer> count = new HashMap<>();\n        for (String w : sentence.split(\" \")) {\n            count.put(w, count.getOrDefault(w, 0) + 1);\n        }\n        return count.getOrDefault(target, 0);\n    }\n}",
       "explanation": "Note `.equals` semantics come free: HashMap compares String keys by content."
     },
-    "hints": ["`sentence.split(\" \")` gives a `String[]`.", "Finish with `count.getOrDefault(target, 0)`."]
+    "hints": [
+      "`sentence.split(\" \")` gives a `String[]`.",
+      "Finish with `count.getOrDefault(target, 0)`."
+    ]
   },
   {
     "id": "hm-mode",
@@ -79,20 +179,153 @@
     "prompt": "Return the value that occurs most often in `nums` (a unique winner is guaranteed). Count with a map, then scan `entrySet()` for the entry with the highest count.",
     "method": {
       "name": "mode",
-      "params": [ { "name": "nums", "type": "int[]" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
       "returns": "int"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int mode(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 2, 3, 2]], "expected": 2 },
-      { "args": [[5]], "expected": 5 },
-      { "args": [[-1, -1, 4]], "expected": -1, "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            2,
+            3,
+            2
+          ]
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          [
+            -1,
+            -1,
+            4
+          ]
+        ],
+        "expected": -1,
+        "hidden": true
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public int mode(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) {\n            count.put(x, count.getOrDefault(x, 0) + 1);\n        }\n        int best = nums[0], bestCount = 0;\n        for (Map.Entry<Integer, Integer> e : count.entrySet()) {\n            if (e.getValue() > bestCount) {\n                bestCount = e.getValue();\n                best = e.getKey();\n            }\n        }\n        return best;\n    }\n}",
       "explanation": "Count pass + argmax pass over entrySet — the two-phase shape behind Top K Frequent Elements."
     },
-    "hints": ["Phase 1: the counting idiom. Phase 2: loop `count.entrySet()`, tracking the best key."]
+    "hints": [
+      "Two passes: count everything first, then find the biggest count.",
+      "Loop `count.entrySet()`, tracking the best key and its count with `e.getKey()` / `e.getValue()`."
+    ]
+  },
+  {
+    "id": "hm-code-sort-by-freq",
+    "type": "code-method",
+    "title": "Distinct values by frequency",
+    "prompt": "Return the distinct values of `nums` ordered by how often they occur, **most frequent first**. Break ties by the smaller value first.\n\nCount with a map, copy `entrySet()` into a list, sort it with a comparator, then read off the keys.",
+    "drill": true,
+    "method": {
+      "name": "byFrequency",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int[]"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] byFrequency(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            1,
+            2,
+            2,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          2,
+          1,
+          3
+        ]
+      },
+      {
+        "args": [
+          [
+            6,
+            4,
+            6,
+            4
+          ]
+        ],
+        "expected": [
+          4,
+          6
+        ],
+        "note": "tie → smaller value first"
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": [
+          5
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            -1,
+            3,
+            3,
+            -1,
+            0
+          ]
+        ],
+        "expected": [
+          -1,
+          3,
+          0
+        ],
+        "hidden": true,
+        "note": "negative values and ties"
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] byFrequency(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) count.put(x, count.getOrDefault(x, 0) + 1);\n        List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(count.entrySet());\n        entries.sort((a, b) -> !a.getValue().equals(b.getValue())\n                ? Integer.compare(b.getValue(), a.getValue())\n                : Integer.compare(a.getKey(), b.getKey()));\n        int[] res = new int[entries.size()];\n        for (int i = 0; i < res.length; i++) res[i] = entries.get(i).getKey();\n        return res;\n    }\n}",
+      "explanation": "Counting is O(n). The comparator orders by count descending (b before a) and falls back to key ascending on a tie. Note `.equals` on the `Integer` counts, not `==`, which would break for counts above 127. Sorting the d distinct entries is O(d log d)."
+    },
+    "hints": [
+      "Phase 1 is the counting idiom. Phase 2 needs the entries in a list so they can be sorted.",
+      "`new ArrayList<>(count.entrySet())`, then a comparator: count descending first, value ascending on a tie.",
+      "Compare counts with `Integer.compare(b.getValue(), a.getValue())`; check for a tie with `.equals`, not `==`."
+    ]
   },
   {
     "id": "hm-ref-put-fill",
@@ -101,7 +334,17 @@
     "prompt": "Fill in the insert, safe-read, and membership operations.",
     "drill": true,
     "code": "Map<String, Integer> map = new HashMap<>();\nmap.{{1}}(\"a\", 1);              // insert or overwrite\nint v = map.{{2}}(\"a\", 0);      // value, or 0 if absent\nboolean has = map.{{3}}(\"a\");   // is the key present?",
-    "blanks": { "1": ["put"], "2": ["getOrDefault"], "3": ["containsKey"] },
+    "blanks": {
+      "1": [
+        "put"
+      ],
+      "2": [
+        "getOrDefault"
+      ],
+      "3": [
+        "containsKey"
+      ]
+    },
     "explanation": "`put` writes, `getOrDefault(key, fallback)` reads without risking a null, `containsKey` checks membership."
   },
   {
@@ -110,17 +353,64 @@
     "title": "Drill: count occurrences",
     "prompt": "From memory: return how many times `target` appears in `nums`, building a frequency map with the counting idiom and reading it with `getOrDefault`.",
     "drill": true,
-    "method": { "name": "countOf", "params": [ { "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" } ], "returns": "int" },
+    "method": {
+      "name": "countOf",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "target",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int countOf(int[] nums, int target) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 2, 3], 2], "expected": 2 },
-      { "args": [[1], 9], "expected": 0 },
-      { "args": [[5, 5, 5], 5], "expected": 3, "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            2,
+            3
+          ],
+          2
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          9
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            5,
+            5,
+            5
+          ],
+          5
+        ],
+        "expected": 3,
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int countOf(int[] nums, int target) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) count.put(x, count.getOrDefault(x, 0) + 1);\n        return count.getOrDefault(target, 0);\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int countOf(int[] nums, int target) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) count.put(x, count.getOrDefault(x, 0) + 1);\n        return count.getOrDefault(target, 0);\n    }\n}",
+      "explanation": "The counting idiom builds every count in one O(n) pass; `getOrDefault(target, 0)` then reads the answer without risking a null unbox when `target` never appeared."
     },
-    "hints": ["Build the count map with `put(x, getOrDefault(x, 0) + 1)`.", "Return `count.getOrDefault(target, 0)`."]
+    "hints": [
+      "Build the count map with `put(x, getOrDefault(x, 0) + 1)`.",
+      "Return `count.getOrDefault(target, 0)`."
+    ]
   },
   {
     "id": "hm-ref-iter-fill",
@@ -129,7 +419,17 @@
     "prompt": "Fill in the entry-iteration operations.",
     "drill": true,
     "code": "for (Map.Entry<String, Integer> e : map.{{1}}()) {\n    String k = e.{{2}}();\n    int v = e.{{3}}();\n}",
-    "blanks": { "1": ["entrySet"], "2": ["getKey"], "3": ["getValue"] },
+    "blanks": {
+      "1": [
+        "entrySet"
+      ],
+      "2": [
+        "getKey"
+      ],
+      "3": [
+        "getValue"
+      ]
+    },
     "explanation": "`entrySet()` yields `Map.Entry` objects; `getKey()` and `getValue()` read each pair."
   },
   {
@@ -138,16 +438,55 @@
     "title": "Drill: sum the values",
     "prompt": "From memory: build a frequency map of `nums`, then return the sum of all its values (by iterating `values()` or `entrySet()`).",
     "drill": true,
-    "method": { "name": "sumOfCounts", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "method": {
+      "name": "sumOfCounts",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int sumOfCounts(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 1, 2]], "expected": 3 },
-      { "args": [[]], "expected": 0 },
-      { "args": [[4, 4, 4, 4]], "expected": 4, "hidden": true, "note": "one key, count 4" }
+      {
+        "args": [
+          [
+            1,
+            1,
+            2
+          ]
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            4,
+            4,
+            4,
+            4
+          ]
+        ],
+        "expected": 4,
+        "hidden": true,
+        "note": "one key, count 4"
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int sumOfCounts(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) count.put(x, count.getOrDefault(x, 0) + 1);\n        int sum = 0;\n        for (int v : count.values()) sum += v;\n        return sum;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int sumOfCounts(int[] nums) {\n        Map<Integer, Integer> count = new HashMap<>();\n        for (int x : nums) count.put(x, count.getOrDefault(x, 0) + 1);\n        int sum = 0;\n        for (int v : count.values()) sum += v;\n        return sum;\n    }\n}",
+      "explanation": "`values()` is a view of every count; summing them gives back the number of elements, since each element added exactly 1 to some count. O(n)."
     },
-    "hints": ["After building the map, loop `for (int v : count.values())` and accumulate."]
+    "hints": [
+      "Build the counts first, then walk over just the values.",
+      "`for (int v : count.values()) sum += v;`"
+    ]
   }
 ]

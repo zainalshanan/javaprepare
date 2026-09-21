@@ -14,6 +14,19 @@
     "explanation": "LeetCode calls your method for you, so you only fill in the method inside `class Solution`. You write the full `main` scaffold only for standalone programs (this course's 'write a program' exercises)."
   },
   {
+    "id": "boiler-predict-concat",
+    "type": "fill-blank",
+    "title": "Predict the output: + with strings",
+    "prompt": "Predict exactly what each line prints.",
+    "code": "System.out.println(\"sum = \" + 2 + 3);    // prints: sum = {{1}}\nSystem.out.println(\"sum = \" + (2 + 3));  // prints: sum = {{2}}\nSystem.out.println(2 + 3 + \" apples\");   // prints: {{3}} apples",
+    "blanks": {
+      "1": ["23"],
+      "2": ["5"],
+      "3": ["5"]
+    },
+    "explanation": "`+` is evaluated left to right. `\"sum = \" + 2` is already a String, so `+ 3` appends \"3\" → `sum = 23`. Parentheses force the math first → `5`. In the last line `2 + 3` runs before any String appears, so it's `5` and then `\" apples\"` is appended."
+  },
+  {
     "id": "boiler-fill-main",
     "type": "fill-blank",
     "title": "Recall: the runnable scaffold",
@@ -39,7 +52,11 @@
       "code": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"ready\");\n    }\n}",
       "explanation": "The scaffold is always the same — the only thing that changes between programs is what goes inside main."
     },
-    "hints": ["Start with `public class Main {`", "Inside it: `public static void main(String[] args) { ... }`"]
+    "hints": [
+      "Every program is a class wrapped around one entry-point method the JVM knows how to find.",
+      "Open with `public class Main {`, then the fixed `public static void main(String[] args) {` line.",
+      "Inside main: `System.out.println(\"ready\");` — then close both braces."
+    ]
   },
   {
     "id": "boiler-fill-solution",
@@ -75,8 +92,12 @@
     ],
     "solution": {
       "code": "class Solution {\n    public boolean isPositive(int n) {\n        return n > 0;\n    }\n}",
-      "explanation": "`class Solution { public <returnType> <name>(<params>) { return ...; } }` — internalize this frame and every problem is just filling the body."
+      "explanation": "`class Solution { public <returnType> <name>(<params>) { return ...; } }` — internalize this frame and every problem is just filling the body. A comparison like `n > 0` already is a boolean, so return it directly."
     },
-    "hints": ["`class Solution { ... }` with the method inside.", "The method body is a single `return n > 0;`"]
+    "hints": [
+      "LeetCode shape: a class named `Solution` with the method inside — no `main`.",
+      "The signature is `public boolean isPositive(int n)`.",
+      "A comparison is already a `boolean` — return it directly instead of using if/else."
+    ]
   }
 ]

@@ -4,7 +4,7 @@
   "title": "Evaluate Reverse Polish Notation",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
-  "prompt": "Evaluate an arithmetic expression in Reverse Polish (postfix) Notation. `tokens` is `+`, `-`, `*`, `/`, or integers. Division truncates toward zero.\n\n**Example**: `[\"2\",\"1\",\"+\",\"3\",\"*\"]` → `9` (i.e. `(2+1)*3`).\n\nA stack: push numbers; on an operator, pop two operands, combine, push the result.",
+  "prompt": "Evaluate an arithmetic expression in Reverse Polish (postfix) Notation. `tokens` is `+`, `-`, `*`, `/`, or integers. Division truncates toward zero.\n\n**Example**: `[\"2\",\"1\",\"+\",\"3\",\"*\"]` → `9` (i.e. `(2+1)*3`). `[\"4\",\"13\",\"5\",\"/\",\"+\"]` → `6` (i.e. `4 + 13/5`).\n\n**Constraints**: the expression is always valid; no division by zero; every intermediate result fits in an `int`.",
   "method": {
     "name": "evalRPN",
     "params": [ { "name": "tokens", "type": "String[]" } ],
@@ -16,15 +16,16 @@
     { "args": [["4", "13", "5", "/", "+"]], "expected": 6 },
     { "args": [["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]], "expected": 22 },
     { "args": [["5"]], "expected": 5, "hidden": true },
-    { "args": [["3", "-4", "-"]], "expected": 7, "hidden": true, "note": "order: a - b where b was popped first" }
+    { "args": [["3", "-4", "-"]], "expected": 7, "hidden": true, "note": "order: a - b where b was popped first" },
+    { "args": [["-7", "2", "/"]], "expected": -3, "hidden": true, "note": "truncates toward zero" }
   ],
   "hints": [
-    "Push each integer. On an operator, pop `b` then `a` (order matters for - and /).",
-    "The result is `a op b` — pushed back for later operators to consume.",
-    "`Integer.parseInt` handles negative tokens like \"-11\"; distinguish them from the \"-\" operator by checking the operator cases first."
+    "Reading left to right, when you hit an operator, which two values does it apply to? Think about the most recently produced numbers.",
+    "Keep pending values in a last-in-first-out structure: push each number; on an operator, take the top two, combine them, and push the result back for later operators.",
+    "Pop `b` first, then `a`, and push `a op b` — the order matters for `-` and `/`. Match the four operator strings before calling `Integer.parseInt`, so \"-11\" isn't mistaken for \"-\"."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int evalRPN(String[] tokens) {\n        Deque<Integer> st = new ArrayDeque<>();\n        for (String t : tokens) {\n            switch (t) {\n                case \"+\": { int b = st.pop(), a = st.pop(); st.push(a + b); break; }\n                case \"-\": { int b = st.pop(), a = st.pop(); st.push(a - b); break; }\n                case \"*\": { int b = st.pop(), a = st.pop(); st.push(a * b); break; }\n                case \"/\": { int b = st.pop(), a = st.pop(); st.push(a / b); break; }\n                default: st.push(Integer.parseInt(t));\n            }\n        }\n        return st.pop();\n    }\n}",
-    "explanation": "O(n). Postfix needs no parentheses because operand order is unambiguous — the two most recent results on the stack are exactly this operator's arguments. Popping `b` before `a` preserves left-to-right order for the non-commutative `-` and `/`."
+    "explanation": "Insight: in postfix notation, an operator's operands are always the two most recent values not yet used, which are the top two of a stack. Pushing each result back lets later operators use it like any other number. Popping `b` before `a` keeps left-to-right order for `-` and `/`, and Java's `/` already truncates toward zero. Time O(n), space O(n)."
   }
 }

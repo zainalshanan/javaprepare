@@ -34,21 +34,64 @@
     "prompt": "Return `true` if any value appears at least twice. This is literally NeetCode #1 — solve it with the `add`-returns-false trick.",
     "method": {
       "name": "hasDuplicate",
-      "params": [ { "name": "nums", "type": "int[]" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
       "returns": "boolean"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public boolean hasDuplicate(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 2, 3, 1]], "expected": true },
-      { "args": [[1, 2, 3, 4]], "expected": false },
-      { "args": [[]], "expected": false, "hidden": true },
-      { "args": [[0, 0]], "expected": true, "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            1
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3,
+            4
+          ]
+        ],
+        "expected": false
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            0,
+            0
+          ]
+        ],
+        "expected": true,
+        "hidden": true
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public boolean hasDuplicate(int[] nums) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) {\n            if (!seen.add(x)) return true;\n        }\n        return false;\n    }\n}",
       "explanation": "O(n) time, O(n) space. The sort-first alternative is O(n log n) time but O(1) extra space — worth mentioning in interviews."
     },
-    "hints": ["`seen.add(x)` returns false when x is already in the set."]
+    "hints": [
+      "A set remembers what you've seen. What should happen the moment you see a value twice?",
+      "`seen.add(x)` returns false when x is already in the set — return true right there."
+    ]
   },
   {
     "id": "hs-drill-missing",
@@ -58,21 +101,70 @@
     "drill": true,
     "method": {
       "name": "missing",
-      "params": [ { "name": "nums", "type": "int[]" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
       "returns": "int"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int missing(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[3, 0, 1]], "expected": 2 },
-      { "args": [[0, 1]], "expected": 2, "note": "the missing one can be n itself" },
-      { "args": [[1]], "expected": 0 },
-      { "args": [[9, 6, 4, 2, 3, 5, 7, 0, 1]], "expected": 8, "hidden": true }
+      {
+        "args": [
+          [
+            3,
+            0,
+            1
+          ]
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          [
+            0,
+            1
+          ]
+        ],
+        "expected": 2,
+        "note": "the missing one can be n itself"
+      },
+      {
+        "args": [
+          [
+            1
+          ]
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            9,
+            6,
+            4,
+            2,
+            3,
+            5,
+            7,
+            0,
+            1
+          ]
+        ],
+        "expected": 8,
+        "hidden": true
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public int missing(int[] nums) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) seen.add(x);\n        for (int i = 0; i <= nums.length; i++) {\n            if (!seen.contains(i)) return i;\n        }\n        return -1; // unreachable\n    }\n}",
       "explanation": "Note `i <= nums.length` — the candidates are 0..n inclusive. (The sum formula and XOR give O(1)-space alternatives.)"
     },
-    "hints": ["Candidates run 0..nums.length INCLUSIVE — use `<=` in the second loop."]
+    "hints": [
+      "Put every number in a set, then check each candidate value.",
+      "Candidates run 0..nums.length INCLUSIVE — use `<=` in the second loop."
+    ]
   },
   {
     "id": "hs-ref-fill",
@@ -81,8 +173,21 @@
     "prompt": "Fill in the insert, membership, delete, and size operations.",
     "drill": true,
     "code": "Set<Integer> set = new HashSet<>();\nset.{{1}}(5);               // insert\nboolean has = set.{{2}}(5); // present?\nset.{{3}}(5);               // delete\nint n = set.{{4}}();        // count",
-    "blanks": { "1": ["add"], "2": ["contains"], "3": ["remove"], "4": ["size"] },
-    "explanation": "`add`, `contains`, `remove`, `size` — all O(1) except size is instant. `add` also returns false if the value was already there."
+    "blanks": {
+      "1": [
+        "add"
+      ],
+      "2": [
+        "contains"
+      ],
+      "3": [
+        "remove"
+      ],
+      "4": [
+        "size"
+      ]
+    },
+    "explanation": "`add`, `contains` and `remove` are O(1) on average, and `size()` is O(1). `add` also returns false if the value was already there."
   },
   {
     "id": "hs-ref-code",
@@ -90,16 +195,55 @@
     "title": "Drill: count distinct",
     "prompt": "From memory: return the number of DISTINCT values in `nums` (load them into a HashSet and return its size).",
     "drill": true,
-    "method": { "name": "distinctCount", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "method": {
+      "name": "distinctCount",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int distinctCount(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[1, 1, 2, 3, 3]], "expected": 3 },
-      { "args": [[]], "expected": 0 },
-      { "args": [[7, 7, 7]], "expected": 1, "hidden": true }
+      {
+        "args": [
+          [
+            1,
+            1,
+            2,
+            3,
+            3
+          ]
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0
+      },
+      {
+        "args": [
+          [
+            7,
+            7,
+            7
+          ]
+        ],
+        "expected": 1,
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int distinctCount(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        for (int x : nums) set.add(x);\n        return set.size();\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int distinctCount(int[] nums) {\n        Set<Integer> set = new HashSet<>();\n        for (int x : nums) set.add(x);\n        return set.size();\n    }\n}",
+      "explanation": "A set stores each value once, so after adding everything its size is the number of distinct values. O(n) time and space."
     },
-    "hints": ["Add everything to a set; duplicates collapse. Return `set.size()`."]
+    "hints": [
+      "What happens to duplicates when you add them to a set?",
+      "Add every element, then return `set.size()`."
+    ]
   }
 ]

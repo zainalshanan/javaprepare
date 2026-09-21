@@ -36,6 +36,19 @@ export function cleanCompileErrors(stderr: string, userFiles: string[]): string 
   return result || stderr.trim();
 }
 
+/**
+ * Line-level javac errors in the learner's file. The user's code is written to its own
+ * file verbatim (no wrapper/preamble), so javac line numbers map 1:1 to editor lines.
+ */
+export function compileDiagnostics(stderr: string, userFile: string): { line: number; message: string }[] {
+  const out: { line: number; message: string }[] = [];
+  for (const raw of stderr.split('\n')) {
+    const m = raw.trim().match(/^(?:.*[\\/])?(\w+\.java):(\d+): (?:error|warning): (.*)$/);
+    if (m && m[1] === userFile) out.push({ line: parseInt(m[2], 10), message: m[3].trim() });
+  }
+  return out;
+}
+
 /** Detect the primary class name in a full-program submission (code-output mode). */
 export function detectClassName(code: string): string | null {
   const mainPos = code.search(/static\s+void\s+main/);

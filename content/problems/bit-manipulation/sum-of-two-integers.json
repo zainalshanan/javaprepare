@@ -4,28 +4,75 @@
   "title": "Sum of Two Integers",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/sum-of-two-integers/",
-  "prompt": "Return `a + b` **without** using the `+` or `-` operators.\n\n**Example**: `getSum(2, 3)` → `5`.\n\nXOR adds bits without carry; AND-then-shift produces the carry. Repeat until there's no carry left.",
+  "prompt": "Given two integers `a` and `b`, return their sum **without** using the `+` or `-` operators.\n\n**Example**: `getSum(2, 3)` → `5`; `getSum(-2, -3)` → `-5`.\n\n**Constraints**: `-1000 ≤ a, b ≤ 1000`.",
   "method": {
     "name": "getSum",
-    "params": [ { "name": "a", "type": "int" }, { "name": "b", "type": "int" } ],
+    "params": [
+      {
+        "name": "a",
+        "type": "int"
+      },
+      {
+        "name": "b",
+        "type": "int"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int getSum(int a, int b) {\n\n    }\n}\n",
   "tests": [
-    { "args": [1, 2], "expected": 3 },
-    { "args": [2, 3], "expected": 5 },
-    { "args": [-1, 1], "expected": 0 },
-    { "args": [-2, -3], "expected": -5 },
-    { "args": [0, 0], "expected": 0, "hidden": true },
-    { "args": [-12, -8], "expected": -20, "hidden": true }
+    {
+      "args": [
+        1,
+        2
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        2,
+        3
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        -1,
+        1
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        -2,
+        -3
+      ],
+      "expected": -5
+    },
+    {
+      "args": [
+        0,
+        0
+      ],
+      "expected": 0,
+      "hidden": true
+    },
+    {
+      "args": [
+        -12,
+        -8
+      ],
+      "expected": -20,
+      "hidden": true
+    }
   ],
   "hints": [
-    "`a ^ b` is the sum ignoring carries; `(a & b) << 1` is the carry.",
-    "Loop: set a = sum-without-carry, b = carry, until the carry (b) becomes 0.",
-    "Two's-complement arithmetic makes this work for negative numbers too."
+    "Think about adding two binary numbers by hand, column by column. What decides the sum bit and the carry bit for each column?",
+    "The sum bit ignoring carries is `a ^ b`. A carry happens where both bits are 1, and it moves one column left: `(a & b) << 1`.",
+    "Repeat with `a = a ^ b` and `b = carry` until the carry is 0. Two's complement makes this work for negatives too."
   ],
   "solution": {
     "code": "class Solution {\n    public int getSum(int a, int b) {\n        while (b != 0) {\n            int carry = (a & b) << 1;\n            a = a ^ b;\n            b = carry;\n        }\n        return a;\n    }\n}",
-    "explanation": "Binary addition is XOR (bitwise sum) plus the carries. `a & b` finds positions where both bits are 1 (a carry is generated); shifting left moves it to the next column. Feeding the carry back as the new `b` and repeating settles all carries — exactly how a hardware adder works. Two's complement makes it correct for negatives automatically."
+    "explanation": "Binary addition is the carry-free sum (XOR) plus the carries (AND, shifted left). Feeding the carries back in and repeating settles them all. In Java's 32-bit two's complement, a carry past bit 31 is simply dropped, so negatives work and the loop ends. O(32) iterations at most, O(1) space."
   }
 }

@@ -4,27 +4,148 @@
   "title": "Merge Intervals",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/merge-intervals/",
-  "prompt": "Merge all overlapping intervals and return the non-overlapping result sorted by start.\n\n**Example**: `[[1,3],[2,6],[8,10],[15,18]]` → `[[1,6],[8,10],[15,18]]`.\n\nThe intervals template verbatim: sort by start, sweep, extend-or-append.",
+  "prompt": "Given an array of `intervals` (in any order), merge all overlapping intervals and return the non-overlapping result sorted by start. Intervals that touch at an endpoint overlap.\n\n**Example**: `[[1,3],[2,6],[8,10],[15,18]]` → `[[1,6],[8,10],[15,18]]`.\n\n**Constraints**: `1 ≤ intervals.length ≤ 10^4`.",
   "method": {
     "name": "merge",
-    "params": [ { "name": "intervals", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "intervals",
+        "type": "int[][]"
+      }
+    ],
     "returns": "int[][]"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int[][] merge(int[][] intervals) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[1, 3], [2, 6], [8, 10], [15, 18]]], "expected": [[1, 6], [8, 10], [15, 18]] },
-    { "args": [[[1, 4], [4, 5]]], "expected": [[1, 5]], "note": "touching endpoints merge" },
-    { "args": [[[1, 4]]], "expected": [[1, 4]] },
-    { "args": [[[1, 4], [2, 3]]], "expected": [[1, 4]], "hidden": true, "note": "fully contained — don't shrink the end!" },
-    { "args": [[[5, 6], [1, 2]]], "expected": [[1, 2], [5, 6]], "hidden": true, "note": "unsorted input" }
+    {
+      "args": [
+        [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            15,
+            18
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          6
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          15,
+          18
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            4
+          ],
+          [
+            4,
+            5
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          5
+        ]
+      ],
+      "note": "touching endpoints merge"
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            4
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          4
+        ]
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          4
+        ]
+      ],
+      "hidden": true,
+      "note": "fully contained — don't shrink the end!"
+    },
+    {
+      "args": [
+        [
+          [
+            5,
+            6
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      ],
+      "expected": [
+        [
+          1,
+          2
+        ],
+        [
+          5,
+          6
+        ]
+      ],
+      "hidden": true,
+      "note": "unsorted input"
+    }
   ],
   "hints": [
-    "`Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));` first, always.",
-    "Overlap with the last kept interval: `cur[0] <= last[1]` → extend with `last[1] = max(last[1], cur[1])`.",
-    "The max matters for contained intervals like [1,4] ⊇ [2,3]."
+    "If the intervals were in start order, which already-merged interval could the next one possibly overlap?",
+    "Only the last one you merged. Sort by start (with `Integer.compare`) and sweep, comparing each interval to the last merged one.",
+    "Overlap iff `cur[0] <= last[1]`. Then `last[1] = Math.max(last[1], cur[1])`. The max handles a contained interval like [2,3] inside [1,4]."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int[][] merge(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        List<int[]> merged = new ArrayList<>();\n        for (int[] cur : intervals) {\n            if (merged.isEmpty() || merged.get(merged.size() - 1)[1] < cur[0]) {\n                merged.add(cur);\n            } else {\n                int[] last = merged.get(merged.size() - 1);\n                last[1] = Math.max(last[1], cur[1]);\n            }\n        }\n        return merged.toArray(new int[merged.size()][]);\n    }\n}",
-    "explanation": "O(n log n) for the sort, O(n) sweep. After sorting, an interval can only overlap the most recent group — so one comparison against the last kept interval decides extend vs. append."
+    "explanation": "After sorting by start, an interval can only overlap the most recent merged group, because earlier groups ended before that group began. So one comparison decides whether to extend or append. O(n log n) time for the sort, O(n) space for the output."
   }
 }

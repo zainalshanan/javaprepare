@@ -23,7 +23,7 @@ for (char c : s.toCharArray()) {
 }
 ```
 
-One line per element: read the current count (0 if new), add one, store back. Alternative spelling: `count.merge(c, 1, Integer::sum);`
+One line per element: read the current count (0 if new), add one, store back. Alternative spelling: `count.merge(c, 1, Integer::sum);` (the `Integer::sum` method reference from the Lambdas lesson combines the old count with the 1).
 
 Trace it on `"aab"`:
 
@@ -57,15 +57,48 @@ for (Map.Entry<String, Integer> e : map.entrySet()) {
 }
 for (String k : map.keySet()) { }     // keys only
 for (int v : map.values()) { }        // values only
+map.forEach((k, v) -> System.out.println(k + "=" + v));   // lambda form
 ```
 
+A `HashMap` has **no order**. Never rely on the iteration order matching insertion or key order. If you need sorted keys, use a `TreeMap`; if you need entries ranked by value, sort them (next section).
+
 @exercise hm-first-repeat
+
+## Sorting entries by value
+
+A map can't be sorted, but its entries can be copied into a list and sorted there:
+
+```java
+List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(count.entrySet());
+entries.sort((a, b) -> Integer.compare(b.getValue(), a.getValue()));   // highest count first
+
+for (Map.Entry<Integer, Integer> e : entries) {
+    int value = e.getKey(), freq = e.getValue();
+}
+```
+
+This is the O(n log n) way to answer "the k most frequent" (Top K Frequent Elements has an O(n) bucket trick too).
+
+@exercise hm-fill-sort-entries
+
+## Removing while iterating
+
+Same rule as lists: don't call `map.remove` inside a loop over the map. Use `removeIf` on one of its views:
+
+```java
+count.values().removeIf(v -> v == 0);              // drop zero counts
+count.entrySet().removeIf(e -> e.getKey() < 0);   // drop negative keys
+```
+
+(In sliding-window problems the usual move is simpler: when a count drops to 0, `map.remove(key)` right there, outside any iteration over the map.)
 
 ## Practice
 
 @exercise hm-drill-count
 
 @exercise hm-mode
+
+@exercise hm-code-sort-by-freq
 
 ## Reference drills
 
@@ -78,3 +111,11 @@ Rapid recall of every core HashMap operation. Fill the blank, then write it live
 @exercise hm-ref-iter-fill
 
 @exercise hm-ref-iter-code
+
+## Recap
+
+- Count: `map.put(k, map.getOrDefault(k, 0) + 1)` or `map.merge(k, 1, Integer::sum)`.
+- Group: `map.computeIfAbsent(k, x -> new ArrayList<>()).add(v)`.
+- Iterate: `for (Map.Entry<K, V> e : map.entrySet())` with `e.getKey()` / `e.getValue()`.
+- Rank: `new ArrayList<>(map.entrySet())`, then `sort((a, b) -> Integer.compare(b.getValue(), a.getValue()))`.
+- No order in a HashMap; remove during iteration with `map.values().removeIf(...)`.

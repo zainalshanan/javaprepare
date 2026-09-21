@@ -14,18 +14,61 @@
     "explanation": "Both operands are ints, so `/` truncates: 9/4 = 2. The remainder 9%4 = 1. 2 + 1 = 3."
   },
   {
+    "id": "ops-predict-mod",
+    "type": "fill-blank",
+    "title": "Predict the output: negative remainders",
+    "prompt": "Predict exactly what each line prints.",
+    "code": "System.out.println(-7 % 3);                // prints: {{1}}\nSystem.out.println(Math.floorMod(-7, 3));  // prints: {{2}}\nSystem.out.println(((-7 % 3) + 3) % 3);    // prints: {{3}}\nSystem.out.println(7 % -3);                // prints: {{4}}",
+    "blanks": {
+      "1": ["-1"],
+      "2": ["2"],
+      "3": ["2"],
+      "4": ["1"]
+    },
+    "explanation": "Java's `%` takes the sign of the LEFT operand: `-7 % 3 == -1` and `7 % -3 == 1`. `Math.floorMod(-7, 3)` rounds the quotient down instead, giving `2`. Adding `b` then taking `% b` again lifts a negative remainder into `[0, b)` by hand."
+  },
+  {
+    "id": "ops-drill-wrap",
+    "type": "code-method",
+    "title": "Drill: wrap an index",
+    "prompt": "From memory: a circular array has `n` slots (n ≥ 1). Return where index `i` lands after wrapping — always in `[0, n)`, even when `i` is negative. E.g. `i = -1, n = 5` → `4`.",
+    "drill": true,
+    "method": {
+      "name": "wrap",
+      "params": [ { "name": "i", "type": "int" }, { "name": "n", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int wrap(int i, int n) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [7, 5], "expected": 2 },
+      { "args": [-1, 5], "expected": 4, "note": "one step left of index 0" },
+      { "args": [0, 4], "expected": 0 },
+      { "args": [-7, 3], "expected": 2, "hidden": true },
+      { "args": [-10, 5], "expected": 0, "hidden": true },
+      { "args": [3, 1], "expected": 0, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int wrap(int i, int n) {\n        return Math.floorMod(i, n);\n    }\n}",
+      "explanation": "`Math.floorMod` always returns a result in `[0, n)` for positive `n`, unlike `%`, which returns negatives for negative `i`. `((i % n) + n) % n` is the equivalent by-hand form. O(1)."
+    },
+    "hints": [
+      "Plain `%` is right for positive `i` but gives a negative answer for negative `i`.",
+      "Java has a `Math` method designed for exactly this — or fix the sign by adding `n` and taking the remainder again."
+    ]
+  },
+  {
     "id": "ops-mcq-shortcircuit",
     "type": "mcq",
     "title": "Short-circuit order",
-    "prompt": "`arr` has length 3. Which condition is safe when `i` might be 5?",
+    "prompt": "`d` might be `0`. Which condition is safe?",
     "options": [
-      "`i < arr.length && arr[i] > 0` — bounds check first",
-      "`arr[i] > 0 && i < arr.length` — same thing, order doesn't matter",
-      "Both crash",
+      "`d != 0 && n / d > 1` — guard first",
+      "`n / d > 1 && d != 0` — same thing, order doesn't matter",
+      "Both crash when d is 0",
       "Neither compiles"
     ],
     "answer": 0,
-    "explanation": "`&&` evaluates left to right and stops at the first false. Checking `i < arr.length` first means `arr[i]` is never touched when `i` is out of bounds. The reversed order throws ArrayIndexOutOfBoundsException."
+    "explanation": "`&&` evaluates left to right and stops at the first false. Checking `d != 0` first means `n / d` is never computed when `d` is zero. The reversed order divides first and throws `ArithmeticException: / by zero`. Later, the same rule makes `i < arr.length && arr[i] > 0` safe."
   },
   {
     "id": "ops-fill-math",
@@ -39,6 +82,49 @@
       "3": ["pow"]
     },
     "explanation": "`Math.pow` returns `double` even for whole numbers, hence the `(int)` cast."
+  },
+  {
+    "id": "ops-predict-bits",
+    "type": "fill-blank",
+    "title": "Predict the output: bit operators",
+    "prompt": "Predict exactly what each line prints. (6 is `110` in binary, 3 is `011`.)",
+    "code": "System.out.println(5 & 1);      // prints: {{1}}\nSystem.out.println(6 ^ 3);      // prints: {{2}}\nSystem.out.println(1 << 4);     // prints: {{3}}\nSystem.out.println(-8 >> 1);    // prints: {{4}}\nSystem.out.println(-1 >>> 28);  // prints: {{5}}",
+    "blanks": {
+      "1": ["1"],
+      "2": ["5"],
+      "3": ["16"],
+      "4": ["-4"],
+      "5": ["15"]
+    },
+    "explanation": "`5 & 1` keeps only the lowest bit → 1 (odd). `110 ^ 011 = 101` → 5. `1 << 4` = 2^4 = 16. `>>` copies the sign bit, so -8 >> 1 = -4. `-1` is 32 one-bits; `>>> 28` shifts in zeros, leaving the top 4 ones at the bottom: `1111` = 15."
+  },
+  {
+    "id": "ops-drill-xor",
+    "type": "code-method",
+    "title": "Drill: odd one out with XOR",
+    "prompt": "From memory: among `a`, `b`, `c`, two values are equal and one may differ. Return the value that doesn't have a partner (if all three are equal, return that value). Use `^` — no `if` needed.",
+    "drill": true,
+    "method": {
+      "name": "oddOneOut",
+      "params": [ { "name": "a", "type": "int" }, { "name": "b", "type": "int" }, { "name": "c", "type": "int" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int oddOneOut(int a, int b, int c) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [4, 7, 4], "expected": 7 },
+      { "args": [1, 1, 9], "expected": 9 },
+      { "args": [-3, 5, 5], "expected": -3, "note": "negatives work too" },
+      { "args": [8, 8, 8], "expected": 8, "hidden": true },
+      { "args": [0, 2147483647, 0], "expected": 2147483647, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int oddOneOut(int a, int b, int c) {\n        return a ^ b ^ c;\n    }\n}",
+      "explanation": "XOR is commutative and `x ^ x == 0`, `x ^ 0 == x`. The equal pair cancels to 0, leaving the unpaired value. The same idea over a whole array solves Single Number in O(n) time, O(1) space."
+    },
+    "hints": [
+      "XOR has two key facts: a value XORed with itself is 0, and XOR with 0 changes nothing.",
+      "Order doesn't matter for XOR, so combining all three lets the equal pair cancel."
+    ]
   },
   {
     "id": "ops-lastdigit",
@@ -59,9 +145,13 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int digitSum(int n) {\n        int sum = 0;\n        while (n > 0) {\n            sum += n % 10;\n            n /= 10;\n        }\n        return sum;\n    }\n}",
-      "explanation": "`n % 10` reads the last digit; `n /= 10` removes it. The loop ends when every digit is consumed."
+      "explanation": "`n % 10` reads the last digit; `n /= 10` removes it. The loop ends when every digit is consumed. O(number of digits)."
     },
-    "hints": ["`while (n > 0) { ... }`", "Inside: `sum += n % 10; n /= 10;`"]
+    "hints": [
+      "Repeat two steps until nothing is left: read the last digit, then remove it.",
+      "Loop `while (n > 0)` — `n % 10` is the last digit, `n / 10` drops it.",
+      "Inside the loop: `sum += n % 10;` then shrink `n`."
+    ]
   },
   {
     "id": "ops-drill-minmax",
@@ -85,7 +175,10 @@
       "code": "class Solution {\n    public int clamp(int x, int lo, int hi) {\n        return Math.max(lo, Math.min(x, hi));\n    }\n}",
       "explanation": "`Math.min(x, hi)` caps the top; `Math.max(lo, ...)` lifts the bottom."
     },
-    "hints": ["Cap the top first: `Math.min(x, hi)` — then lift the result with `Math.max(lo, ...)`."]
+    "hints": [
+      "Clamping is two separate limits: one ceiling, one floor.",
+      "`Math.min(x, hi)` enforces the ceiling — then wrap that result in a `Math.max` with `lo`."
+    ]
   },
   {
     "id": "ops-ref-math-fill",
@@ -111,8 +204,13 @@
       { "args": [-2, 0, 5], "expected": 7, "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public int range(int a, int b, int c) {\n        int mx = Math.max(a, Math.max(b, c));\n        int mn = Math.min(a, Math.min(b, c));\n        return mx - mn;\n    }\n}"
+      "code": "class Solution {\n    public int range(int a, int b, int c) {\n        int mx = Math.max(a, Math.max(b, c));\n        int mn = Math.min(a, Math.min(b, c));\n        return mx - mn;\n    }\n}",
+      "explanation": "`Math.max`/`Math.min` take two arguments, so nest one call inside another to cover three values. Range is then max minus min."
     },
-    "hints": ["Nest to get the max of three: `Math.max(a, Math.max(b, c))`.", "Do the same with `Math.min`, then subtract."]
+    "hints": [
+      "Find the largest and the smallest separately, then subtract.",
+      "Nest to get the max of three: `Math.max(a, Math.max(b, c))`.",
+      "Do the same with `Math.min`, then subtract."
+    ]
   }
 ]

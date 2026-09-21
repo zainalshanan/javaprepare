@@ -7,7 +7,7 @@
   "prompt": "Invert a binary tree (mirror it left-right) and return its root.\n\n**Example**: `[4,2,7,1,3,6,9]` → `[4,7,2,9,6,3,1]`.\n\nThe gentlest possible DFS: swap children, recurse into both.",
   "method": {
     "name": "invertTree",
-    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }],
     "returns": "TreeNode"
   },
   "starter": "class Solution {\n    public TreeNode invertTree(TreeNode root) {\n\n    }\n}\n",
@@ -19,11 +19,12 @@
     { "args": [[1, 2]], "expected": [1, null, 2], "hidden": true, "note": "one-sided tree" }
   ],
   "hints": [
-    "Base case: null returns null.",
-    "Swap `root.left` and `root.right` (needs a temp), then recurse on both children — or recurse first; either order works."
+    "What is the inverted version of an empty tree? And if both subtrees were already inverted, what would be left to do at the root?",
+    "Swap `root.left` and `root.right`, then invert each child. Doing the recursion before the swap works too.",
+    "Swapping needs a temporary variable: writing `root.left = root.right` first loses the original left subtree. Remember to `return root;`."
   ],
   "solution": {
     "code": "class Solution {\n    public TreeNode invertTree(TreeNode root) {\n        if (root == null) return null;\n        TreeNode temp = root.left;\n        root.left = root.right;\n        root.right = temp;\n        invertTree(root.left);\n        invertTree(root.right);\n        return root;\n    }\n}",
-    "explanation": "O(n) time, O(height) stack. Every tree problem's skeleton in miniature: null base case, local work, recurse into children."
+    "explanation": "Mirroring a tree means mirroring every node, and the recursion reaches every node exactly once: swap here, then trust the calls to mirror the subtrees. This is template (a): a null base case, local work, and recursion into both children. O(n) time, O(h) stack space where h is the height."
   }
 }

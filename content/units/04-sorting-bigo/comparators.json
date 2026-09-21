@@ -1,5 +1,19 @@
 [
   {
+    "id": "cmp-mcq-primitive",
+    "type": "mcq",
+    "title": "Descending int[]",
+    "prompt": "`int[] nums = {3, 1, 2};` then `Arrays.sort(nums, (a, b) -> Integer.compare(b, a));` — what happens?",
+    "options": [
+      "Compile error — there is no `Arrays.sort(int[], Comparator)`; comparators only sort object arrays",
+      "nums becomes `{3, 2, 1}`",
+      "nums becomes `{1, 2, 3}` — the comparator is ignored",
+      "It compiles but throws at runtime"
+    ],
+    "answer": 0,
+    "explanation": "Comparators compare objects, and `int` is a primitive, so no such overload exists. Sort ascending and reverse, or copy into an `Integer[]` and sort that with `Collections.reverseOrder()`. `int[][]` is fine: each row is an `int[]` object."
+  },
+  {
     "id": "cmp-mcq-direction",
     "type": "mcq",
     "title": "Which way does it sort?",
@@ -23,7 +37,20 @@
       "1": ["a[0]"],
       "2": ["b[0]"]
     },
-    "explanation": "Primary key in (a, b) order = ascending. This exact sort opens Merge Intervals."
+    "explanation": "Primary key in (a, b) order = ascending. Only when the starts are equal does the second `Integer.compare` on the ends decide. This exact sort opens Merge Intervals."
+  },
+  {
+    "id": "cmp-fill-chain",
+    "type": "fill-blank",
+    "title": "Recall: Comparator builders",
+    "prompt": "Fill in the builder methods.",
+    "code": "// by length ascending\nwords.sort(Comparator.{{1}}(String::length));\n\n// by length, LONGEST first\nwords.sort(Comparator.comparingInt(String::length).{{2}}());\n\n// rows by [1], ties broken by [0]\nArrays.sort(rows, Comparator.comparingInt((int[] r) -> r[1])\n        .{{3}}(r -> r[0]));",
+    "blanks": {
+      "1": ["comparingInt", "comparing"],
+      "2": ["reversed"],
+      "3": ["thenComparingInt", "thenComparing"]
+    },
+    "explanation": "`comparingInt(keyFn)` sorts ascending by an int key, `.reversed()` flips everything built so far, and `.thenComparingInt(keyFn)` adds a tie-breaker. The explicit `(int[] r)` type is needed because Java can't infer a lambda's parameter type once you chain onto it."
   },
   {
     "id": "cmp-sort-strings",
@@ -44,9 +71,12 @@
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public String[] sortWords(String[] words) {\n        Arrays.sort(words, (a, b) -> a.length() != b.length()\n                ? Integer.compare(a.length(), b.length())\n                : a.compareTo(b));\n        return words;\n    }\n}",
-      "explanation": "Object arrays (String[]) accept comparators directly in Arrays.sort."
+      "explanation": "Object arrays (String[]) accept comparators directly in Arrays.sort. The comparator checks length first and only calls `compareTo` (alphabetical) on a tie. Equivalent builder form: `Comparator.comparingInt(String::length).thenComparing(Comparator.naturalOrder())`. O(n log n) comparisons."
     },
-    "hints": ["Compare lengths first; only fall back to `compareTo` on a tie."]
+    "hints": [
+      "Two keys: length is the primary one, the word itself only breaks ties.",
+      "Compare lengths with `Integer.compare`; if they're equal, fall back to `a.compareTo(b)`."
+    ]
   },
   {
     "id": "cmp-drill-intervals",
@@ -63,12 +93,64 @@
     "tests": [
       { "args": [[[5, 6], [1, 3], [2, 4]]], "expected": [[1, 3], [2, 4], [5, 6]] },
       { "args": [[[1, 2]]], "expected": [[1, 2]] },
-      { "args": [[[3, 9], [1, 10], [2, 5]]], "expected": [[1, 10], [2, 5], [3, 9]], "hidden": true }
+      { "args": [[[3, 9], [1, 10], [2, 5]]], "expected": [[1, 10], [2, 5], [3, 9]], "hidden": true },
+      { "args": [[[2147483647, 2147483647], [-2147483648, 0]]], "expected": [[-2147483648, 0], [2147483647, 2147483647]], "hidden": true, "note": "a[0] - b[0] overflows here" }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] sortIntervals(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        return intervals;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] sortIntervals(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        return intervals;\n    }\n}",
+      "explanation": "Each row is an `int[]` object, so `Arrays.sort` takes a comparator that compares the rows' start values. `Integer.compare` stays correct at the int extremes where `a[0] - b[0]` overflows. O(n log n)."
     },
-    "hints": ["`Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));`"]
+    "hints": [
+      "`Arrays.sort` on an `int[][]` accepts a comparator that receives two rows.",
+      "Compare the start of each row: index `[0]`, with `Integer.compare(a[0], b[0])`."
+    ]
+  },
+  {
+    "id": "cmp-code-sort-desc",
+    "type": "code-method",
+    "title": "Descending ints via Integer[]",
+    "prompt": "Return a new `int[]` containing `nums` sorted in **descending** order. `Arrays.sort(int[])` can't take a comparator, so box the values into an `Integer[]`, sort that with `Collections.reverseOrder()`, and copy back.",
+    "drill": true,
+    "method": { "name": "sortDescending", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int[]" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int[] sortDescending(int[] nums) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[3, 1, 2]], "expected": [3, 2, 1] },
+      { "args": [[5, 5, -1, 10]], "expected": [10, 5, 5, -1] },
+      { "args": [[]], "expected": [], "hidden": true },
+      { "args": [[-2147483648, 2147483647, 0]], "expected": [2147483647, 0, -2147483648], "hidden": true, "note": "int extremes" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] sortDescending(int[] nums) {\n        Integer[] boxed = new Integer[nums.length];\n        for (int i = 0; i < nums.length; i++) boxed[i] = nums[i];\n        Arrays.sort(boxed, Collections.reverseOrder());\n        int[] res = new int[nums.length];\n        for (int i = 0; i < nums.length; i++) res[i] = boxed[i];\n        return res;\n    }\n}",
+      "explanation": "Boxing to `Integer[]` makes the array sortable with a comparator; `Collections.reverseOrder()` flips the natural order without any subtraction, so the extremes are safe. Copying back unboxes. O(n log n). (Sorting ascending and reversing in place also works and avoids boxing.)"
+    },
+    "hints": [
+      "Comparators need objects. Which wrapper array can hold the same values?",
+      "Copy into `Integer[] boxed`, then `Arrays.sort(boxed, Collections.reverseOrder());`.",
+      "Copy `boxed` back into a fresh `int[]` — assignment unboxes each element."
+    ]
+  },
+  {
+    "id": "comp-mcq-vs",
+    "type": "mcq",
+    "title": "Comparable vs Comparator",
+    "prompt": "What's the key difference between implementing `Comparable` and passing a `Comparator`?",
+    "options": [
+      "Comparable defines a class's own natural order (compareTo); a Comparator is an external ordering supplied at the sort call",
+      "They're the same thing with different names",
+      "Comparable is for numbers, Comparator is for Strings",
+      "Comparator can only sort ascending"
+    ],
+    "answer": 0,
+    "explanation": "Comparable bakes one default ordering into the class (`compareTo`); Comparator lets you specify any ordering externally, including several different ones for the same type."
+  },
+  {
+    "id": "comp-fill-skeleton",
+    "type": "fill-blank",
+    "title": "Recall: implement Comparable",
+    "prompt": "Complete the class declaration and the compareTo method (order Persons by age).",
+    "code": "class Person {{1}} Comparable<Person> {\n    int id, age;\n    public int {{2}}(Person other) {\n        return Integer.compare(this.age, other.age);\n    }\n}",
+    "blanks": { "1": ["implements"], "2": ["compareTo"] },
+    "explanation": "`implements Comparable<Person>` plus a `compareTo(Person)` returning a negative/zero/positive int gives the class a natural order."
   },
   {
     "id": "cmp-ref-fill",
@@ -78,7 +160,7 @@
     "drill": true,
     "code": "Arrays.sort(arr, (a, b) -> Integer.{{1}}(a, b));       // ascending\nArrays.sort(arr, (a, b) -> Integer.compare({{2}}, {{3}})); // descending",
     "blanks": { "1": ["compare"], "2": ["b"], "3": ["a"] },
-    "explanation": "`Integer.compare(a, b)` sorts ascending; swap the arguments to `(b, a)` for descending. Prefer this over `a - b`, which can overflow."
+    "explanation": "`Integer.compare(a, b)` sorts ascending; swap the arguments to `(b, a)` for descending. Prefer this over `a - b`, which can overflow. (Here `arr` must be an object array such as `Integer[]`.)"
   },
   {
     "id": "cmp-ref-code",
@@ -94,8 +176,12 @@
       { "args": [[[1, 9], [1, 8], [4, 0]]], "expected": [[4, 0], [1, 9], [1, 8]], "hidden": true, "note": "stable on ties" }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] sortDesc(int[][] pairs) {\n        Arrays.sort(pairs, (a, b) -> Integer.compare(b[0], a[0]));\n        return pairs;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[][] sortDesc(int[][] pairs) {\n        Arrays.sort(pairs, (a, b) -> Integer.compare(b[0], a[0]));\n        return pairs;\n    }\n}",
+      "explanation": "Passing `b[0]` before `a[0]` reverses the natural order, so larger first elements come first. The sort is stable, so rows with equal first elements keep their input order. O(n log n)."
     },
-    "hints": ["Descending on the first element: `(a, b) -> Integer.compare(b[0], a[0])`."]
+    "hints": [
+      "Ascending would be `Integer.compare(a[0], b[0])`. What reverses it?",
+      "Swap the arguments: `(a, b) -> Integer.compare(b[0], a[0])`."
+    ]
   }
 ]

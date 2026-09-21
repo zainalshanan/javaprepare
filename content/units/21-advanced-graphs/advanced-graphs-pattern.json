@@ -1,5 +1,31 @@
 [
   {
+    "id": "pat-ag-fill-uf",
+    "type": "fill-blank",
+    "title": "Recall: find & union",
+    "prompt": "Fill in `find` with path compression and `union` by size.",
+    "drill": true,
+    "code": "int find(int x) {\n    if (parent[x] != x) {\n        parent[x] = {{1}};        // path compression\n    }\n    return parent[x];\n}\n\nboolean union(int a, int b) {\n    int ra = find(a), rb = find(b);\n    if (ra == rb) return {{2}};\n    if (size[ra] < size[rb]) { int t = ra; ra = rb; rb = t; }\n    parent[{{3}}] = {{4}};           // smaller tree under larger root\n    size[ra] += {{5}};\n    return true;\n}",
+    "blanks": {
+      "1": [
+        "find(parent[x])"
+      ],
+      "2": [
+        "false"
+      ],
+      "3": [
+        "rb"
+      ],
+      "4": [
+        "ra"
+      ],
+      "5": [
+        "size[rb]"
+      ]
+    },
+    "explanation": "`parent[x] = find(parent[x])` points every node on the path directly at the root as the recursion returns. `union` returns `false` when the roots already match, which means the edge closes a cycle. After the swap, `ra` is the larger root, so `rb` goes under it and `ra`'s size grows by `size[rb]`."
+  },
+  {
     "id": "pat-ag-mcq-uf",
     "type": "mcq",
     "title": "Union-Find's cycle test",
@@ -11,13 +37,13 @@
       "b is a's parent"
     ],
     "answer": 0,
-    "explanation": "union returns false when both endpoints share a root — a path between them already exists, so this edge is redundant/cycle-forming. That's the entire solution to Redundant Connection."
+    "explanation": "`union` returns false only when both endpoints already have the same root, so a path between them already exists. Adding the edge would create a second path, which is a cycle. Redundant Connection returns the first such edge, and Graph Valid Tree answers false as soon as one appears."
   },
   {
     "id": "pat-ag-drill-uf",
     "type": "code-design",
     "title": "Drill: Union-Find from memory",
-    "prompt": "Implement Union-Find with path compression:\n\n- `UnionFind(int n)` — n elements, each its own component\n- `int find(int x)` — the root of x's component\n- `boolean union(int a, int b)` — merge; return false if already connected\n- `boolean connected(int a, int b)` — same component?\n\nRank/size balancing is optional here (path compression alone passes) — but write it if you can.",
+    "prompt": "Implement Union-Find from memory:\n\n- `UnionFind(int n)`: n elements, each in its own component\n- `int find(int x)`: the root of x's component\n- `boolean union(int a, int b)`: merge the two components; return `false` if they were already connected\n- `boolean connected(int a, int b)`: are a and b in the same component?\n\nUse path compression. Union by size or rank isn't required to pass, but write it.",
     "drill": true,
     "className": "UnionFind",
     "methods": {
@@ -146,20 +172,20 @@
       }
     ],
     "solution": {
-      "code": "class UnionFind {\n    private int[] parent;\n\n    public UnionFind(int n) {\n        parent = new int[n];\n        for (int i = 0; i < n; i++) parent[i] = i;\n    }\n\n    public int find(int x) {\n        if (parent[x] != x) parent[x] = find(parent[x]);\n        return parent[x];\n    }\n\n    public boolean union(int a, int b) {\n        int ra = find(a), rb = find(b);\n        if (ra == rb) return false;\n        parent[rb] = ra;\n        return true;\n    }\n\n    public boolean connected(int a, int b) {\n        return find(a) == find(b);\n    }\n}",
-      "explanation": "Path compression (`parent[x] = find(parent[x])`) flattens chains on every find, keeping operations near O(1) amortized."
+      "code": "class UnionFind {\n    private int[] parent, size;\n\n    public UnionFind(int n) {\n        parent = new int[n];\n        size = new int[n];\n        for (int i = 0; i < n; i++) {\n            parent[i] = i;\n            size[i] = 1;\n        }\n    }\n\n    public int find(int x) {\n        if (parent[x] != x) parent[x] = find(parent[x]);\n        return parent[x];\n    }\n\n    public boolean union(int a, int b) {\n        int ra = find(a), rb = find(b);\n        if (ra == rb) return false;\n        if (size[ra] < size[rb]) { int t = ra; ra = rb; rb = t; }\n        parent[rb] = ra;\n        size[ra] += size[rb];\n        return true;\n    }\n\n    public boolean connected(int a, int b) {\n        return find(a) == find(b);\n    }\n}",
+      "explanation": "Path compression flattens every path that `find` walks, and union by size keeps trees shallow in the first place. Together they make each operation O(α(n)) amortized, which is effectively constant. Space is O(n)."
     },
     "hints": [
-      "Constructor: `parent[i] = i` for all i.",
-      "find: recurse to the root, assigning on the way back (compression).",
-      "union: find both roots; equal → false, else point one at the other."
+      "Represent each component as a tree of parent pointers. What's special about a root's parent?",
+      "Constructor: `parent[i] = i`. `find` follows parents to the root. `union` finds both roots and links one to the other unless they're already the same.",
+      "Compression is one line inside `find`: `if (parent[x] != x) parent[x] = find(parent[x]);`"
     ]
   },
   {
     "id": "pat-ag-drill-topo",
     "type": "code-method",
     "title": "Drill: is it a DAG? (Kahn's topo sort)",
-    "prompt": "From memory (Kahn's algorithm): given `n` nodes and directed `edges` (`[u, v]` = u before v), return whether a valid topological order exists (i.e. no cycle).",
+    "prompt": "From memory (Kahn's algorithm): given `n` nodes and directed `edges` (`[u, v]` means u must come before v), return whether a valid topological order exists, i.e. the graph has no cycle.",
     "drill": true,
     "method": {
       "name": "canOrder",
@@ -248,11 +274,13 @@
       }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public boolean canOrder(int n, int[][] edges) {\n        Map<Integer, List<Integer>> adj = new HashMap<>();\n        int[] indeg = new int[n];\n        for (int[] e : edges) {\n            adj.computeIfAbsent(e[0], k -> new ArrayList<>()).add(e[1]);\n            indeg[e[1]]++;\n        }\n        Queue<Integer> q = new LinkedList<>();\n        for (int i = 0; i < n; i++) if (indeg[i] == 0) q.offer(i);\n        int seen = 0;\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            seen++;\n            for (int v : adj.getOrDefault(u, new ArrayList<>())) {\n                if (--indeg[v] == 0) q.offer(v);\n            }\n        }\n        return seen == n;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean canOrder(int n, int[][] edges) {\n        List<List<Integer>> adj = new ArrayList<>();\n        for (int i = 0; i < n; i++) adj.add(new ArrayList<>());\n        int[] indeg = new int[n];\n        for (int[] e : edges) {\n            adj.get(e[0]).add(e[1]);\n            indeg[e[1]]++;\n        }\n        Deque<Integer> q = new ArrayDeque<>();\n        for (int i = 0; i < n; i++) if (indeg[i] == 0) q.offer(i);\n        int processed = 0;\n        while (!q.isEmpty()) {\n            int u = q.poll();\n            processed++;\n            for (int v : adj.get(u)) {\n                if (--indeg[v] == 0) q.offer(v);\n            }\n        }\n        return processed == n;\n    }\n}",
+      "explanation": "A node enters the queue only after all of its predecessors are processed. Nodes on a cycle keep waiting on each other, never reach indegree 0, and never get counted. So `processed == n` exactly when there's no cycle. O(n + E) time and space."
     },
     "hints": [
-      "Queue the indegree-0 nodes, peel them, decrement neighbors.",
-      "If you process all n, there's no cycle."
+      "Which nodes could safely come first in any valid order?",
+      "Count each node's incoming edges. Queue every node with indegree 0. When you poll one, remove its outgoing edges by decrementing its neighbors' indegrees.",
+      "`if (--indeg[v] == 0) q.offer(v);` then at the end `return processed == n;`"
     ]
   }
 ]

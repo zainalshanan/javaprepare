@@ -14,6 +14,18 @@
     "explanation": "The parameter list `(String s)` is what comes in; the type before the name (`boolean`) is what must come back via `return`."
   },
   {
+    "id": "start-fill-helper",
+    "type": "fill-blank",
+    "title": "Helpers inside Solution",
+    "prompt": "Complete the call to the helper method, and the keyword that makes a nested helper class usable without an outer `Solution` object.",
+    "code": "class Solution {\n    public int twiceSquare(int n) {\n        return 2 * {{1}}(n);\n    }\n\n    private int square(int n) {\n        return n * n;\n    }\n\n    {{2}} class Pair {\n        int a, b;\n    }\n}",
+    "blanks": {
+      "1": ["square"],
+      "2": ["static", "private static"]
+    },
+    "explanation": "Inside the same class you call a helper by its bare name: `square(n)`. Nested helper classes are conventionally declared `static class`, so you can create them anywhere with `new Pair()`."
+  },
+  {
     "id": "start-mcq-drills",
     "type": "mcq",
     "title": "How drills work",
@@ -37,7 +49,11 @@
     "solution": {
       "code": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"ready to grind\");\n    }\n}",
       "explanation": "`System.out.println` prints its argument followed by a newline."
-    }
+    },
+    "hints": [
+      "Text goes to the screen through Java's standard print statement, placed inside `main`.",
+      "Use `System.out.println(...)` with the text in double quotes."
+    ]
   },
   {
     "id": "start-add",
@@ -57,8 +73,11 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int add(int a, int b) {\n        return a + b;\n    }\n}",
-      "explanation": "A method with a non-void return type must `return` a value of that type on every path."
+      "explanation": "A method with a non-void return type must `return` a value of that type on every path. Here that value is simply `a + b`."
     },
-    "hints": ["The method must end with `return <something>;`"]
+    "hints": [
+      "The method doesn't print anything — it hands a value back to whoever called it.",
+      "The whole body is one statement of the form `return <expression>;`"
+    ]
   }
 ]

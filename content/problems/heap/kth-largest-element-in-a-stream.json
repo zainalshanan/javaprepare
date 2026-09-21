@@ -26,12 +26,12 @@
     }
   ],
   "hints": [
-    "Field: a min-heap holding the k largest values seen; its peek is the answer.",
-    "Constructor: just call your own add() for each initial number.",
-    "add: offer, poll if size > k, return peek."
+    "You only ever need the k largest values seen so far. Among those, which one is the answer?",
+    "Keep a min-heap field holding at most k values. Its top, the smallest of the k largest, is the k-th largest.",
+    "add: `heap.offer(val); if (heap.size() > k) heap.poll(); return heap.peek();`. The constructor can just call `add` for each initial number."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass KthLargest {\n    private PriorityQueue<Integer> heap = new PriorityQueue<>();\n    private int k;\n\n    public KthLargest(int k, int[] nums) {\n        this.k = k;\n        for (int x : nums) {\n            add(x);\n        }\n    }\n\n    public int add(int val) {\n        heap.offer(val);\n        if (heap.size() > k) heap.poll();\n        return heap.peek();\n    }\n}",
-    "explanation": "O(log k) per add. Reusing add() in the constructor keeps the invariant (heap holds exactly the top ≤ k) in one place — a pattern worth copying in design problems."
+    "explanation": "The heap always holds the k largest values seen so far, so its minimum is the k-th largest. Reusing `add` in the constructor keeps that rule in one place. O(log k) per add, O(n log k) to build, O(k) space."
   }
 }

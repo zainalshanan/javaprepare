@@ -11,13 +11,15 @@ Everything you submit is **compiled and run with a real JDK on your machine** �
 ### Features
 
 - 5 exercise types: quizzes, fill-in-the-blank code, write-a-program, implement-a-method (LeetCode style), and design-a-class problems
-- **Mastery drills**: pass 3 times in a row from a blank editor to master an idiom
-- **Spaced repetition**: mastered drills resurface on an expanding review schedule so the syntax stays automatic
-- **Progress dashboard**: per-unit mastery, streaks, weak-area detection
-- Progressive hints and full solutions with explanations (unlocked after a real attempt)
-- Compile errors mapped to your code's line numbers; hidden tests keep you honest
-- Prev/Next navigation across the whole course, a "Continue where you left off" button, and ⌘/Ctrl+Enter to run
-- Multiple-choice options are shuffled per question, so the answer is never predictably in the same slot
+- **Mastery drills**: pass 3 times in a row, retyping from memory each rep, to master an idiom
+- **Spaced repetition**: mastered drills (and any NeetCode problem you add) resurface in review sessions on an expanding, local-day schedule
+- **Progress dashboard**: drills vs NeetCode problems solved by category, activity heatmap, review forecast and retention, struggle areas and leeches
+- Progressive hints; full solutions with explanations unlock after 2 real attempts or all hints. Using them marks the exercise "solved with help"
+- Stuck on a quiz or fill-in? "Show answer" appears after 2 misses
+- Drafts survive reloads; "Run examples" checks visible tests without counting as an attempt
+- Compile errors underlined in the editor; line-by-line output diff; hidden tests keep you honest
+- Prev/Next navigation, per-lesson checklists, "Continue where you left off", ⌘/Ctrl+Enter to run, light and dark themes
+- Multiple-choice options are reshuffled between attempts, so the answer is never predictably in the same slot
 
 ## Requirements
 
@@ -63,6 +65,7 @@ Every code exercise must include a reference solution, and:
 
 ```sh
 npm run validate-content
+UNITS=16-trees,17-tries npm run validate-content   # just some units, while editing
 ```
 
 must pass — it compiles and runs **every reference solution against its own tests**, so broken content can't ship. See any existing problem file for the schema (supported parameter/return types include primitives, arrays, `List<...>`, `ListNode`, `TreeNode`, and op-sequence tests for design problems).

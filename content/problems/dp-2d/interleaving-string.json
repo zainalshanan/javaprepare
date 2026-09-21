@@ -4,28 +4,85 @@
   "title": "Interleaving String",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/interleaving-string/",
-  "prompt": "Return whether `s3` is formed by interleaving `s1` and `s2` — merging them while preserving each string's internal order.\n\n**Example**: `s1 = \"aabcc\"`, `s2 = \"dbbca\"`, `s3 = \"aadbbcbcac\"` → `true`.\n\ndp[i][j] = 'the first i chars of s1 and first j of s2 interleave to the first i+j of s3'.",
+  "prompt": "Return `true` if `s3` can be formed by interleaving `s1` and `s2`, meaning every character of both is used and each string's characters stay in their original order.\n\n**Example**: `s1 = \"aabcc\"`, `s2 = \"dbbca\"`, `s3 = \"aadbbcbcac\"` → `true`; with `s3 = \"aadbbbaccc\"` → `false`.\n\n**Constraints**: `0 <= s1.length, s2.length <= 100`, `0 <= s3.length <= 200`.",
   "method": {
     "name": "isInterleave",
-    "params": [ { "name": "s1", "type": "String" }, { "name": "s2", "type": "String" }, { "name": "s3", "type": "String" } ],
+    "params": [
+      {
+        "name": "s1",
+        "type": "String"
+      },
+      {
+        "name": "s2",
+        "type": "String"
+      },
+      {
+        "name": "s3",
+        "type": "String"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean isInterleave(String s1, String s2, String s3) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["aabcc", "dbbca", "aadbbcbcac"], "expected": true },
-    { "args": ["aabcc", "dbbca", "aadbbbaccc"], "expected": false },
-    { "args": ["", "", ""], "expected": true },
-    { "args": ["a", "", "a"], "expected": true },
-    { "args": ["", "b", "b"], "expected": true, "hidden": true },
-    { "args": ["abc", "def", "adbecf"], "expected": true, "hidden": true }
+    {
+      "args": [
+        "aabcc",
+        "dbbca",
+        "aadbbcbcac"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "aabcc",
+        "dbbca",
+        "aadbbbaccc"
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        "",
+        "",
+        ""
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "a",
+        "",
+        "a"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "",
+        "b",
+        "b"
+      ],
+      "expected": true,
+      "hidden": true
+    },
+    {
+      "args": [
+        "abc",
+        "def",
+        "adbecf"
+      ],
+      "expected": true,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Length check first: if s1.length + s2.length != s3.length, return false.",
-    "dp[i][j] is true if we can match s3's first i+j chars. Fill the first row/column from single-string prefixes.",
-    "dp[i][j] = (dp[i-1][j] and s1[i-1] == s3[i+j-1]) OR (dp[i][j-1] and s2[j-1] == s3[i+j-1])."
+    "Always taking the next character from whichever string matches can go wrong when both match. After producing some prefix of s3, what two numbers fully describe where you are?",
+    "Let dp[i][j] = the first i characters of s1 and the first j of s2 can form the first i+j of s3. The last character came from either s1 or s2. If the lengths don't add up, return false.",
+    "`dp[i][j] = (dp[i-1][j] && s1.charAt(i-1) == s3.charAt(i+j-1)) || (dp[i][j-1] && s2.charAt(j-1) == s3.charAt(i+j-1));` Seed row and column 0 from a single string's prefix."
   ],
   "solution": {
     "code": "class Solution {\n    public boolean isInterleave(String s1, String s2, String s3) {\n        int m = s1.length(), n = s2.length();\n        if (m + n != s3.length()) return false;\n        boolean[][] dp = new boolean[m + 1][n + 1];\n        dp[0][0] = true;\n        for (int i = 1; i <= m; i++) {\n            dp[i][0] = dp[i - 1][0] && s1.charAt(i - 1) == s3.charAt(i - 1);\n        }\n        for (int j = 1; j <= n; j++) {\n            dp[0][j] = dp[0][j - 1] && s2.charAt(j - 1) == s3.charAt(j - 1);\n        }\n        for (int i = 1; i <= m; i++) {\n            for (int j = 1; j <= n; j++) {\n                dp[i][j] = (dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(i + j - 1))\n                        || (dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(i + j - 1));\n            }\n        }\n        return dp[m][n];\n    }\n}",
-    "explanation": "At position i+j of s3, the last character came either from s1 (consuming its i-th char) or s2 (its j-th) — so dp[i][j] is reachable if a valid predecessor state exists and the matching source char equals s3's. Trying to do this greedily fails on branches; the DP explores both. O(m·n)."
+    "explanation": "Any interleaving of s1[0..i) and s2[0..j) ends with a character from one of them, following a valid interleaving of the shorter prefixes, so the OR of those two cases is exactly right. Where greedy has to guess when both strings match, the table tries both. O(m·n) time and space."
   }
 }

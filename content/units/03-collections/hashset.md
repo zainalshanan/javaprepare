@@ -25,6 +25,10 @@ for (int x : nums) seen.add(x);
 
 @exercise hs-mcq-choose
 
+## What can go in a set
+
+Anything whose `equals`/`hashCode` compare by value: `Integer`, `String`, `Character`, `List<Integer>`, records. **Not** `int[]`: arrays compare by identity, so `set.contains(new int[]{r, c})` is always false. For grid cells, store `r + "," + c`, `r * cols + c`, or `List.of(r, c)` (see the equals & hashCode lesson).
+
 ## Practice
 
 @exercise hs-has-duplicate
@@ -38,3 +42,10 @@ Rapid recall of every core HashSet operation. Fill the blank, then write it live
 @exercise hs-ref-fill
 
 @exercise hs-ref-code
+
+## Recap
+
+- `Set<Integer> seen = new HashSet<>();` then `add`, `contains`, `remove`, `size()`, all O(1).
+- `if (!seen.add(x))` means x is a duplicate.
+- Existence → set; counts → map; letters a–z → `int[26]`.
+- Never `int[]` elements. Use `r + "," + c` or `List.of(r, c)`.

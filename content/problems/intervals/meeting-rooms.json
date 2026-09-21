@@ -7,16 +7,89 @@
   "prompt": "Given meeting time `intervals`, return whether a single person could attend all of them (no two overlap). Touching endpoints like `[1,3]`,`[3,5]` are fine.\n\n**Example**: `[[0,30],[5,10],[15,20]]` → `false`.\n\nSort by start; any overlap between consecutive meetings makes it impossible.",
   "method": {
     "name": "canAttendMeetings",
-    "params": [ { "name": "intervals", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "intervals",
+        "type": "int[][]"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public boolean canAttendMeetings(int[][] intervals) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[0, 30], [5, 10], [15, 20]]], "expected": false },
-    { "args": [[[7, 10], [2, 4]]], "expected": true },
-    { "args": [[]], "expected": true },
-    { "args": [[[1, 3], [3, 5]]], "expected": true, "hidden": true, "note": "touching is allowed" },
-    { "args": [[[5, 8], [6, 8]]], "expected": false, "hidden": true }
+    {
+      "args": [
+        [
+          [
+            0,
+            30
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            15,
+            20
+          ]
+        ]
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        [
+          [
+            7,
+            10
+          ],
+          [
+            2,
+            4
+          ]
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            3
+          ],
+          [
+            3,
+            5
+          ]
+        ]
+      ],
+      "expected": true,
+      "hidden": true,
+      "note": "touching is allowed"
+    },
+    {
+      "args": [
+        [
+          [
+            5,
+            8
+          ],
+          [
+            6,
+            8
+          ]
+        ]
+      ],
+      "expected": false,
+      "hidden": true
+    }
   ],
   "hints": [
     "Sort intervals by start time.",
@@ -25,6 +98,6 @@
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public boolean canAttendMeetings(int[][] intervals) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        for (int i = 1; i < intervals.length; i++) {\n            if (intervals[i][0] < intervals[i - 1][1]) return false;\n        }\n        return true;\n    }\n}",
-    "explanation": "After sorting by start, only adjacent meetings can conflict, so one linear pass suffices. The strict `<` comparison treats back-to-back meetings (end == next start) as compatible. O(n log n)."
+    "explanation": "After sorting by start, if a meeting conflicts with any earlier meeting, it conflicts with the one right before it, so one linear pass is enough. The strict `<` treats back-to-back meetings (end == next start) as compatible. O(n log n) time, O(1) extra space."
   }
 }

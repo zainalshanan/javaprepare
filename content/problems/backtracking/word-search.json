@@ -4,10 +4,10 @@
   "title": "Word Search",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/word-search/",
-  "prompt": "Given an `m x n` board of letters and a `word`, return whether the word can be traced through horizontally/vertically adjacent cells, using each cell at most once.\n\n**Example**: board `[[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]]`, word `\"ABCCED\"` → `true`.\n\nDFS from every cell, matching one character at a time and marking the path to prevent reuse.",
+  "prompt": "Given an `m x n` board of letters and a `word`, return whether the word can be spelled by a path of horizontally or vertically adjacent cells, using each cell at most once.\n\n**Example**: board `[[\"A\",\"B\",\"C\",\"E\"],[\"S\",\"F\",\"C\",\"S\"],[\"A\",\"D\",\"E\",\"E\"]]`, word `\"ABCCED\"` → `true`; word `\"ABCB\"` → `false`.\n\n**Constraints**: 1 ≤ m, n ≤ 6; 1 ≤ word length ≤ 15.",
   "method": {
     "name": "exist",
-    "params": [ { "name": "board", "type": "char[][]" }, { "name": "word", "type": "String" } ],
+    "params": [{ "name": "board", "type": "char[][]" }, { "name": "word", "type": "String" }],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean exist(char[][] board, String word) {\n\n    }\n}\n",
@@ -16,15 +16,16 @@
     { "args": [[["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "SEE"], "expected": true },
     { "args": [[["A", "B", "C", "E"], ["S", "F", "C", "S"], ["A", "D", "E", "E"]], "ABCB"], "expected": false, "note": "would reuse the B" },
     { "args": [[["a"]], "a"], "expected": true, "hidden": true },
-    { "args": [[["a", "b"]], "ba"], "expected": true, "hidden": true }
+    { "args": [[["a", "b"]], "ba"], "expected": true, "hidden": true },
+    { "args": [[["A", "A"]], "AAA"], "expected": false, "hidden": true, "note": "would have to reuse a cell" }
   ],
   "hints": [
-    "Try starting the DFS at each cell.",
-    "Match `board[r][c] == word.charAt(idx)`; on success, mark the cell (e.g. set to '#'), recurse in 4 directions for idx+1, then restore.",
-    "Base case: `idx == word.length()` means the whole word matched → true."
+    "The word could start at any cell. From a matching cell, what has to be true of the next cell, and how do you stop the path from reusing a cell?",
+    "Run a DFS from every cell with an index into the word: out of bounds or a mismatch → false; `idx == word.length()` → true.",
+    "Before exploring the 4 neighbours, overwrite the cell with `'#'`; after the recursive calls return, put the original letter back."
   ],
   "solution": {
     "code": "class Solution {\n    public boolean exist(char[][] board, String word) {\n        for (int r = 0; r < board.length; r++) {\n            for (int c = 0; c < board[0].length; c++) {\n                if (dfs(board, r, c, word, 0)) return true;\n            }\n        }\n        return false;\n    }\n\n    private boolean dfs(char[][] board, int r, int c, String word, int idx) {\n        if (idx == word.length()) return true;\n        if (r < 0 || r >= board.length || c < 0 || c >= board[0].length\n                || board[r][c] != word.charAt(idx)) {\n            return false;\n        }\n        char tmp = board[r][c];\n        board[r][c] = '#';\n        boolean found = dfs(board, r + 1, c, word, idx + 1)\n                || dfs(board, r - 1, c, word, idx + 1)\n                || dfs(board, r, c + 1, word, idx + 1)\n                || dfs(board, r, c - 1, word, idx + 1);\n        board[r][c] = tmp;\n        return found;\n    }\n}",
-    "explanation": "Backtracking on a grid: temporarily sinking the current cell to '#' enforces 'each cell used once' along a path, and restoring it on the way out lets other paths reuse it. The `||` short-circuits as soon as any direction completes the word."
+    "explanation": "This is backtracking on a grid. Temporarily replacing the current cell with `#` stops the path from using it twice, and restoring it on the way back lets other paths use it. `||` stops at the first direction that completes the word. O(m·n·3^L) time for word length L (each step has at most 3 unvisited directions), O(L) recursion depth."
   }
 }

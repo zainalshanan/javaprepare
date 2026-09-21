@@ -4,10 +4,10 @@
   "title": "Letter Combinations of a Phone Number",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
-  "prompt": "Given digits 2–9, return all letter combinations they could spell on a phone keypad (2→abc, 3→def, …, 7→pqrs, 8→tuv, 9→wxyz). Return `[]` for an empty input.\n\n**Example**: `\"23\"` → `[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]`.\n\nBacktracking across digit positions: at each digit, branch over its letters.",
+  "prompt": "Given a string of digits `2`–`9`, return all letter combinations it could spell on a phone keypad (2→abc, 3→def, 4→ghi, 5→jkl, 6→mno, 7→pqrs, 8→tuv, 9→wxyz), in any order. Return `[]` for an empty input.\n\n**Example**: `\"23\"` → `[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]`.\n\n**Constraints**: 0 ≤ digits.length ≤ 4.",
   "method": {
     "name": "letterCombinations",
-    "params": [ { "name": "digits", "type": "String" } ],
+    "params": [{ "name": "digits", "type": "String" }],
     "returns": "List<String>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> letterCombinations(String digits) {\n\n    }\n}\n",
@@ -19,12 +19,12 @@
     { "args": ["79"], "expected": ["pw", "px", "py", "pz", "qw", "qx", "qy", "qz", "rw", "rx", "ry", "rz", "sw", "sx", "sy", "sz"], "compare": "unordered", "hidden": true }
   ],
   "hints": [
-    "A lookup array maps a digit to its letters (index 2..9).",
-    "Recurse over digit positions; at position i, loop its letters, append, recurse to i+1, remove.",
-    "Guard the empty input up front so you don't return `[\"\"]`."
+    "Each digit contributes exactly one letter. How many decisions do you make, and how many options does each decision have?",
+    "Recurse over digit positions. At position `i`, loop over that digit's letters (from a lookup array indexed by digit), append the letter, recurse to `i + 1`, then remove it.",
+    "Record `sb.toString()` when `i == digits.length()`. Return early for empty input so you don't return `[\"\"]`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    private static final String[] MAP = {\"\", \"\", \"abc\", \"def\", \"ghi\", \"jkl\", \"mno\", \"pqrs\", \"tuv\", \"wxyz\"};\n    private List<String> res = new ArrayList<>();\n\n    public List<String> letterCombinations(String digits) {\n        if (digits.isEmpty()) return res;\n        backtrack(0, new StringBuilder(), digits);\n        return res;\n    }\n\n    private void backtrack(int idx, StringBuilder sb, String digits) {\n        if (idx == digits.length()) {\n            res.add(sb.toString());\n            return;\n        }\n        String letters = MAP[digits.charAt(idx) - '0'];\n        for (char c : letters.toCharArray()) {\n            sb.append(c);\n            backtrack(idx + 1, sb, digits);\n            sb.deleteCharAt(sb.length() - 1);\n        }\n    }\n}",
-    "explanation": "A classic Cartesian-product backtrack: each digit position contributes one letter, and the recursion depth equals the number of digits. Output size is the product of the per-digit letter counts (3 or 4 each)."
+    "explanation": "The result is every way to pick one letter per digit: the recursion depth is the number of digits, and each level branches over 3 or 4 letters. The `StringBuilder` is shared and restored with `deleteCharAt`. O(4ⁿ·n) time, O(n) recursion depth."
   }
 }

@@ -4,7 +4,7 @@
   "title": "Valid Parentheses",
   "difficulty": "Easy",
   "leetcodeUrl": "https://leetcode.com/problems/valid-parentheses/",
-  "prompt": "Given a string containing only `()[]{}`, determine if it is valid: every opener closes with the matching bracket type, in the correct order.\n\n**Example**: `\"()[]{}\"` → `true`; `\"(]\"` → `false`.\n\nThe matching-stack template with three bracket types.",
+  "prompt": "Given a string containing only `()[]{}`, determine if it is valid: every opener closes with the matching bracket type, in the correct order.\n\n**Example**: `\"()[]{}\"` → `true`; `\"(]\"` → `false`; `\"([)]\"` → `false`.\n\n**Constraints**: `1 <= s.length <= 10^4`.\n\nThe matching-pairs template from the lesson, with three bracket types.",
   "method": {
     "name": "isValid",
     "params": [ { "name": "s", "type": "String" } ],
@@ -21,12 +21,13 @@
     { "args": ["]"], "expected": false, "hidden": true }
   ],
   "hints": [
+    "Which opener must a closing bracket match: the first one you saw, or the most recent one still open?",
     "Push openers. On a closer, the stack top must be its matching opener.",
     "A slick trick: when you see an opener, push its CLOSER — then a closer just needs `pop() == c`.",
     "Two failure modes: closer with empty/wrong stack, and leftover openers (`return stack.isEmpty()`)."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public boolean isValid(String s) {\n        Deque<Character> stack = new ArrayDeque<>();\n        for (char c : s.toCharArray()) {\n            if (c == '(') stack.push(')');\n            else if (c == '[') stack.push(']');\n            else if (c == '{') stack.push('}');\n            else {\n                if (stack.isEmpty() || stack.pop() != c) return false;\n            }\n        }\n        return stack.isEmpty();\n    }\n}",
-    "explanation": "Pushing the EXPECTED closer collapses the matching logic to one comparison. O(n)/O(n). \"([)]\" fails because the top expectation when `)` arrives is `]`."
+    "explanation": "Insight: a closing bracket must match the most recent bracket that is still open, which is exactly what a stack's top holds. Pushing the expected closer turns the match into one comparison. \"([)]\" fails because when `)` arrives the stack expects `]`. Leftover entries at the end mean some brackets never closed. Time O(n), space O(n)."
   }
 }

@@ -4,27 +4,112 @@
   "title": "Gas Station",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/gas-station/",
-  "prompt": "There are `n` gas stations in a circle; `gas[i]` is the fuel available and `cost[i]` the fuel to reach the next station. Return the starting index to complete the loop (unique if it exists), or `-1`.\n\n**Example**: `gas = [1,2,3,4,5]`, `cost = [3,4,5,1,2]` → `3`.\n\nIf total gas ≥ total cost, a solution exists; a single greedy pass finds where to start.",
+  "prompt": "There are `n` gas stations in a circle; `gas[i]` is the fuel available at station `i` and `cost[i]` is the fuel needed to drive to station `i+1`. Starting with an empty tank, return the index of the station from which you can drive around the circuit once, or `-1` if impossible. If a solution exists it is unique.\n\n**Example**: `gas = [1,2,3,4,5]`, `cost = [3,4,5,1,2]` → `3`.\n\n**Constraints**: `1 ≤ n ≤ 10^5`, `0 ≤ gas[i], cost[i] ≤ 10^4`.",
   "method": {
     "name": "canCompleteCircuit",
-    "params": [ { "name": "gas", "type": "int[]" }, { "name": "cost", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "gas",
+        "type": "int[]"
+      },
+      {
+        "name": "cost",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int canCompleteCircuit(int[] gas, int[] cost) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[1, 2, 3, 4, 5], [3, 4, 5, 1, 2]], "expected": 3 },
-    { "args": [[2, 3, 4], [3, 4, 3]], "expected": -1 },
-    { "args": [[5, 1, 2, 3, 4], [4, 4, 1, 5, 1]], "expected": 4 },
-    { "args": [[2], [2]], "expected": 0, "hidden": true },
-    { "args": [[3, 1, 1], [1, 2, 2]], "expected": 0, "hidden": true }
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        [
+          3,
+          4,
+          5,
+          1,
+          2
+        ]
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          3,
+          4,
+          3
+        ]
+      ],
+      "expected": -1
+    },
+    {
+      "args": [
+        [
+          5,
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          4,
+          4,
+          1,
+          5,
+          1
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        [
+          2
+        ],
+        [
+          2
+        ]
+      ],
+      "expected": 0,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          3,
+          1,
+          1
+        ],
+        [
+          1,
+          2,
+          2
+        ]
+      ],
+      "expected": 0,
+      "hidden": true
+    }
   ],
   "hints": [
-    "If sum(gas) < sum(cost), it's impossible → -1.",
-    "Track a running tank of `gas[i] - cost[i]`; whenever it dips below 0, no start in the current stretch works — restart from the next station.",
-    "The last restart point is the answer (guaranteed when the total is non-negative)."
+    "Ignore the starting point for a moment. When is the trip impossible no matter where you start?",
+    "Simulate from a candidate start with a running tank. If the tank goes negative at station i, what does that tell you about starting at any station between the candidate and i?",
+    "All of them fail too, so set `start = i + 1` and `tank = 0`. At the end, return `start` if `total >= 0`, else -1."
   ],
   "solution": {
     "code": "class Solution {\n    public int canCompleteCircuit(int[] gas, int[] cost) {\n        int total = 0, tank = 0, start = 0;\n        for (int i = 0; i < gas.length; i++) {\n            int diff = gas[i] - cost[i];\n            total += diff;\n            tank += diff;\n            if (tank < 0) {\n                start = i + 1;\n                tank = 0;\n            }\n        }\n        return total >= 0 ? start : -1;\n    }\n}",
-    "explanation": "If the tank goes negative at station i, no station from the last start through i can be the origin (they'd all run dry no later than i), so the next candidate is i+1. Because a valid start is unique when it exists, the final restart point is it — and total ≥ 0 certifies existence. O(n)."
+    "explanation": "If the total is negative, no start works. If the tank first goes negative at i, every station between the start and i was reached with fuel ≥ 0, so starting fresh at any of them (with 0 fuel) also fails by i. That makes skipping to i+1 safe. With a non-negative total, the last start that never failed completes the loop. O(n) time, O(1) space."
   }
 }

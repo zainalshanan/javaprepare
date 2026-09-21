@@ -4,28 +4,95 @@
   "title": "Coin Change II",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/coin-change-ii/",
-  "prompt": "Given coin denominations and an `amount`, return the number of distinct **combinations** that make up the amount (unlimited coins; order doesn't matter).\n\n**Example**: `amount = 5`, `coins = [1,2,5]` → `4` (5; 2+2+1; 2+1+1+1; 1×5).\n\ndp[a] = number of ways to make amount a. Iterate coins in the OUTER loop so each combination is counted once (not permutations).",
+  "prompt": "Given coin denominations `coins` (unlimited supply of each) and an `amount`, return the number of **combinations** that make up that amount. Order doesn't matter, so 1+2 and 2+1 are the same combination. Return `0` if no combination works.\n\n**Example**: `amount = 5`, `coins = [1,2,5]` → `4` (5; 2+2+1; 2+1+1+1; 1+1+1+1+1).\n\n**Constraints**: `1 <= coins.length <= 300`, `0 <= amount <= 5000`, coins distinct; the answer fits in a 32-bit int.",
   "method": {
     "name": "change",
-    "params": [ { "name": "amount", "type": "int" }, { "name": "coins", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "amount",
+        "type": "int"
+      },
+      {
+        "name": "coins",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int change(int amount, int[] coins) {\n\n    }\n}\n",
   "tests": [
-    { "args": [5, [1, 2, 5]], "expected": 4 },
-    { "args": [3, [2]], "expected": 0 },
-    { "args": [10, [10]], "expected": 1 },
-    { "args": [0, [7]], "expected": 1, "note": "one way to make 0: use nothing" },
-    { "args": [4, [1, 2, 3]], "expected": 4, "hidden": true },
-    { "args": [10, [2, 5, 3, 6]], "expected": 5, "hidden": true }
+    {
+      "args": [
+        5,
+        [
+          1,
+          2,
+          5
+        ]
+      ],
+      "expected": 4
+    },
+    {
+      "args": [
+        3,
+        [
+          2
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        10,
+        [
+          10
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        0,
+        [
+          7
+        ]
+      ],
+      "expected": 1,
+      "note": "one way to make 0: use nothing"
+    },
+    {
+      "args": [
+        4,
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "expected": 4,
+      "hidden": true
+    },
+    {
+      "args": [
+        10,
+        [
+          2,
+          5,
+          3,
+          6
+        ]
+      ],
+      "expected": 5,
+      "hidden": true
+    }
   ],
   "hints": [
-    "dp[0] = 1 (the empty combination). dp[a] accumulates ways to form amount a.",
-    "Loop coins OUTER, amounts INNER: `dp[a] += dp[a - coin]`.",
-    "The coin-outer order is what counts combinations (unordered) rather than permutations."
+    "If you count 'ways to reach amount a' by trying every coin as the last one, what happens to 1+2 versus 2+1? How could you force every combination to be built in one fixed coin order?",
+    "Let dp[a] = number of ways to make amount a, with dp[0] = 1. Process the coins one at a time. For each coin, add the ways that use it, going from its value up to amount.",
+    "Coins in the OUTER loop: `for (int c : coins) for (int a = c; a <= amount; a++) dp[a] += dp[a - c];`. Swapping the loops counts permutations instead."
   ],
   "solution": {
     "code": "class Solution {\n    public int change(int amount, int[] coins) {\n        int[] dp = new int[amount + 1];\n        dp[0] = 1;\n        for (int coin : coins) {\n            for (int a = coin; a <= amount; a++) {\n                dp[a] += dp[a - coin];\n            }\n        }\n        return dp[amount];\n    }\n}",
-    "explanation": "Fixing the coin loop outside means each amount is built by considering coins in a fixed order, so `1+2` and `2+1` are the same combination counted once. (Swapping the loop order would count ordered permutations — a different problem.) O(amount · coins)."
+    "explanation": "After processing the first k coins, dp[a] counts combinations that use only those coins. Adding coin k+1 adds exactly the combinations that include it at least once, and the upward loop allows repeats. Since coins are introduced in a fixed order, each multiset is counted once. O(amount · coins) time, O(amount) space."
   }
 }

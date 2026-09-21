@@ -14,6 +14,18 @@
     "explanation": "if/else chains stop at the FIRST true branch. When conditions overlap, put the most specific one first."
   },
   {
+    "id": "cond-predict-order",
+    "type": "fill-blank",
+    "title": "Predict the output: chain order",
+    "prompt": "Predict what each snippet prints. Watch the order of the thresholds, and look closely at the second `if`.",
+    "code": "int score = 95;\nString g = \"F\";\nif (score >= 70) g = \"C\";\nelse if (score >= 80) g = \"B\";\nelse if (score >= 90) g = \"A\";\nSystem.out.println(g);          // prints: {{1}}\n\nint x = 3;\nif (x > 10); {\n    System.out.println(\"big\");\n}\n// the line above prints: {{2}}",
+    "blanks": {
+      "1": ["C", "\"C\""],
+      "2": ["big", "\"big\""]
+    },
+    "explanation": "95 >= 70 is true, so the first branch runs and the chain stops — the stricter thresholds are never checked. Put `>= 90` first. In the second snippet, the `;` right after `if (x > 10)` IS the if's (empty) body; the `{ ... }` block below is ordinary code that always runs, so `big` prints even though 3 > 10 is false."
+  },
+  {
     "id": "cond-fill-ternary",
     "type": "fill-blank",
     "title": "Ternary syntax",
@@ -63,7 +75,11 @@
       "code": "class Solution {\n    public String fizzBuzz(int n) {\n        if (n % 15 == 0) return \"FizzBuzz\";\n        if (n % 3 == 0) return \"Fizz\";\n        if (n % 5 == 0) return \"Buzz\";\n        return String.valueOf(n);\n    }\n}",
       "explanation": "Most specific condition first. `return` exits immediately, so no `else` is needed — a very common clean-code style."
     },
-    "hints": ["Divisible by both 3 and 5 means divisible by 15.", "`String.valueOf(n)` converts an int to a String."]
+    "hints": [
+      "The cases overlap — decide which one must be tested first.",
+      "Divisible by both 3 and 5 means divisible by 15.",
+      "`String.valueOf(n)` converts an int to a String for the fallback case."
+    ]
   },
   {
     "id": "cond-drill-grade",
@@ -84,8 +100,12 @@
       { "args": [-2147483648], "expected": -1, "hidden": true, "note": "Integer.MIN_VALUE" }
     ],
     "solution": {
-      "code": "class Solution {\n    public int sign(int x) {\n        if (x > 0) return 1;\n        if (x < 0) return -1;\n        return 0;\n    }\n}"
+      "code": "class Solution {\n    public int sign(int x) {\n        if (x > 0) return 1;\n        if (x < 0) return -1;\n        return 0;\n    }\n}",
+      "explanation": "Three mutually exclusive cases, each ending in an early `return`; whatever survives both checks must be zero. Avoid `x / Math.abs(x)` — it divides by zero at 0 and `Math.abs(Integer.MIN_VALUE)` is still negative."
     },
-    "hints": ["Three cases, three returns."]
+    "hints": [
+      "There are exactly three cases; handle two explicitly and let the last be the fallback.",
+      "`if (x > 0) return 1;` — then the negative case — then `return 0;`."
+    ]
   }
 ]

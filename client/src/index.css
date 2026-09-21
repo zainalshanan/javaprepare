@@ -7,8 +7,10 @@
   --color-line: #2c3b58;
   --color-paper: #e8edf7;
   --color-dim: #8b99b8;
+  --color-code: #10182a;
   --color-amber: #f5b84c;
   --color-amber-deep: #d99a26;
+  --color-on-amber: #131c2e;
   --color-pass: #5cd69a;
   --color-fail: #f26d6d;
   --color-sky: #6fa8ff;
@@ -16,6 +18,40 @@
   --font-display: "Bricolage Grotesque", "IBM Plex Sans", sans-serif;
   --font-sans: "IBM Plex Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Syntax token colors (dark) */
+:root {
+  color-scheme: dark;
+  --hl-keyword: #c792ea;
+  --hl-string: #5cd69a;
+  --hl-number: #f5b84c;
+  --hl-title: #6fa8ff;
+  --hl-comment: #64748f;
+}
+
+/* Light mode: Tailwind utilities read these variables, so overriding them re-themes everything. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-ink: #f5f7fb;
+  --color-panel: #ffffff;
+  --color-panel-2: #e9edf5;
+  --color-line: #d3dae7;
+  --color-paper: #172036;
+  --color-dim: #5a6784;
+  --color-code: #f0f3f9;
+  --color-amber: #b7791f;
+  --color-amber-deep: #975a16;
+  --color-on-amber: #ffffff;
+  --color-pass: #15803d;
+  --color-fail: #dc2626;
+  --color-sky: #2563eb;
+
+  --hl-keyword: #8b3fc7;
+  --hl-string: #15803d;
+  --hl-number: #b45309;
+  --hl-title: #1d4ed8;
+  --hl-comment: #6b7a90;
 }
 
 html { background: var(--color-ink); }
@@ -61,7 +97,7 @@ body {
   border-radius: 4px;
 }
 .prose-lesson pre {
-  background: #10182a;
+  background: var(--color-code);
   border: 1px solid var(--color-line);
   border-radius: 8px;
   padding: 0.9em 1.1em;
@@ -76,13 +112,13 @@ body {
 .prose-lesson th { background: var(--color-panel); font-weight: 600; }
 
 /* highlight.js-ish token colors tuned to the palette */
-.hljs-keyword { color: #c792ea; }
-.hljs-string { color: #5cd69a; }
-.hljs-number { color: #f5b84c; }
-.hljs-title, .hljs-title.class_ { color: #6fa8ff; }
-.hljs-comment { color: #64748f; font-style: italic; }
-.hljs-type, .hljs-built_in { color: #6fa8ff; }
-.hljs-literal { color: #f5b84c; }
+.hljs-keyword { color: var(--hl-keyword); }
+.hljs-string { color: var(--hl-string); }
+.hljs-number { color: var(--hl-number); }
+.hljs-title, .hljs-title.class_ { color: var(--hl-title); }
+.hljs-comment { color: var(--hl-comment); font-style: italic; }
+.hljs-type, .hljs-built_in { color: var(--hl-title); }
+.hljs-literal { color: var(--hl-number); }
 
 /* fill-blank inputs */
 .blank-input {

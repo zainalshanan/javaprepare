@@ -4,29 +4,72 @@
   "title": "Valid Parenthesis String",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/valid-parenthesis-string/",
-  "prompt": "Given a string of `(`, `)`, and `*` (where `*` can be `(`, `)`, or empty), return whether it can be a valid parenthesis string.\n\n**Example**: `\"(*)\"` → `true`; `\"(*))\"` → `true`.\n\nTrack the RANGE of possible open-paren counts as you scan; valid if 0 stays in range and the range can end at 0.",
+  "prompt": "Given a string `s` of `(`, `)`, and `*`, return whether it can be valid. Each `*` may be treated as `(`, `)`, or an empty string. Valid means every `(` has a matching `)` after it, and vice versa.\n\n**Example**: `\"(*)\"` → `true`; `\"(*))\"` → `true`; `\")(\"` → `false`.\n\n**Constraints**: `1 ≤ s.length ≤ 100`.",
   "method": {
     "name": "checkValidString",
-    "params": [ { "name": "s", "type": "String" } ],
+    "params": [
+      {
+        "name": "s",
+        "type": "String"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean checkValidString(String s) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["()"], "expected": true },
-    { "args": ["(*)"], "expected": true },
-    { "args": ["(*))"], "expected": true },
-    { "args": [")("], "expected": false },
-    { "args": ["(("], "expected": false, "hidden": true },
-    { "args": ["*"], "expected": true, "hidden": true },
-    { "args": ["(*()"], "expected": true, "hidden": true }
+    {
+      "args": [
+        "()"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "(*)"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "(*))"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        ")("
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        "(("
+      ],
+      "expected": false,
+      "hidden": true
+    },
+    {
+      "args": [
+        "*"
+      ],
+      "expected": true,
+      "hidden": true
+    },
+    {
+      "args": [
+        "(*()"
+      ],
+      "expected": true,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Keep `low` and `high`: the min and max number of unmatched '(' possible so far.",
-    "'(' bumps both; ')' drops both; '*' drops low (treat as ')') and raises high (treat as '(').",
-    "If high < 0, too many ')' → false. Clamp low at 0. Valid iff low can reach 0 at the end."
+    "Trying all 3 meanings of every `*` is exponential. Instead of one open-paren count, could you track every count that is still possible?",
+    "The possible counts form a contiguous range `[low, high]`: `(` raises both, `)` lowers both, and `*` lowers `low` (acts as `)`) while raising `high` (acts as `(`).",
+    "If `high < 0`, return false. Clamp `low` at 0 after each char. At the end, return `low == 0`."
   ],
   "solution": {
     "code": "class Solution {\n    public boolean checkValidString(String s) {\n        int low = 0, high = 0;\n        for (char c : s.toCharArray()) {\n            if (c == '(') { low++; high++; }\n            else if (c == ')') { low--; high--; }\n            else { low--; high++; }\n            if (high < 0) return false;\n            if (low < 0) low = 0;\n        }\n        return low == 0;\n    }\n}",
-    "explanation": "Rather than trying every meaning of each '*', track the interval [low, high] of possible open counts. high < 0 means even the most-open interpretation has excess ')'. Clamping low at 0 forbids negative opens. If 0 is achievable at the end (low == 0), some valid assignment exists. O(n)/O(1)."
+    "explanation": "`[low, high]` is exactly the set of open counts some assignment of the stars can produce so far. If `high < 0`, even the most generous choice has an unmatched `)`. Clamping `low` at 0 drops choices that would go negative. If 0 is still possible at the end, some assignment balances. O(n) time, O(1) space."
   }
 }

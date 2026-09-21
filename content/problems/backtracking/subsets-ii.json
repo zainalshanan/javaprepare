@@ -4,10 +4,10 @@
   "title": "Subsets II",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/subsets-ii/",
-  "prompt": "Given an array that **may contain duplicates**, return all unique subsets (no duplicate subsets in the output).\n\n**Example**: `[1,2,2]` → `[[],[1],[1,2],[1,2,2],[2],[2,2]]`.\n\nSort first, then skip a duplicate value when it would start a sibling branch identical to one already explored.",
+  "prompt": "Given an integer array that **may contain duplicates**, return all possible subsets with no duplicate subsets in the result, in any order.\n\n**Example**: `[1,2,2]` → `[[],[1],[1,2],[1,2,2],[2],[2,2]]`.\n\n**Constraints**: 1 ≤ n ≤ 10.",
   "method": {
     "name": "subsetsWithDup",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [{ "name": "nums", "type": "int[]" }],
     "returns": "List<List<Integer>>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> subsetsWithDup(int[] nums) {\n\n    }\n}\n",
@@ -18,12 +18,12 @@
     { "args": [[2, 1, 2]], "expected": [[], [1], [1, 2], [1, 2, 2], [2], [2, 2]], "compare": "unordered-deep", "hidden": true, "note": "must sort first" }
   ],
   "hints": [
-    "Sort `nums` so duplicates are adjacent.",
-    "Record a copy of the path at every node (like plain Subsets).",
-    "In the loop, `if (i > start && nums[i] == nums[i-1]) continue;` — skip duplicate values at the same recursion depth."
+    "Two equal values create identical branches in the recursion tree. What can you do to the input so duplicates are easy to spot?",
+    "Sort `nums`, then use the Subsets template: record at every call, loop from `start`, recurse with `i + 1`.",
+    "Skip repeated values in the same loop: `if (i > start && nums[i] == nums[i - 1]) continue;`. The first copy in each loop still recurses."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    private List<List<Integer>> res = new ArrayList<>();\n\n    public List<List<Integer>> subsetsWithDup(int[] nums) {\n        Arrays.sort(nums);\n        backtrack(0, new ArrayList<>(), nums);\n        return res;\n    }\n\n    private void backtrack(int start, List<Integer> path, int[] nums) {\n        res.add(new ArrayList<>(path));\n        for (int i = start; i < nums.length; i++) {\n            if (i > start && nums[i] == nums[i - 1]) continue;\n            path.add(nums[i]);\n            backtrack(i + 1, path, nums);\n            path.remove(path.size() - 1);\n        }\n    }\n}",
-    "explanation": "The `i > start` guard only skips duplicates that would begin a *sibling* branch (same depth) — the first occurrence still recurses, so `[2,2]` is reachable while a second identical `[2]`-first branch is pruned. Sorting is what makes duplicates adjacent and this test valid."
+    "explanation": "After sorting, equal values sit next to each other. The `i > start` check skips a value only when it repeats one already tried in the same loop, where it would start an identical branch. Going deeper can still pick the next copy, so `[2,2]` is reachable. O(n·2ⁿ) time worst case, O(n) recursion depth."
   }
 }

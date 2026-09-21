@@ -7,23 +7,90 @@
   "prompt": "Given an integer array `nums`, return `true` if any value appears **at least twice**, and `false` if every element is distinct.\n\n**Example**: `[1,2,3,1]` → `true`; `[1,2,3,4]` → `false`.",
   "method": {
     "name": "containsDuplicate",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public boolean containsDuplicate(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[1, 2, 3, 1]], "expected": true },
-    { "args": [[1, 2, 3, 4]], "expected": false },
-    { "args": [[1, 1, 1, 3, 3, 4, 3, 2, 4, 2]], "expected": true },
-    { "args": [[]], "expected": false, "hidden": true },
-    { "args": [[-1, -1]], "expected": true, "hidden": true }
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          1
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        [
+          1,
+          1,
+          1,
+          3,
+          3,
+          4,
+          3,
+          2,
+          4,
+          2
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        []
+      ],
+      "expected": false,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          -1,
+          -1
+        ]
+      ],
+      "expected": true,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          7
+        ]
+      ],
+      "expected": false,
+      "hidden": true,
+      "note": "single element"
+    }
   ],
   "hints": [
-    "A HashSet remembers what you've seen with O(1) lookups.",
-    "`set.add(x)` returns false if x was already present — check it inline."
+    "Comparing every pair is O(n²). What if, as you walk the array, you remembered every value you'd already passed?",
+    "Keep a HashSet of seen values; a value that's already in it is a duplicate.",
+    "`set.add(x)` returns false if x was already present — `if (!seen.add(x)) return true;`"
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public boolean containsDuplicate(int[] nums) {\n        Set<Integer> seen = new HashSet<>();\n        for (int x : nums) {\n            if (!seen.add(x)) return true;\n        }\n        return false;\n    }\n}",
-    "explanation": "O(n) time, O(n) space, early exit on the first repeat. Alternatives: sort first and compare neighbors (O(n log n), O(1) extra) — worth mentioning as the space-optimized trade."
+    "explanation": "Insight: \"have I seen x before?\" is an O(1) HashSet question. We add each value as we go, so the first time `add` reports the value was already present we've found a repeat; if the loop finishes, every value was distinct. O(n) time, O(n) space. Sorting and comparing neighbors is the O(n log n) time, O(1) extra space trade-off."
   }
 }

@@ -25,6 +25,8 @@ Once a branch is taken the chain stops, so order your conditions from most speci
 
 @exercise cond-fizzbuzz-order
 
+@exercise cond-predict-order
+
 ## The ternary operator
 
 A one-line if/else that produces a value:
@@ -56,8 +58,16 @@ Forgetting `break` makes execution *fall through* into the next case — a class
 
 ## Practice
 
-FizzBuzz logic hinges on **check the most specific condition first** — a pattern that shows up whenever conditions overlap.
+FizzBuzz logic hinges on **check the most specific condition first** — a pattern that shows up whenever conditions overlap. It returns a `String`; `String.valueOf(n)` turns an int into one (more in the Strings lesson).
 
 @exercise cond-fizzbuzz
 
 @exercise cond-drill-grade
+
+## Recap
+
+- `if (...) { } else if (...) { } else { }` — only the first true branch runs.
+- Overlapping conditions: most specific (or highest threshold) first.
+- Conditions must be `boolean`; there's no `if (n)` for ints.
+- Ternary: `int m = a > b ? a : b;`
+- `switch` needs `break` or it falls through.

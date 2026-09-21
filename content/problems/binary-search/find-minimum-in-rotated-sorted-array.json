@@ -4,7 +4,7 @@
   "title": "Find Minimum in Rotated Sorted Array",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
-  "prompt": "A sorted array of **distinct** values was rotated at some pivot. Return its minimum in O(log n).\n\n**Example**: `[3,4,5,1,2]` → `1`; `[4,5,6,7,0,1,2]` → `0`.\n\nBinary search on the shape: compare `nums[mid]` to `nums[hi]` to tell which half holds the rotation point.",
+  "prompt": "A sorted array of **distinct** values was rotated at some pivot (e.g. `[0,1,2,4,5,6,7]` might become `[4,5,6,7,0,1,2]`). Return its minimum element. Your algorithm must run in O(log n).\n\n**Example 1**: `[3,4,5,1,2]` → `1`\n\n**Example 2**: `[4,5,6,7,0,1,2]` → `0`\n\n**Example 3**: `[11,13,15,17]` → `11` (rotated a full turn)\n\n**Constraints**: `1 <= n <= 5000`, `-5000 <= nums[i] <= 5000`, all values distinct.",
   "method": {
     "name": "findMin",
     "params": [ { "name": "nums", "type": "int[]" } ],
@@ -16,15 +16,16 @@
     { "args": [[4, 5, 6, 7, 0, 1, 2]], "expected": 0 },
     { "args": [[11, 13, 15, 17]], "expected": 11, "note": "not rotated" },
     { "args": [[2, 1]], "expected": 1, "hidden": true },
-    { "args": [[5, 1, 2, 3, 4]], "expected": 1, "hidden": true }
+    { "args": [[5, 1, 2, 3, 4]], "expected": 1, "hidden": true },
+    { "args": [[1]], "expected": 1, "hidden": true, "note": "single element" }
   ],
   "hints": [
-    "Use `lo < hi` (converging to a single index), comparing `nums[mid]` with `nums[hi]`.",
-    "If `nums[mid] > nums[hi]`, the minimum is to the right → `lo = mid + 1`.",
-    "Otherwise the minimum is at mid or to its left → `hi = mid` (keep mid as a candidate)."
+    "A rotated array is two sorted runs glued together, and the minimum is the first element of the second run. Looking at the middle element and one endpoint, can you tell which run `mid` belongs to?",
+    "Compare `nums[mid]` with `nums[hi]`. If `nums[mid] > nums[hi]`, mid is in the left (larger) run, so the minimum lies strictly to the right; otherwise the minimum is at mid or to its left.",
+    "Use `while (lo < hi)`: `if (nums[mid] > nums[hi]) lo = mid + 1; else hi = mid;` — `hi = mid` (not `mid - 1`) keeps mid as a candidate, and `nums[lo]` is the answer."
   ],
   "solution": {
     "code": "class Solution {\n    public int findMin(int[] nums) {\n        int lo = 0, hi = nums.length - 1;\n        while (lo < hi) {\n            int mid = lo + (hi - lo) / 2;\n            if (nums[mid] > nums[hi]) lo = mid + 1;\n            else hi = mid;\n        }\n        return nums[lo];\n    }\n}",
-    "explanation": "Comparing against `nums[hi]` (not `nums[lo]`) cleanly identifies the unsorted half that contains the pivot. Because the answer is never discarded (we use `hi = mid`, not `mid - 1`), the range converges exactly onto the minimum. O(log n)."
+    "explanation": "Comparing `nums[mid]` against `nums[hi]` tells you whether the drop (the minimum) is right of mid or at/left of it. The minimum is never discarded — we use `hi = mid`, not `mid - 1` — so the range converges exactly onto it. Comparing with `nums[lo]` instead fails on unrotated arrays. O(log n) time, O(1) space."
   }
 }

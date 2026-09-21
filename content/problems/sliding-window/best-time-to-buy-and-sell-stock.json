@@ -4,7 +4,7 @@
   "title": "Best Time to Buy and Sell Stock",
   "difficulty": "Easy",
   "leetcodeUrl": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock/",
-  "prompt": "`prices[i]` is a stock's price on day `i`. Choose one day to buy and a **later** day to sell; return the maximum profit (0 if no profit is possible).\n\n**Example**: `[7,1,5,3,6,4]` → `5` (buy at 1, sell at 6).\n\nOne pass: for each day, the best sale uses the cheapest buy seen so far.",
+  "prompt": "`prices[i]` is a stock's price on day `i`. Choose one day to buy and a **later** day to sell; return the maximum profit (0 if no profit is possible).\n\n**Example**: `[7,1,5,3,6,4]` → `5` (buy at 1, sell at 6).\n\n**Constraints**: `1 <= prices.length <= 10^5`, `0 <= prices[i] <= 10^4`.\n\nAim for one pass — the buy day is the left edge of a window that only moves forward.",
   "method": {
     "name": "maxProfit",
     "params": [ { "name": "prices", "type": "int[]" } ],
@@ -19,11 +19,12 @@
     { "args": [[5]], "expected": 0, "hidden": true }
   ],
   "hints": [
-    "Track two things in one loop: the minimum price so far, and the best profit so far.",
-    "Selling today earns `prices[i] - minSoFar`; compare it to the best before updating the min."
+    "If you had to sell on day i, which earlier day would you want to have bought on?",
+    "Scan once, remembering the cheapest price seen so far and the best profit so far.",
+    "Each day: `best = Math.max(best, p - minSoFar)`, then update `minSoFar` — in that order, so you never sell before you buy."
   ],
   "solution": {
     "code": "class Solution {\n    public int maxProfit(int[] prices) {\n        int minSoFar = prices[0];\n        int best = 0;\n        for (int p : prices) {\n            best = Math.max(best, p - minSoFar);\n            minSoFar = Math.min(minSoFar, p);\n        }\n        return best;\n    }\n}",
-    "explanation": "O(n)/O(1). Viewed as a window: the left edge (buy day) only ever moves forward to a new minimum — a sliding window where 'invalid' means 'a cheaper buy exists'. Starting best at 0 covers the all-declining case."
+    "explanation": "Insight: the best sale on any day uses the cheapest price before it. The buy day works like a window's left edge that only moves forward, to a new minimum. Computing profit before updating the minimum means you never sell before buying, and starting `best` at 0 covers prices that only fall. Time O(n), space O(1)."
   }
 }

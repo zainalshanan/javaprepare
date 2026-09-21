@@ -4,7 +4,7 @@
   "title": "Largest Rectangle in Histogram",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
-  "prompt": "Given bar heights of a histogram (each of width 1), return the area of the largest rectangle that fits inside.\n\n**Example**: `[2,1,5,6,2,3]` → `10` (the `5,6` bars give 5×2).\n\nA monotonic (increasing) stack of `{startIndex, height}`: when a shorter bar appears, pop taller bars and settle their rectangles — each popped bar could extend left to where it was first pushed.",
+  "prompt": "Given bar heights of a histogram (each of width 1), return the area of the largest rectangle that fits inside.\n\n**Example**: `[2,1,5,6,2,3]` → `10` (the `5,6` bars give 5×2).\n\n**Constraints**: `0 <= heights.length <= 10^5`, `0 <= heights[i] <= 10^4`. Aim for O(n) — checking every pair of edges is too slow.",
   "method": {
     "name": "largestRectangleArea",
     "params": [ { "name": "heights", "type": "int[]" } ],
@@ -17,15 +17,16 @@
     { "args": [[2]], "expected": 2 },
     { "args": [[]], "expected": 0 },
     { "args": [[6, 2, 5, 4, 5, 1, 6]], "expected": 12, "hidden": true },
-    { "args": [[1, 1, 1, 1]], "expected": 4, "hidden": true }
+    { "args": [[1, 1, 1, 1]], "expected": 4, "hidden": true },
+    { "args": [[1, 2, 3, 4, 5]], "expected": 9, "hidden": true, "note": "strictly increasing — nothing settles until the end" }
   ],
   "hints": [
-    "Stack holds `{start, height}` with heights increasing bottom→top.",
-    "When bar i is shorter than the top, pop it: its rectangle spans from its recorded start to i, so area = height × (i - start). Remember the leftmost popped start — bar i can extend back that far.",
-    "After the loop, settle whatever remains: each extends to the end of the histogram."
+    "The best rectangle uses some bar's full height. For bar i, how far can that rectangle stretch left and right? What stops it?",
+    "Scan left to right keeping unsettled bars whose heights increase. When a shorter bar arrives, every taller unsettled bar has found its right boundary — settle its area. Its left boundary is where it could start, which the shorter bar then inherits.",
+    "Store indices. When bar `i` is shorter than the top, pop it: its width is `i - left - 1`, where `left` is the new top (or -1 if the stack is empty). Loop to `i == heights.length` with a sentinel height of 0 so every bar gets popped."
   ],
   "solution": {
-    "code": "import java.util.*;\n\nclass Solution {\n    public int largestRectangleArea(int[] heights) {\n        Deque<int[]> stack = new ArrayDeque<>();   // {startIndex, height}\n        int maxArea = 0;\n        for (int i = 0; i < heights.length; i++) {\n            int start = i;\n            while (!stack.isEmpty() && stack.peek()[1] > heights[i]) {\n                int[] top = stack.pop();\n                maxArea = Math.max(maxArea, top[1] * (i - top[0]));\n                start = top[0];   // heights[i] can extend back to here\n            }\n            stack.push(new int[]{start, heights[i]});\n        }\n        for (int[] rem : stack) {\n            maxArea = Math.max(maxArea, rem[1] * (heights.length - rem[0]));\n        }\n        return maxArea;\n    }\n}",
-    "explanation": "O(n): each bar is pushed and popped once. A bar's maximal rectangle is bounded on the right by the first shorter bar (which triggers its pop) and on the left by where it was pushed (inherited when it absorbed taller bars in front of it). Bars never popped run to the far right edge."
+    "code": "import java.util.*;\n\nclass Solution {\n    public int largestRectangleArea(int[] heights) {\n        Deque<Integer> stack = new ArrayDeque<>();   // indices, heights increasing\n        int maxArea = 0;\n        for (int i = 0; i <= heights.length; i++) {\n            int cur = (i == heights.length) ? 0 : heights[i];   // sentinel 0 flushes the stack\n            while (!stack.isEmpty() && cur < heights[stack.peek()]) {\n                int height = heights[stack.pop()];\n                int left = stack.isEmpty() ? -1 : stack.peek();   // first shorter bar on the left\n                maxArea = Math.max(maxArea, height * (i - left - 1));\n            }\n            stack.push(i);\n        }\n        return maxArea;\n    }\n}",
+    "explanation": "Insight: the largest rectangle uses some bar's full height and stretches until a shorter bar blocks it on each side. The stack keeps indices with increasing heights, so when a bar is popped, the bar that popped it (`i`) is its right limit and the index now below it is its left limit, giving width `i - left - 1`. The sentinel height 0 at `i == n` pops every remaining bar, so none is missed. Time O(n), since each index is pushed and popped once; space O(n)."
   }
 }

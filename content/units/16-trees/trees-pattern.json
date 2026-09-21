@@ -72,10 +72,13 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int treeSum(TreeNode root) {\n        if (root == null) return 0;\n        return root.val + treeSum(root.left) + treeSum(root.right);\n    }\n}"
+      "code": "class Solution {\n    public int treeSum(TreeNode root) {\n        if (root == null) return 0;\n        return root.val + treeSum(root.left) + treeSum(root.right);\n    }\n}",
+      "explanation": "Template (a): the empty tree is worth 0, and every node adds its value to its children's sums. Each node is visited once, O(n) time; the call stack is O(h) where h is the tree height."
     },
     "hints": [
-      "Three lines: null check, then val + recurse left + recurse right."
+      "What is the sum of an empty tree? If you already had the sums of both subtrees, how would you get the whole tree's sum?",
+      "Base case: `if (root == null) return 0;`.",
+      "Combine: `return root.val + treeSum(root.left) + treeSum(root.right);`"
     ]
   },
   {
@@ -136,10 +139,37 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int countNodes(TreeNode root) {\n        if (root == null) return 0;\n        return 1 + countNodes(root.left) + countNodes(root.right);\n    }\n}"
+      "code": "class Solution {\n    public int countNodes(TreeNode root) {\n        if (root == null) return 0;\n        return 1 + countNodes(root.left) + countNodes(root.right);\n    }\n}",
+      "explanation": "Same shape as tree sum with `1` in place of `root.val`: this node counts once, plus whatever the subtrees report. O(n) time, O(h) stack space."
     },
     "hints": [
-      "Three lines: null check, then 1 + recurse left + recurse right."
+      "How many nodes does an empty tree have? If each subtree reports its own count, what does this node add?",
+      "Base case: `if (root == null) return 0;`.",
+      "Combine: `return 1 + countNodes(root.left) + countNodes(root.right);`"
     ]
+  },
+  {
+    "id": "pat-tr-fill-best",
+    "type": "fill-blank",
+    "title": "Template: return height, track the best",
+    "prompt": "Fill in the diameter template: the method **returns** height to its parent, but **records** the longest path bending at each node in a field.",
+    "drill": true,
+    "code": "private int best = 0;\n\nprivate int height(TreeNode node) {\n    if (node == null) return {{1}};\n    int l = height(node.left);\n    int r = height(node.right);\n    best = Math.max(best, {{2}});\n    return {{3}};\n}",
+    "blanks": {
+      "1": [
+        "0"
+      ],
+      "2": [
+        "l + r",
+        "r + l"
+      ],
+      "3": [
+        "1 + Math.max(l, r)",
+        "Math.max(l, r) + 1",
+        "1 + Math.max(r, l)",
+        "Math.max(r, l) + 1"
+      ]
+    },
+    "explanation": "An empty subtree has height 0. The path bending at this node uses both arms (`l + r` edges), but a parent can only extend one arm, so the method returns `1 + Math.max(l, r)`. Keeping the answer (`best`) separate from the return value is template (b)."
   }
 ]

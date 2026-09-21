@@ -13,6 +13,18 @@
     "explanation": "Start at 0, continue while `< 10`, step by one. `i < 10` (not `<=`) gives exactly 10 iterations: 0..9."
   },
   {
+    "id": "loops-predict-bounds",
+    "type": "fill-blank",
+    "title": "Predict the output: loop bounds",
+    "prompt": "Predict exactly what each `println` prints.",
+    "code": "int count = 0;\nfor (int i = 0; i <= 5; i++) {\n    count++;\n}\nSystem.out.println(count);   // prints: {{1}}\n\nint j = 10;\nwhile (j > 0) {\n    j -= 3;\n}\nSystem.out.println(j);       // prints: {{2}}",
+    "blanks": {
+      "1": ["6"],
+      "2": ["-2"]
+    },
+    "explanation": "`i <= 5` runs for i = 0, 1, 2, 3, 4, 5 — six times, one more than `i < 5` would. The while loop checks before each step: j goes 10 → 7 → 4 → 1 → -2, and only then is `j > 0` false. A loop condition doesn't stop the variable at the boundary; it stops at the first value that fails."
+  },
+  {
     "id": "loops-mcq-trace",
     "type": "mcq",
     "title": "Trace the loop",
@@ -35,9 +47,12 @@
     "expectedOutput": "5\n4\n3\n2\n1\nliftoff",
     "solution": {
       "code": "public class Main {\n    public static void main(String[] args) {\n        for (int i = 5; i >= 1; i--) {\n            System.out.println(i);\n        }\n        System.out.println(\"liftoff\");\n    }\n}",
-      "explanation": "Reverse loops start high, run while `>= low`, and step with `i--`."
+      "explanation": "Reverse loops start high, run while `>= low`, and step with `i--`. `liftoff` is printed after the loop so it appears exactly once."
     },
-    "hints": ["`for (int i = 5; i >= 1; i--)`"]
+    "hints": [
+      "Start the counter at the top value and move it down each iteration; the final word is printed outside the loop.",
+      "The three parts: start at 5, keep going while the counter is still at least 1, step with `i--`."
+    ]
   },
   {
     "id": "loops-sum-evens",
@@ -58,9 +73,13 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int sumEvens(int n) {\n        int sum = 0;\n        for (int i = 2; i <= n; i += 2) {\n            sum += i;\n        }\n        return sum;\n    }\n}",
-      "explanation": "Stepping by 2 from 2 visits only evens. Looping all numbers and checking `i % 2 == 0` also works."
+      "explanation": "Stepping by 2 from 2 visits only evens; `<= n` because n itself is included. Looping all numbers and checking `i % 2 == 0` also works. O(n)."
     },
-    "hints": ["Accumulate into a variable declared before the loop.", "Either loop everything and test `i % 2 == 0`, or step by 2."]
+    "hints": [
+      "Accumulate into a variable declared before the loop.",
+      "Either loop everything and test `i % 2 == 0`, or step by 2 starting at 2.",
+      "`n` is inclusive, so the condition needs `<=`."
+    ]
   },
   {
     "id": "loops-drill-basic",
@@ -71,9 +90,14 @@
     "starter": "",
     "expectedOutput": "0\n1\n2\n3\n4",
     "solution": {
-      "code": "public class Main {\n    public static void main(String[] args) {\n        for (int i = 0; i < 5; i++) {\n            System.out.println(i);\n        }\n    }\n}"
+      "code": "public class Main {\n    public static void main(String[] args) {\n        for (int i = 0; i < 5; i++) {\n            System.out.println(i);\n        }\n    }\n}",
+      "explanation": "`i < 5` gives exactly five iterations, i = 0..4 — the canonical shape."
     },
-    "hints": ["Boilerplate first: `public class Main { public static void main(String[] args) { ... } }`"]
+    "hints": [
+      "You need the program scaffold first, then a single loop inside `main`.",
+      "Boilerplate: `public class Main { public static void main(String[] args) { ... } }`",
+      "Five values starting at 0 means the condition is `i < 5`."
+    ]
   },
   {
     "id": "loops-drill-reverse",
@@ -96,6 +120,9 @@
       "code": "class Solution {\n    public String countdownString(int n) {\n        String s = \"\";\n        for (int i = n; i >= 1; i--) {\n            s += i;\n        }\n        return s;\n    }\n}",
       "explanation": "`s += i` converts the int and appends. (For big strings you'd use StringBuilder — coming in the Strings lesson.)"
     },
-    "hints": ["`for (int i = n; i >= 1; i--)`"]
+    "hints": [
+      "Declare the string before the loop, append inside it, return it after.",
+      "Reverse loop: start at `n`, continue while `i >= 1`, step `i--`."
+    ]
   }
 ]

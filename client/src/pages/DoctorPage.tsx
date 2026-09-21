@@ -39,7 +39,7 @@ export function DoctorPage({ status, onRetry }: { status: JdkStatus; onRetry: ()
       </div>
       <button
         onClick={onRetry}
-        className="mt-8 w-fit rounded-md bg-amber px-4 py-2 text-sm font-semibold text-ink hover:bg-amber-deep"
+        className="mt-8 w-fit rounded-md bg-amber px-4 py-2 text-sm font-semibold text-on-amber hover:bg-amber-deep"
       >
         Check again
       </button>

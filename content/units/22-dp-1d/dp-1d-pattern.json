@@ -11,7 +11,7 @@
       "The number of ways to rob i houses"
     ],
     "answer": 0,
-    "explanation": "With that meaning, the recurrence reads itself: either skip house i (dp[i-1]) or rob it, which forbids i-1 (dp[i-2] + nums[i]). Take the max."
+    "explanation": "With that meaning the recurrence follows directly: skip house i (dp[i-1]) or rob it, which forbids i-1 (dp[i-2] + nums[i]), and take the max. 'Whether house i is robbed' isn't a number you can optimize, and 'the loot in house i' is just the input."
   },
   {
     "id": "pat-dp1-drill-fib",
@@ -72,18 +72,19 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int tribonacci(int n) {\n        if (n == 0) return 0;\n        if (n <= 2) return 1;\n        int a = 0, b = 1, c = 1;   // T(i-3), T(i-2), T(i-1)\n        for (int i = 3; i <= n; i++) {\n            int cur = a + b + c;\n            a = b;\n            b = c;\n            c = cur;\n        }\n        return c;\n    }\n}",
-      "explanation": "The roll: compute, then shift every variable one slot left. Bases handled before the loop."
+      "explanation": "Handle the bases first, then compute and shift every variable one slot left. Assign `a = b` before `b = c`, or you'll overwrite a value you still need. O(n) time, O(1) space."
     },
     "hints": [
-      "Handle n=0,1,2 explicitly first.",
-      "Roll: `a = b; b = c; c = cur;` — order matters."
+      "T(n) depends on only the previous three values. How many values do you actually need to keep?",
+      "Return early for n = 0, 1, 2. Then keep `a, b, c` = T(i-3), T(i-2), T(i-1) and loop i from 3 to n.",
+      "Inside the loop: `int cur = a + b + c; a = b; b = c; c = cur;`"
     ]
   },
   {
     "id": "pat-dp1-drill-rob",
     "type": "code-method",
     "title": "Drill: max non-adjacent sum",
-    "prompt": "From memory (rolling dp): return the maximum sum of elements of `nums` with no two chosen elements adjacent. `dp = max(skip, take)` with two rolling variables.",
+    "prompt": "From memory (rolling DP): return the maximum sum of elements of `nums` such that no two chosen elements are adjacent. Use two rolling variables, no array.",
     "drill": true,
     "method": {
       "name": "maxNonAdjacent",
@@ -137,10 +138,144 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int maxNonAdjacent(int[] nums) {\n        int prev2 = 0, prev1 = 0;\n        for (int x : nums) {\n            int cur = Math.max(prev1, prev2 + x);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}"
+      "code": "class Solution {\n    public int maxNonAdjacent(int[] nums) {\n        int prev2 = 0, prev1 = 0;\n        for (int x : nums) {\n            int cur = Math.max(prev1, prev2 + x);\n            prev2 = prev1;\n            prev1 = cur;\n        }\n        return prev1;\n    }\n}",
+      "explanation": "At each element, either skip it (keep the best so far) or take it (best from two back + x). Starting both variables at 0 handles empty and one-element inputs with no special case. O(n) time, O(1) space."
     },
     "hints": [
-      "`cur = max(prev1 (skip), prev2 + x (take))`, then roll the variables."
+      "For the current element you have exactly two choices. What does each choice rule out?",
+      "best(i) = max(best(i-1), best(i-2) + nums[i]). Only the last two bests matter.",
+      "`int cur = Math.max(prev1, prev2 + x); prev2 = prev1; prev1 = cur;`"
     ]
+  },
+  {
+    "id": "pat-dp1-drill-squares",
+    "type": "code-method",
+    "title": "Drill: fewest perfect squares",
+    "prompt": "From memory (state = amount): return the fewest perfect squares (1, 4, 9, 16, …) that sum to `n`.\n\n`12` → `3` (4 + 4 + 4), `13` → `2` (4 + 9). `1 <= n <= 10⁴`.",
+    "drill": true,
+    "method": {
+      "name": "numSquares",
+      "params": [
+        {
+          "name": "n",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int numSquares(int n) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          12
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          13
+        ],
+        "expected": 2
+      },
+      {
+        "args": [
+          1
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          7
+        ],
+        "expected": 4,
+        "hidden": true,
+        "note": "4 + 1 + 1 + 1"
+      },
+      {
+        "args": [
+          100
+        ],
+        "expected": 1,
+        "hidden": true
+      },
+      {
+        "args": [
+          43
+        ],
+        "expected": 3,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int numSquares(int n) {\n        int[] dp = new int[n + 1];\n        Arrays.fill(dp, n + 1);             // sentinel: more than the max possible (n ones)\n        dp[0] = 0;\n        for (int a = 1; a <= n; a++) {\n            for (int s = 1; s * s <= a; s++) {\n                dp[a] = Math.min(dp[a], dp[a - s * s] + 1);\n            }\n        }\n        return dp[n];\n    }\n}",
+      "explanation": "This is Coin Change where the coins are the perfect squares. The last square used leaves an amount whose best answer is already in the table. Since 1 is a square, every amount is reachable. O(n·√n) time, O(n) space."
+    },
+    "hints": [
+      "This is Coin Change in disguise. What are the 'coins'?",
+      "dp[a] = fewest squares summing to a. dp[0] = 0, and fill the rest with a sentinel.",
+      "`for (int s = 1; s * s <= a; s++) dp[a] = Math.min(dp[a], dp[a - s * s] + 1);`"
+    ]
+  },
+  {
+    "id": "pat-dp1-fill-subset",
+    "type": "fill-blank",
+    "title": "Recall: 0/1 subset sum",
+    "prompt": "Fill in the boolean subset-sum loop: can some subset of `nums` (each used at most once) sum to `target`?",
+    "drill": true,
+    "code": "boolean[] dp = new boolean[target + 1];\ndp[0] = {{1}};\nfor (int x : nums) {\n    for (int j = {{2}}; j >= {{3}}; j--) {\n        dp[j] = dp[j] || dp[{{4}}];\n    }\n}\nreturn dp[target];",
+    "blanks": {
+      "1": [
+        "true"
+      ],
+      "2": [
+        "target"
+      ],
+      "3": [
+        "x"
+      ],
+      "4": [
+        "j - x"
+      ]
+    },
+    "explanation": "The empty subset makes sum 0, so `dp[0] = true`. For each number, go from `target` down to `x`. Sum `j` becomes reachable if `j - x` was reachable *before* this number, and going downwards guarantees you're reading those older values."
+  },
+  {
+    "id": "pat-dp1-mcq-backwards",
+    "type": "mcq",
+    "title": "Forwards instead?",
+    "prompt": "In the 1-D subset-sum loop, you change `for (int j = target; j >= x; j--)` to `for (int j = x; j <= target; j++)`. What happens?",
+    "options": [
+      "Each number can be used multiple times: dp[j - x] may already include x from earlier in the same pass, so it becomes an unbounded knapsack",
+      "Nothing; the order of j never matters",
+      "An ArrayIndexOutOfBoundsException",
+      "Some reachable sums are missed, so it returns false too often"
+    ],
+    "answer": 0,
+    "explanation": "Going forwards, `dp[j - x]` may have just become true because of this same `x`, so `dp[j]` counts x twice. With `nums = [5]` and target 10, forwards sets dp[5] and then dp[10], which is wrong. Backwards reads only values from before this number. The forwards order is exactly right for unbounded problems like Coin Change, where coins can be reused."
+  },
+  {
+    "id": "pat-dp1-fill-expand",
+    "type": "fill-blank",
+    "title": "Recall: expand around center",
+    "prompt": "Fill in Longest Palindromic Substring by expanding around every odd and even center.",
+    "drill": true,
+    "code": "int start = 0, best = 0;\nfor (int i = 0; i < s.length(); i++) {\n    int len = Math.max(expand(s, i, {{1}}), expand(s, i, {{2}}));\n    if (len > best) {\n        best = len;\n        start = i - ({{3}}) / 2;\n    }\n}\nreturn s.substring(start, start + best);\n\nint expand(String s, int l, int r) {\n    while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {\n        l--;\n        r++;\n    }\n    return {{4}};   // palindrome length\n}",
+    "blanks": {
+      "1": [
+        "i"
+      ],
+      "2": [
+        "i + 1",
+        "1 + i"
+      ],
+      "3": [
+        "len - 1"
+      ],
+      "4": [
+        "r - l - 1",
+        "r - 1 - l"
+      ]
+    },
+    "explanation": "`(i, i)` is the odd center and `(i, i + 1)` is the even center. When the loop stops, `l` and `r` are one step past the palindrome on each side, so its length is `r - l - 1`. From center `i`, the palindrome starts `(len - 1) / 2` characters to the left, and integer division makes that work for both odd and even lengths."
   }
 ]

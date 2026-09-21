@@ -54,5 +54,30 @@
     ],
     "answer": 0,
     "explanation": "\"What lookup makes the inner loop O(1)?\" is the most valuable question in array problems — it's exactly the Two Sum insight."
+  },
+  {
+    "id": "bigo-code-count-pairs",
+    "type": "code-method",
+    "title": "Count pairs in O(n)",
+    "prompt": "Return how many index pairs `i < j` satisfy `nums[i] + nums[j] == target`.\n\nThe obvious solution checks every pair with two nested loops — O(n²). Write the **O(n)** version: scan once, and for each `x` ask a HashMap \"how many earlier values equal `target - x`?\"",
+    "drill": true,
+    "method": { "name": "countPairs", "params": [ { "name": "nums", "type": "int[]" }, { "name": "target", "type": "int" } ], "returns": "int" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public int countPairs(int[] nums, int target) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 5, 7, -1, 5], 6], "expected": 3, "note": "(1,5), (1,5), (7,-1)" },
+      { "args": [[2, 2, 2, 2], 4], "expected": 6, "note": "every pair of the four 2s" },
+      { "args": [[], 0], "expected": 0, "hidden": true, "note": "empty" },
+      { "args": [[1, 2, 3], 100], "expected": 0, "hidden": true },
+      { "args": [[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 6], 6], "expected": 46, "hidden": true, "note": "45 pairs of 3s plus (0, 6)" }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public int countPairs(int[] nums, int target) {\n        Map<Integer, Integer> seen = new HashMap<>();\n        int pairs = 0;\n        for (int x : nums) {\n            pairs += seen.getOrDefault(target - x, 0);\n            seen.put(x, seen.getOrDefault(x, 0) + 1);\n        }\n        return pairs;\n    }\n}",
+      "explanation": "When we reach `x`, every earlier value equal to `target - x` forms a valid pair with it, and the map already holds exactly how many of those there are. Looking up BEFORE recording `x` guarantees `i < j` and stops `x` from pairing with itself. One pass of O(1) map operations: O(n) time, O(n) space."
+    },
+    "hints": [
+      "For the current value `x`, which partner value would make a pair? How could you know instantly how many of those came before?",
+      "Keep a `Map<Integer, Integer>` counting the values seen so far. Add `seen.getOrDefault(target - x, 0)` to the answer.",
+      "Order matters: look up the partner first, then record `x` in the map, so an element never pairs with itself."
+    ]
   }
 ]

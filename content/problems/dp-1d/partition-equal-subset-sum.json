@@ -4,27 +4,83 @@
   "title": "Partition Equal Subset Sum",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/partition-equal-subset-sum/",
-  "prompt": "Return whether `nums` can be split into two subsets with equal sum.\n\n**Example**: `[1,5,11,5]` → `true` (`[1,5,5]` and `[11]`).\n\nEqual halves means finding a subset summing to `total/2` — a 0/1 knapsack over a boolean reachability array.",
+  "prompt": "Return `true` if `nums` can be split into two subsets whose sums are equal.\n\n**Example**: `[1,5,11,5]` → `true` (`[1,5,5]` and `[11]`). `[1,2,3,5]` → `false`.\n\n**Constraints**: `1 <= nums.length <= 200`, `1 <= nums[i] <= 100`.",
   "method": {
     "name": "canPartition",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean canPartition(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[1, 5, 11, 5]], "expected": true },
-    { "args": [[1, 2, 3, 5]], "expected": false },
-    { "args": [[1, 1]], "expected": true },
-    { "args": [[2, 2, 3, 5]], "expected": false, "hidden": true },
-    { "args": [[3, 3, 3, 4, 5]], "expected": true, "hidden": true }
+    {
+      "args": [
+        [
+          1,
+          5,
+          11,
+          5
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          1,
+          2,
+          3,
+          5
+        ]
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        [
+          1,
+          1
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        [
+          2,
+          2,
+          3,
+          5
+        ]
+      ],
+      "expected": false,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          3,
+          3,
+          3,
+          4,
+          5
+        ]
+      ],
+      "expected": true,
+      "hidden": true
+    }
   ],
   "hints": [
-    "If the total sum is odd, it's immediately false.",
-    "Otherwise, target = sum/2. dp[j] = 'can we form sum j from some subset?', dp[0] = true.",
-    "For each number, update j from target down to num: `dp[j] |= dp[j - num]` (iterate downward so each number is used once)."
+    "If the two halves are equal, what must each half sum to? Does that make some inputs impossible right away?",
+    "The question becomes: can some subset sum to total / 2? Let dp[j] = some subset of the numbers so far sums to j, with dp[0] = true, and add the numbers one at a time.",
+    "`for (int j = target; j >= x; j--) dp[j] = dp[j] || dp[j - x];`. Loop j downwards so each number is used at most once."
   ],
   "solution": {
     "code": "class Solution {\n    public boolean canPartition(int[] nums) {\n        int sum = 0;\n        for (int x : nums) sum += x;\n        if (sum % 2 != 0) return false;\n        int target = sum / 2;\n        boolean[] dp = new boolean[target + 1];\n        dp[0] = true;\n        for (int x : nums) {\n            for (int j = target; j >= x; j--) {\n                if (dp[j - x]) dp[j] = true;\n            }\n        }\n        return dp[target];\n    }\n}",
-    "explanation": "One subset summing to half the total forces the other half to match, so this reduces to subset-sum. The 1-D knapsack tracks reachable sums; iterating j downward prevents reusing the same element within one number's pass. O(n · target)."
+    "explanation": "A subset summing to total / 2 leaves the rest summing to total / 2 as well, so this is subset-sum (an odd total fails immediately). dp tracks reachable sums as numbers are added. Going through j backwards means dp[j - x] still reflects the state before x, so no number is used twice. O(n · total) time, O(total) space."
   }
 }

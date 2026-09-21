@@ -4,27 +4,139 @@
   "title": "Number of Islands",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/number-of-islands/",
-  "prompt": "Given an `m x n` grid of `'1'` (land) and `'0'` (water), count the islands — groups of land connected horizontally or vertically.\n\n**Example**:\n```\n1 1 0 0 0\n1 1 0 0 0\n0 0 1 0 0\n0 0 0 1 1\n```\n→ `3`.\n\nScan every cell; each time you find unvisited land, that's one island — flood-fill it with DFS so it's never counted again.",
+  "prompt": "Given an `m x n` grid of `'1'` (land) and `'0'` (water), count the islands. An island is a group of land cells connected horizontally or vertically. Everything outside the grid is water.\n\n**Example**:\n```\n1 1 0 0 0\n1 1 0 0 0\n0 0 1 0 0\n0 0 0 1 1\n```\n→ `3`.\n\n**Constraints**: `1 <= m, n <= 300`.",
   "method": {
     "name": "numIslands",
-    "params": [ { "name": "grid", "type": "char[][]" } ],
+    "params": [
+      {
+        "name": "grid",
+        "type": "char[][]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int numIslands(char[][] grid) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[["1", "1", "1", "1", "0"], ["1", "1", "0", "1", "0"], ["1", "1", "0", "0", "0"], ["0", "0", "0", "0", "0"]]], "expected": 1 },
-    { "args": [[["1", "1", "0", "0", "0"], ["1", "1", "0", "0", "0"], ["0", "0", "1", "0", "0"], ["0", "0", "0", "1", "1"]]], "expected": 3 },
-    { "args": [[["0"]]], "expected": 0 },
-    { "args": [[["1", "0", "1", "0", "1"]]], "expected": 3, "hidden": true },
-    { "args": [[["1"], ["1"], ["1"]]], "expected": 1, "hidden": true }
+    {
+      "args": [
+        [
+          [
+            "1",
+            "1",
+            "1",
+            "1",
+            "0"
+          ],
+          [
+            "1",
+            "1",
+            "0",
+            "1",
+            "0"
+          ],
+          [
+            "1",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+          ]
+        ]
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        [
+          [
+            "1",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "1",
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0",
+            "1",
+            "1"
+          ]
+        ]
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          [
+            "0"
+          ]
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            "1",
+            "0",
+            "1",
+            "0",
+            "1"
+          ]
+        ]
+      ],
+      "expected": 3,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            "1"
+          ],
+          [
+            "1"
+          ],
+          [
+            "1"
+          ]
+        ]
+      ],
+      "expected": 1,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Double loop over all cells; `grid[r][c] == '1'` → count++ and dfs(r, c).",
-    "DFS: bounds-check + water-check first (return), then sink the cell (`grid[r][c] = '0'`), then recurse in 4 directions.",
-    "Sinking visited land IS the visited set — no extra array needed."
+    "Say you find a land cell during a scan. What must happen to the rest of its island so it isn't counted a second time?",
+    "Scan every cell. Each unvisited `'1'` is a new island: add one to the count, then visit every land cell connected to it and mark each as visited.",
+    "You can mark in place so no extra array is needed: `grid[r][c] = '0';` before exploring the four neighbors."
   ],
   "solution": {
     "code": "class Solution {\n    public int numIslands(char[][] grid) {\n        int count = 0;\n        for (int r = 0; r < grid.length; r++) {\n            for (int c = 0; c < grid[0].length; c++) {\n                if (grid[r][c] == '1') {\n                    count++;\n                    dfs(grid, r, c);\n                }\n            }\n        }\n        return count;\n    }\n\n    private void dfs(char[][] grid, int r, int c) {\n        if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length || grid[r][c] != '1') {\n            return;\n        }\n        grid[r][c] = '0';\n        dfs(grid, r + 1, c);\n        dfs(grid, r - 1, c);\n        dfs(grid, r, c + 1);\n        dfs(grid, r, c - 1);\n    }\n}",
-    "explanation": "O(m·n) — every cell is visited a constant number of times. Each DFS kickoff from the scan corresponds to exactly one island; the flood-fill erases it so later scanning can't recount it."
+    "explanation": "Each time the scan finds land, the DFS erases that whole island, so each island adds exactly one to the count. Every cell is marked at most once and checked a constant number of times. O(m·n) time, O(m·n) worst-case recursion depth (an all-land grid)."
   }
 }

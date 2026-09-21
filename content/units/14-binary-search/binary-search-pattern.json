@@ -104,8 +104,9 @@
       "explanation": "The workhorse variant: it handles duplicates, missing targets, and insert positions in one shape. Java's Arrays.binarySearch does NOT give you this cleanly."
     },
     "hints": [
-      "`hi` starts at nums.length (a valid answer: \"none qualify\").",
-      "Feasible → `hi = mid` (keep mid as a candidate); infeasible → `lo = mid + 1`."
+      "The condition `nums[mid] >= target` is false for a prefix and true for the rest. What are you looking for in that sequence?",
+      "Search for the first true: keep mid when it satisfies the condition, otherwise jump past it. `hi` starts at `nums.length` (\"none qualify\").",
+      "Feasible → `hi = mid`; infeasible → `lo = mid + 1`; loop `while (lo < hi)`, return `lo`."
     ]
   },
   {
@@ -159,11 +160,158 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int mySqrt(int x) {\n        if (x < 2) return x;\n        int lo = 1, hi = x / 2, ans = 1;\n        while (lo <= hi) {\n            int mid = lo + (hi - lo) / 2;\n            if ((long) mid * mid <= x) {\n                ans = mid;\n                lo = mid + 1;\n            } else {\n                hi = mid - 1;\n            }\n        }\n        return ans;\n    }\n}"
+      "code": "class Solution {\n    public int mySqrt(int x) {\n        if (x < 2) return x;\n        int lo = 1, hi = x / 2, ans = 1;\n        while (lo <= hi) {\n            int mid = lo + (hi - lo) / 2;\n            if ((long) mid * mid <= x) {\n                ans = mid;\n                lo = mid + 1;\n            } else {\n                hi = mid - 1;\n            }\n        }\n        return ans;\n    }\n}",
+      "explanation": "The predicate `mid * mid <= x` is monotonic (true, ..., true, false, ...), so binary search finds the last true. Using long avoids overflow near Integer.MAX_VALUE. O(log x) time, O(1) space."
     },
     "hints": [
-      "Record the largest mid whose square is <= x.",
-      "Cast to long before squaring: `(long) mid * mid`."
+      "As a candidate answer grows, \"candidate² ≤ x\" goes from true to false exactly once.",
+      "Binary search candidates, remembering the largest one whose square still fits.",
+      "Cast before squaring: `(long) mid * mid <= x`, then `ans = mid; lo = mid + 1;`."
+    ]
+  },
+  {
+    "id": "pat-bs-fill-answer",
+    "type": "fill-blank",
+    "title": "Template recall: search on the answer",
+    "prompt": "From memory: Koko Eating Bananas — the smallest speed whose hours fit in `h`.",
+    "drill": true,
+    "code": "int lo = 1, hi = maxPile;\nwhile (lo {{1}} hi) {\n    int mid = lo + (hi - lo) / 2;\n    if (hoursAt(piles, mid) <= h) {{2}};\n    else {{3}};\n}\nreturn {{4}};",
+    "blanks": {
+      "1": [
+        "<"
+      ],
+      "2": [
+        "hi = mid"
+      ],
+      "3": [
+        "lo = mid + 1",
+        "lo = 1 + mid"
+      ],
+      "4": [
+        "lo",
+        "hi"
+      ]
+    },
+    "explanation": "Feasible speeds form a suffix (no, no, yes, yes). A feasible `mid` might be the answer, so keep it with `hi = mid`; an infeasible one is discarded with `lo = mid + 1`. With `lo < hi` the range shrinks every step and ends with `lo == hi` = the first feasible speed."
+  },
+  {
+    "id": "pat-bs-mcq-rotated",
+    "type": "mcq",
+    "title": "Rotated array: which half?",
+    "prompt": "Search `target = 6` in `nums = [6, 7, 0, 1, 2, 4, 5]`. Now `l = 0`, `r = 6`, `mid = 3` (`nums[mid] = 1`). What is the correct next step?",
+    "options": [
+      "Right half is sorted (`nums[l]=6 > nums[mid]=1`); 6 is not in `[1..5]`, so `r = mid - 1`",
+      "Left half is sorted; 6 is in it, so `r = mid - 1`",
+      "`1 < 6`, so `l = mid + 1`",
+      "Neither half is sorted, so scan linearly"
+    ],
+    "answer": 0,
+    "explanation": "Since `nums[l] > nums[mid]`, the rotation point is in the left half and the right half `[1,2,4,5]` is sorted. A range check is only trustworthy on the sorted half: 6 is outside `[1..5]`, so it must be on the left. Plain `nums[mid] < target → l = mid + 1` would skip the answer at index 0."
+  },
+  {
+    "id": "pat-bs-drill-floor",
+    "type": "code-method",
+    "title": "Drill: last index with value <= target",
+    "prompt": "From memory: return the LAST index `i` with `nums[i] <= target` in sorted `nums`, or -1 if none. This is the \"latest timestamp at or before t\" lookup from Time Based Key-Value Store.",
+    "drill": true,
+    "method": {
+      "name": "floorIndex",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "target",
+          "type": "int"
+        }
+      ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int floorIndex(int[] nums, int target) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          6
+        ],
+        "expected": 2,
+        "note": "not present — last element <= 6 is 5"
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          7
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          0
+        ],
+        "expected": -1,
+        "note": "everything is bigger"
+      },
+      {
+        "args": [
+          [
+            2,
+            2,
+            2
+          ],
+          2
+        ],
+        "expected": 2,
+        "hidden": true,
+        "note": "duplicates — LAST one"
+      },
+      {
+        "args": [
+          [],
+          5
+        ],
+        "expected": -1,
+        "hidden": true,
+        "note": "empty array"
+      },
+      {
+        "args": [
+          [
+            1,
+            3,
+            5,
+            7
+          ],
+          100
+        ],
+        "expected": 3,
+        "hidden": true
+      }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int floorIndex(int[] nums, int target) {\n        int l = 0, r = nums.length - 1, ans = -1;\n        while (l <= r) {\n            int mid = l + (r - l) / 2;\n            if (nums[mid] <= target) {\n                ans = mid;       // candidate; a later one may also qualify\n                l = mid + 1;\n            } else {\n                r = mid - 1;\n            }\n        }\n        return ans;\n    }\n}",
+      "explanation": "`nums[i] <= target` is true for a prefix of a sorted array; we want the end of that prefix. Every qualifying mid is recorded and the search continues right, so `ans` ends as the last qualifying index. O(log n) time, O(1) space."
+    },
+    "hints": [
+      "In a sorted array, which indices satisfy `nums[i] <= target` — a prefix, a suffix, or scattered?",
+      "Binary search that prefix: when mid qualifies, remember it and look further right; otherwise look left.",
+      "`if (nums[mid] <= target) { ans = mid; l = mid + 1; } else r = mid - 1;` starting with `ans = -1`."
     ]
   }
 ]

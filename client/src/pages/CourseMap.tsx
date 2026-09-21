@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
-import type { Course, CourseUnit } from '../types';
+import type { Course, CourseState, CourseUnit } from '../types';
 import { StatusDot } from '../components/Pips';
 
 export function CourseMap() {
@@ -28,7 +28,7 @@ export function CourseMap() {
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Link
             to={resume.kind === 'lesson' ? `/lesson/${resume.id}` : `/problem/${resume.id}`}
-            className="rounded-md bg-amber px-4 py-2 text-sm font-semibold text-ink hover:bg-amber-deep"
+            className="rounded-md bg-amber px-4 py-2 text-sm font-semibold text-on-amber hover:bg-amber-deep"
           >
             {resume.started ? 'Continue where you left off' : 'Start the course'} →
           </Link>
@@ -48,6 +48,11 @@ function isDone(s?: { status: string }): boolean {
   return !!s && (s.status === 'completed' || s.status === 'mastered');
 }
 
+/** Started but not done: a drill part-way to its streak, or any attempt so far. */
+function isPartial(s?: CourseState): boolean {
+  return !!s && !isDone(s) && (s.consecutive > 0 || s.attempts > 0);
+}
+
 /** First lesson/problem in course order that isn't finished — powers the Continue button. */
 function firstIncomplete(course: Course): { kind: 'lesson' | 'problem'; id: string; title: string; started: boolean } | null {
   let anyProgress = false;
@@ -55,7 +60,7 @@ function firstIncomplete(course: Course): { kind: 'lesson' | 'problem'; id: stri
     for (const l of u.lessons) {
       const total = l.exerciseIds.length;
       const done = l.exerciseIds.filter((id) => isDone(course.states[id])).length;
-      if (done > 0) anyProgress = true;
+      if (done > 0 || l.exerciseIds.some((id) => isPartial(course.states[id]))) anyProgress = true;
       if (total > 0 && done < total) return { kind: 'lesson', id: l.id, title: `${l.title}`, started: anyProgress };
     }
     for (const p of u.problems) {
@@ -68,11 +73,7 @@ function firstIncomplete(course: Course): { kind: 'lesson' | 'problem'; id: stri
 
 function unitProgress(unit: CourseUnit, course: Course): { done: number; total: number } {
   const ids = [...unit.lessons.flatMap((l) => l.exerciseIds), ...unit.problems.map((p) => p.id)];
-  const done = ids.filter((id) => {
-    const s = course.states[id];
-    return s && (s.status === 'completed' || s.status === 'mastered');
-  }).length;
-  return { done, total: ids.length };
+  return { done: ids.filter((id) => isDone(course.states[id])).length, total: ids.length };
 }
 
 function UnitCard({ unit, index, course }: { unit: CourseUnit; index: number; course: Course }) {
@@ -96,29 +97,32 @@ function UnitCard({ unit, index, course }: { unit: CourseUnit; index: number; co
           <p className="truncate text-xs text-dim">{unit.description}</p>
         </div>
         <div className="ml-auto flex shrink-0 items-center gap-3">
-          <div className="h-1.5 w-24 overflow-hidden rounded-full bg-line">
+          <div className="h-1.5 w-24 overflow-hidden rounded-full bg-line" aria-hidden="true">
             <div className="h-full rounded-full bg-amber transition-all" style={{ width: `${pct}%` }} />
           </div>
-          <span className="w-12 text-right font-mono text-[11px] text-dim">{done}/{total}</span>
+          <span className="w-12 text-right font-mono text-[11px] text-dim">
+            {done}/{total}<span className="sr-only"> done</span>
+          </span>
         </div>
       </header>
       <div className="border-t border-line/60 px-5 py-3">
         <ul className="grid grid-cols-1 gap-x-8 gap-y-1 sm:grid-cols-2">
           {unit.lessons.map((l) => {
-            const doneCount = l.exerciseIds.filter((id) => {
-              const s = course.states[id];
-              return s && (s.status === 'completed' || s.status === 'mastered');
-            }).length;
+            const doneCount = l.exerciseIds.filter((id) => isDone(course.states[id])).length;
+            const partial = l.exerciseIds.filter((id) => isPartial(course.states[id])).length;
             const status = l.exerciseIds.length > 0 && doneCount === l.exerciseIds.length
               ? 'completed'
-              : doneCount > 0 ? 'in-progress' : 'not-started';
+              : doneCount > 0 || partial > 0 ? 'in-progress' : 'not-started';
             return (
               <li key={l.id}>
                 <Link to={`/lesson/${l.id}`} className="group flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-panel-2">
                   <StatusDot status={status} />
                   <span className="text-paper/90 group-hover:text-paper">{l.title}</span>
                   {l.exerciseIds.length > 0 && (
-                    <span className="ml-auto font-mono text-[10px] text-dim">{doneCount}/{l.exerciseIds.length}</span>
+                    <span className="ml-auto shrink-0 font-mono text-[10px] text-dim">
+                      {partial > 0 && <span className="mr-1.5 text-amber" title={`${partial} in progress`}>◐{partial}<span className="sr-only"> in progress,</span></span>}
+                      {doneCount}/{l.exerciseIds.length}<span className="sr-only"> done</span>
+                    </span>
                   )}
                 </Link>
               </li>
@@ -131,19 +135,26 @@ function UnitCard({ unit, index, course }: { unit: CourseUnit; index: number; co
             <div className="flex flex-wrap gap-1.5">
               {unit.problems.map((p) => {
                 const s = course.states[p.id];
-                const solved = s && (s.status === 'completed' || s.status === 'mastered');
+                const solved = isDone(s);
+                const helped = solved && s.withHelp;
                 return (
                   <Link
                     key={p.id}
                     to={`/problem/${p.id}`}
+                    title={helped ? 'Solved with help (hints or solution)' : solved ? 'Solved' : undefined}
                     className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors ${
-                      solved
-                        ? 'border-pass/40 bg-pass/10 text-pass'
-                        : 'border-line bg-panel text-paper/85 hover:border-dim'
+                      helped ? 'border-amber/40 bg-amber/10 text-amber'
+                      : solved ? 'border-pass/40 bg-pass/10 text-pass'
+                      : isPartial(s) ? 'border-amber/30 bg-panel text-paper/85 hover:border-dim'
+                      : 'border-line bg-panel text-paper/85 hover:border-dim'
                     }`}
                   >
-                    {solved && <span>✓</span>}
+                    {solved && <span aria-hidden="true">✓</span>}
                     {p.title}
+                    {helped && <span className="text-[10px] opacity-80">help</span>}
+                    <span className="sr-only">
+                      {helped ? ' (solved with help)' : solved ? ' (solved)' : isPartial(s) ? ' (attempted)' : ''}
+                    </span>
                     {p.difficulty && <Difficulty d={p.difficulty} />}
                   </Link>
                 );
@@ -158,5 +169,5 @@ function UnitCard({ unit, index, course }: { unit: CourseUnit; index: number; co
 
 function Difficulty({ d }: { d: string }) {
   const cls = d === 'Easy' ? 'text-pass' : d === 'Medium' ? 'text-amber' : 'text-fail';
-  return <span className={`text-[10px] font-medium ${cls}`}>{d[0]}</span>;
+  return <span className={`text-[10px] font-medium ${cls}`} title={d}>{d[0]}<span className="sr-only">{d.slice(1)}</span></span>;
 }

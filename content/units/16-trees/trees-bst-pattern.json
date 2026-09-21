@@ -1,0 +1,134 @@
+[
+  {
+    "id": "pat-tr-mcq-bst-bounds",
+    "type": "mcq",
+    "title": "Why not int sentinels?",
+    "prompt": "You validate a BST with `valid(TreeNode node, int low, int high)`, starting from `valid(root, Integer.MIN_VALUE, Integer.MAX_VALUE)` and rejecting when `node.val <= low || node.val >= high`. Which input gets the **wrong** answer?",
+    "options": [
+      "`[2147483647]`: a valid one-node BST is reported invalid",
+      "`[2,1,3]`: a valid BST is reported invalid",
+      "`[5,4,6,null,null,3,7]`: an invalid BST is reported valid",
+      "`[]`: the empty tree is reported invalid"
+    ],
+    "answer": 0,
+    "explanation": "`Integer.MAX_VALUE` is a legal node value, so `2147483647 >= Integer.MAX_VALUE` is true and a valid tree is rejected. The same thing happens with `Integer.MIN_VALUE`. Use `long` bounds (`Long.MIN_VALUE`, `Long.MAX_VALUE`), which no `int` can equal, or nullable `Integer` bounds where `null` means unbounded. The bounds approach itself handles `[5,4,6,null,null,3,7]` correctly."
+  },
+  {
+    "id": "pat-tr-fill-inorder",
+    "type": "fill-blank",
+    "title": "Template: iterative inorder",
+    "prompt": "Complete the iterative inorder traversal: slide left pushing, pop to visit, then go right.",
+    "drill": true,
+    "code": "Deque<TreeNode> stack = new ArrayDeque<>();\nTreeNode curr = root;\nwhile (curr != null || !stack.isEmpty()) {\n    while (curr != null) {\n        stack.push(curr);\n        curr = {{1}};\n    }\n    curr = {{2}};\n    out.add(curr.val);\n    curr = {{3}};\n}",
+    "blanks": {
+      "1": [
+        "curr.left"
+      ],
+      "2": [
+        "stack.pop()"
+      ],
+      "3": [
+        "curr.right"
+      ]
+    },
+    "explanation": "The stack holds the ancestors still waiting to be visited. Sliding left pushes the path down to the smallest remaining node, popping visits it, and moving to `curr.right` starts the same process on its right subtree. On a BST the pops come out in ascending order, and you can return early, which is what Kth Smallest needs."
+  },
+  {
+    "id": "pat-tr-drill-inorder-iter",
+    "type": "code-method",
+    "title": "Drill: inorder without recursion",
+    "prompt": "From memory: return the inorder traversal (left, node, right) of a binary tree **without recursion**, using an `ArrayDeque` as an explicit stack.",
+    "drill": true,
+    "method": {
+      "name": "inorderIterative",
+      "params": [
+        {
+          "name": "root",
+          "type": "TreeNode"
+        }
+      ],
+      "returns": "List<Integer>"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public List<Integer> inorderIterative(TreeNode root) {\n\n    }\n}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            5,
+            3,
+            6,
+            2,
+            4
+          ]
+        ],
+        "expected": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "note": "a BST comes out sorted"
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "note": "empty tree"
+      },
+      {
+        "args": [
+          [
+            1,
+            null,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          1,
+          3,
+          2
+        ]
+      },
+      {
+        "args": [
+          [
+            3,
+            2,
+            null,
+            1
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ],
+        "hidden": true,
+        "note": "left-skewed"
+      },
+      {
+        "args": [
+          [
+            7
+          ]
+        ],
+        "expected": [
+          7
+        ],
+        "hidden": true
+      }
+    ],
+    "hints": [
+      "Recursion uses the call stack to remember which ancestors still need visiting. What explicit structure can take its place?",
+      "Loop while `curr != null || !stack.isEmpty()`: slide left pushing nodes, then pop one and visit it.",
+      "After visiting the popped node, continue from `curr = curr.right;`."
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public List<Integer> inorderIterative(TreeNode root) {\n        List<Integer> out = new ArrayList<>();\n        Deque<TreeNode> stack = new ArrayDeque<>();\n        TreeNode curr = root;\n        while (curr != null || !stack.isEmpty()) {\n            while (curr != null) {\n                stack.push(curr);\n                curr = curr.left;\n            }\n            curr = stack.pop();\n            out.add(curr.val);\n            curr = curr.right;\n        }\n        return out;\n    }\n}",
+      "explanation": "The explicit stack does the job of the recursive call stack. A node is pushed on the way down and visited only after everything to its left is done, which is exactly inorder. Each node is pushed and popped once: O(n) time, O(h) stack space."
+    }
+  }
+]

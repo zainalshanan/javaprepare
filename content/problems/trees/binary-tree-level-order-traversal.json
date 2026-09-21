@@ -4,10 +4,10 @@
   "title": "Binary Tree Level Order Traversal",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
-  "prompt": "Return the level-order traversal of a binary tree: a list of levels, each level a list of values left-to-right.\n\n**Example**: `[3,9,20,null,null,15,7]` → `[[3],[9,20],[15,7]]`.\n\nThe BFS template with the frozen-size trick.",
+  "prompt": "Return the level-order traversal of a binary tree: a list of levels, top to bottom, each level a list of values from left to right.\n\n**Example**: `[3,9,20,null,null,15,7]` → `[[3],[9,20],[15,7]]`.\n\n**Constraints**: 0 ≤ nodes ≤ 2000.",
   "method": {
     "name": "levelOrder",
-    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }],
     "returns": "List<List<Integer>>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> levelOrder(TreeNode root) {\n\n    }\n}\n",
@@ -18,12 +18,12 @@
     { "args": [[1, 2, 3, 4, null, null, 5]], "expected": [[1], [2, 3], [4, 5]], "hidden": true }
   ],
   "hints": [
-    "Null root → return the empty list immediately (never offer null to the queue).",
-    "`int size = q.size();` BEFORE the inner loop — the queue grows while you process the level.",
-    "Offer children only when non-null."
+    "Nodes must come out level by level, left to right. Which data structure hands items back in the same order they were added?",
+    "BFS with a queue. Before processing a level, record how many nodes it has (`int size = q.size();`), then poll exactly that many.",
+    "Null root → return `[]` immediately. Offer a child only if it's non-null: `ArrayDeque` rejects null."
   ],
   "solution": {
-    "code": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> levelOrder(TreeNode root) {\n        List<List<Integer>> res = new ArrayList<>();\n        if (root == null) return res;\n        Queue<TreeNode> q = new LinkedList<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size();\n            List<Integer> level = new ArrayList<>();\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                level.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(level);\n        }\n        return res;\n    }\n}",
-    "explanation": "O(n). The snapshot `size` separates generations: exactly the nodes present at the top of the while-loop belong to the current level, no matter how many children get offered meanwhile."
+    "code": "import java.util.*;\n\nclass Solution {\n    public List<List<Integer>> levelOrder(TreeNode root) {\n        List<List<Integer>> res = new ArrayList<>();\n        if (root == null) return res;\n        Deque<TreeNode> q = new ArrayDeque<>();\n        q.offer(root);\n        while (!q.isEmpty()) {\n            int size = q.size();\n            List<Integer> level = new ArrayList<>();\n            for (int i = 0; i < size; i++) {\n                TreeNode node = q.poll();\n                level.add(node.val);\n                if (node.left != null) q.offer(node.left);\n                if (node.right != null) q.offer(node.right);\n            }\n            res.add(level);\n        }\n        return res;\n    }\n}",
+    "explanation": "A queue processes nodes in the order they were discovered, and nodes are discovered level by level. Reading `size` before each inner loop marks exactly where the current level ends, even while children keep joining the queue. O(n) time; O(w) queue space where w is the widest level."
   }
 }

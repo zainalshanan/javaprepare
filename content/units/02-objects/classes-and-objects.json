@@ -26,6 +26,29 @@
     "explanation": "`curr = curr.next` steps to the following node; `null` marks the end. This exact loop opens nearly every linked-list problem."
   },
   {
+    "id": "obj-code-copy-reversed",
+    "type": "code-method",
+    "title": "Build a reversed copy",
+    "prompt": "Return a **new** linked list holding the values of `head` in reverse order (leave the original list alone). For `1 -> 2 -> 3` return `3 -> 2 -> 1`. An empty list (`null`) returns `null`.\n\nWalk the input with the counting loop, and build the output with the 2-arg constructor `new ListNode(val, next)`.",
+    "method": { "name": "reversedCopy", "params": [ { "name": "head", "type": "ListNode" } ], "returns": "ListNode" },
+    "starter": "class Solution {\n    public ListNode reversedCopy(ListNode head) {\n\n    }\n}\n",
+    "tests": [
+      { "args": [[1, 2, 3]], "expected": [3, 2, 1] },
+      { "args": [[7]], "expected": [7], "note": "single node" },
+      { "args": [[]], "expected": null, "hidden": true, "note": "empty list" },
+      { "args": [[5, 5, -1, 0]], "expected": [0, -1, 5, 5], "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public ListNode reversedCopy(ListNode head) {\n        ListNode result = null;\n        ListNode curr = head;\n        while (curr != null) {\n            result = new ListNode(curr.val, result);\n            curr = curr.next;\n        }\n        return result;\n    }\n}",
+      "explanation": "Reading the input front to back and *prepending* each value to `result` naturally reverses the order: the last value read ends up at the front. `result` starts as `null`, which becomes the tail's `next`. O(n) time, O(n) new nodes."
+    },
+    "hints": [
+      "Prepending to a list puts things in reverse order. What if you prepend every value you read?",
+      "Start with `ListNode result = null;` and walk `curr` from `head` until it's `null`.",
+      "Each step: `result = new ListNode(curr.val, result);`"
+    ]
+  },
+  {
     "id": "obj-mcq-static",
     "type": "mcq",
     "title": "static semantics",
@@ -38,6 +61,20 @@
     ],
     "answer": 0,
     "explanation": "`static` means one copy shared across all instances — that's why it can count how many objects were made."
+  },
+  {
+    "id": "obj-mcq-nested-static",
+    "type": "mcq",
+    "title": "static nested class",
+    "prompt": "You declare `static class Pair { int r, c; ... }` inside `class Solution`. What does `static` buy you over a plain `class Pair`?",
+    "options": [
+      "A `static` nested class has no hidden link to a `Solution` object, so it can be created anywhere, even from static methods",
+      "Only one `Pair` object can ever exist",
+      "The fields `r` and `c` become shared by all Pairs",
+      "It makes `Pair` accessible outside the file"
+    ],
+    "answer": 0,
+    "explanation": "`static` on a nested class doesn't make its fields static. It just detaches the class from the enclosing instance. A non-static inner class carries a reference to its `Solution` and can't be constructed from a static context. Default to `static class` for helpers."
   },
   {
     "id": "obj-build-counter",
@@ -67,8 +104,12 @@
     ],
     "solution": {
       "code": "class RunningMax {\n    private int best;\n\n    public RunningMax() {\n        best = Integer.MIN_VALUE;\n    }\n\n    public void add(int x) {\n        best = Math.max(best, x);\n    }\n\n    public int max() {\n        return best;\n    }\n}",
-      "explanation": "State lives in a field; methods read and update it. This is exactly the shape of MinStack and other design problems."
+      "explanation": "State lives in a field; methods read and update it. Starting at `Integer.MIN_VALUE` means the first `add` always wins, even for negative values. Every call is O(1). This is exactly the shape of MinStack and other design problems."
     },
-    "hints": ["One `int` field is enough — update it in `add`.", "Initialize to `Integer.MIN_VALUE` so negative inputs work."]
+    "hints": [
+      "The object has to remember something between calls. What single piece of data is enough?",
+      "One `int` field holding the best so far; update it in `add` with `Math.max`.",
+      "Initialize it to `Integer.MIN_VALUE` in the constructor so negative inputs work."
+    ]
   }
 ]

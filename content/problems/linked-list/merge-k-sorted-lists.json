@@ -4,7 +4,7 @@
   "title": "Merge k Sorted Lists",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/merge-k-sorted-lists/",
-  "prompt": "Merge `k` sorted linked lists into one sorted list and return its head.\n\n**Example**: `[[1,4,5],[1,3,4],[2,6]]` → `[1,1,2,3,4,4,5,6]`.\n\nA min-heap of the current head of each list: repeatedly poll the smallest and push its successor. O(N log k).",
+  "prompt": "You are given an array of `k` linked lists, each sorted in ascending order. Merge them all into one sorted linked list and return its head.\n\n**Example 1**: `[[1,4,5],[1,3,4],[2,6]]` → `[1,1,2,3,4,4,5,6]`\n\n**Example 2**: `[]` → `[]`\n\n**Example 3**: `[[]]` → `[]`\n\n**Constraints**: `0 <= k <= 10^4`, each list has 0–500 nodes, total nodes N ≤ 10^4, `-10^4 <= Node.val <= 10^4`.",
   "method": {
     "name": "mergeKLists",
     "params": [ { "name": "lists", "type": "ListNode[]" } ],
@@ -16,15 +16,16 @@
     { "args": [[]], "expected": [], "note": "no lists" },
     { "args": [[[]]], "expected": [], "note": "one empty list" },
     { "args": [[[1], [0]]], "expected": [0, 1], "hidden": true },
-    { "args": [[[2, 6], [], [1, 3]]], "expected": [1, 2, 3, 6], "hidden": true, "note": "empty list among non-empty" }
+    { "args": [[[2, 6], [], [1, 3]]], "expected": [1, 2, 3, 6], "hidden": true, "note": "empty list among non-empty" },
+    { "args": [[[-2, -1, 5], [-3, 5]]], "expected": [-3, -2, -1, 5, 5], "hidden": true, "note": "negatives and duplicates across lists" }
   ],
   "hints": [
-    "Seed a min-heap (ordered by node value) with every non-null list head.",
-    "Poll the smallest node, append it to the result, and if it has a `next`, push that.",
-    "A dummy head keeps the result-building clean."
+    "At every step, the next output node is the smallest among the current fronts of the k lists. Scanning all k fronts each time costs O(k) per node — what structure hands you the smallest of a changing set faster?",
+    "Keep the current front node of each list in a min-heap ordered by value. Repeatedly poll the smallest, append it to the result, and push that node's successor (if any).",
+    "`new PriorityQueue<ListNode>((a, b) -> Integer.compare(a.val, b.val))` — seed it with only the non-null heads, and build the output behind a dummy head."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public ListNode mergeKLists(ListNode[] lists) {\n        PriorityQueue<ListNode> pq = new PriorityQueue<>((a, b) -> Integer.compare(a.val, b.val));\n        for (ListNode node : lists) {\n            if (node != null) pq.offer(node);\n        }\n        ListNode dummy = new ListNode(0), tail = dummy;\n        while (!pq.isEmpty()) {\n            ListNode n = pq.poll();\n            tail.next = n;\n            tail = n;\n            if (n.next != null) pq.offer(n.next);\n        }\n        return dummy.next;\n    }\n}",
-    "explanation": "The heap never holds more than k nodes (one frontier per list), so each of the N total nodes costs O(log k) to insert/extract: O(N log k). Splicing existing nodes (rather than copying values) keeps it O(k) extra space."
+    "explanation": "The heap always holds the front of every unfinished list, so its minimum is the smallest remaining node overall — appending it keeps the output sorted. Each of the N nodes is pushed and polled once on a heap of size ≤ k: O(N log k) time, O(k) extra space, since existing nodes are spliced rather than copied."
   }
 }

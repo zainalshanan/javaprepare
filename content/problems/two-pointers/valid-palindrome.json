@@ -7,16 +7,50 @@
   "prompt": "A phrase is a palindrome if, after converting to lowercase and removing all non-alphanumeric characters, it reads the same forwards and backwards.\n\nGiven a string `s`, return `true` if it is a palindrome.\n\n**Example**: `\"A man, a plan, a canal: Panama\"` → `true`.\n\nConverging two pointers — but each pointer must skip characters that don't count.",
   "method": {
     "name": "isPalindrome",
-    "params": [ { "name": "s", "type": "String" } ],
+    "params": [
+      {
+        "name": "s",
+        "type": "String"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "class Solution {\n    public boolean isPalindrome(String s) {\n\n    }\n}\n",
   "tests": [
-    { "args": ["A man, a plan, a canal: Panama"], "expected": true },
-    { "args": ["race a car"], "expected": false },
-    { "args": [" "], "expected": true, "note": "empty after filtering" },
-    { "args": ["0P"], "expected": false, "hidden": true, "note": "digit vs letter" },
-    { "args": ["ab_a"], "expected": true, "hidden": true }
+    {
+      "args": [
+        "A man, a plan, a canal: Panama"
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        "race a car"
+      ],
+      "expected": false
+    },
+    {
+      "args": [
+        " "
+      ],
+      "expected": true,
+      "note": "empty after filtering"
+    },
+    {
+      "args": [
+        "0P"
+      ],
+      "expected": false,
+      "hidden": true,
+      "note": "digit vs letter"
+    },
+    {
+      "args": [
+        "ab_a"
+      ],
+      "expected": true,
+      "hidden": true
+    }
   ],
   "hints": [
     "`Character.isLetterOrDigit(c)` decides whether a character counts.",
@@ -25,6 +59,6 @@
   ],
   "solution": {
     "code": "class Solution {\n    public boolean isPalindrome(String s) {\n        int l = 0, r = s.length() - 1;\n        while (l < r) {\n            while (l < r && !Character.isLetterOrDigit(s.charAt(l))) l++;\n            while (l < r && !Character.isLetterOrDigit(s.charAt(r))) r--;\n            if (Character.toLowerCase(s.charAt(l)) != Character.toLowerCase(s.charAt(r))) {\n                return false;\n            }\n            l++;\n            r--;\n        }\n        return true;\n    }\n}",
-    "explanation": "O(n) time, O(1) space — no cleaned copy of the string needed. The inner skip-loops keep `l < r` in their conditions so the pointers can't cross mid-skip."
+    "explanation": "Insight: a palindrome check only needs to compare mirrored positions, so pointers from both ends that skip non-alphanumerics compare exactly the filtered characters. Each character is visited at most once by one pointer, and a single mismatch proves it isn't a palindrome. O(n) time, O(1) space — no cleaned copy needed; the inner skip-loops keep `l < r` so the pointers can't cross mid-skip."
   }
 }

@@ -1,5 +1,29 @@
 [
   {
+    "id": "pq-fill-heap-index",
+    "type": "fill-blank",
+    "title": "Heap index arithmetic",
+    "prompt": "A heap is stored in an array. Fill in the index formulas for node `i` (0-based).",
+    "code": "int left   = {{1}};   // left child of i\nint right  = {{2}};   // right child of i\nint parent = {{3}};   // parent of i (i > 0)",
+    "blanks": {
+      "1": [
+        "2 * i + 1",
+        "2*i+1",
+        "i * 2 + 1"
+      ],
+      "2": [
+        "2 * i + 2",
+        "2*i+2",
+        "i * 2 + 2"
+      ],
+      "3": [
+        "(i - 1) / 2",
+        "(i-1)/2"
+      ]
+    },
+    "explanation": "Level-order packing puts node i's children at 2i+1 and 2i+2, and integer division makes (i-1)/2 the parent for both of them. Because a heap of n elements is only about log₂ n levels deep, sifting an element up (offer) or down (poll) takes O(log n) swaps."
+  },
+  {
     "id": "pq-mcq-poll",
     "type": "mcq",
     "title": "Poll order",
@@ -20,8 +44,12 @@
     "prompt": "Order `int[]{value, index}` pairs so the LARGEST value polls first.",
     "code": "PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare({{1}}[0], {{2}}[0]));",
     "blanks": {
-      "1": ["b"],
-      "2": ["a"]
+      "1": [
+        "b"
+      ],
+      "2": [
+        "a"
+      ]
     },
     "explanation": "`Integer.compare(a[0], b[0])` sorts ascending (min-heap); swapping to `(b[0], a[0])` reverses it. Prefer `Integer.compare` over `b[0] - a[0]`, which can overflow."
   },
@@ -32,21 +60,82 @@
     "prompt": "Return the k-th largest element of `nums` using the size-k min-heap pattern (offer everything, poll when size exceeds k, answer is `peek`).",
     "method": {
       "name": "kthLargest",
-      "params": [ { "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "k",
+          "type": "int"
+        }
+      ],
       "returns": "int"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int kthLargest(int[] nums, int k) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[3, 2, 1, 5, 6, 4], 2], "expected": 5 },
-      { "args": [[1], 1], "expected": 1 },
-      { "args": [[7, 7, 7], 2], "expected": 7, "note": "duplicates count separately" },
-      { "args": [[3, 2, 3, 1, 2, 4, 5, 5, 6], 4], "expected": 4, "hidden": true }
+      {
+        "args": [
+          [
+            3,
+            2,
+            1,
+            5,
+            6,
+            4
+          ],
+          2
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          [
+            1
+          ],
+          1
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            7,
+            7,
+            7
+          ],
+          2
+        ],
+        "expected": 7,
+        "note": "duplicates count separately"
+      },
+      {
+        "args": [
+          [
+            3,
+            2,
+            3,
+            1,
+            2,
+            4,
+            5,
+            5,
+            6
+          ],
+          4
+        ],
+        "expected": 4,
+        "hidden": true
+      }
     ],
     "solution": {
       "code": "import java.util.*;\n\nclass Solution {\n    public int kthLargest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) {\n            heap.offer(x);\n            if (heap.size() > k) heap.poll();\n        }\n        return heap.peek();\n    }\n}",
       "explanation": "O(n log k) — better than sorting when k is small. The heap holds exactly the k largest seen; its minimum is the k-th largest."
     },
-    "hints": ["Min-heap, cap at size k, evict with poll.", "After the loop, `heap.peek()` is the answer."]
+    "hints": [
+      "Min-heap, cap at size k, evict with poll.",
+      "After the loop, `heap.peek()` is the answer."
+    ]
   },
   {
     "id": "pq-drill-topk",
@@ -56,19 +145,74 @@
     "drill": true,
     "method": {
       "name": "kSmallest",
-      "params": [ { "name": "nums", "type": "int[]" }, { "name": "k", "type": "int" } ],
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        },
+        {
+          "name": "k",
+          "type": "int"
+        }
+      ],
       "returns": "int[]"
     },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int[] kSmallest(int[] nums, int k) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[5, 2, 8, 1, 9], 3], "expected": [1, 2, 5] },
-      { "args": [[4, 4, 4], 2], "expected": [4, 4] },
-      { "args": [[10, -1], 2], "expected": [-1, 10], "hidden": true }
+      {
+        "args": [
+          [
+            5,
+            2,
+            8,
+            1,
+            9
+          ],
+          3
+        ],
+        "expected": [
+          1,
+          2,
+          5
+        ]
+      },
+      {
+        "args": [
+          [
+            4,
+            4,
+            4
+          ],
+          2
+        ],
+        "expected": [
+          4,
+          4
+        ]
+      },
+      {
+        "args": [
+          [
+            10,
+            -1
+          ],
+          2
+        ],
+        "expected": [
+          -1,
+          10
+        ],
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int[] kSmallest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) heap.offer(x);\n        int[] res = new int[k];\n        for (int i = 0; i < k; i++) {\n            res[i] = heap.poll();\n        }\n        return res;\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int[] kSmallest(int[] nums, int k) {\n        PriorityQueue<Integer> heap = new PriorityQueue<>();\n        for (int x : nums) heap.offer(x);\n        int[] res = new int[k];\n        for (int i = 0; i < k; i++) {\n            res[i] = heap.poll();\n        }\n        return res;\n    }\n}",
+      "explanation": "Each `poll` returns the current minimum, so k polls produce the k smallest in ascending order. O(n log n) to fill the heap plus O(k log n) to drain."
     },
-    "hints": ["Offer all n, then poll exactly k times."]
+    "hints": [
+      "Let the heap do the sorting: put everything in, and the smallest comes out first every time.",
+      "Offer all n values, then `poll()` exactly k times into `res[i]`."
+    ]
   },
   {
     "id": "pq-ref-min-fill",
@@ -77,7 +221,21 @@
     "prompt": "Fill in the min-heap construction and operations.",
     "drill": true,
     "code": "PriorityQueue<Integer> pq = new {{1}}<>();  // min-heap by default\npq.{{2}}(5);          // add\nint min = pq.{{3}}(); // smallest, without removing\npq.{{4}}();           // remove the smallest",
-    "blanks": { "1": ["PriorityQueue"], "2": ["offer", "add"], "3": ["peek"], "4": ["poll"] },
+    "blanks": {
+      "1": [
+        "PriorityQueue"
+      ],
+      "2": [
+        "offer",
+        "add"
+      ],
+      "3": [
+        "peek"
+      ],
+      "4": [
+        "poll"
+      ]
+    },
     "explanation": "A default `PriorityQueue` is a min-heap; `offer` adds, `peek` reads the smallest, `poll` removes it."
   },
   {
@@ -86,17 +244,56 @@
     "title": "Drill: min via heap",
     "prompt": "From memory: offer every element of `nums` (non-empty) into a min-heap and return the minimum with `peek`.",
     "drill": true,
-    "method": { "name": "minViaHeap", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "method": {
+      "name": "minViaHeap",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int minViaHeap(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[3, 1, 2]], "expected": 1 },
-      { "args": [[5]], "expected": 5 },
-      { "args": [[-2, -9, 0]], "expected": -9, "hidden": true }
+      {
+        "args": [
+          [
+            3,
+            1,
+            2
+          ]
+        ],
+        "expected": 1
+      },
+      {
+        "args": [
+          [
+            5
+          ]
+        ],
+        "expected": 5
+      },
+      {
+        "args": [
+          [
+            -2,
+            -9,
+            0
+          ]
+        ],
+        "expected": -9,
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int minViaHeap(int[] nums) {\n        PriorityQueue<Integer> pq = new PriorityQueue<>();\n        for (int x : nums) pq.offer(x);\n        return pq.peek();\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int minViaHeap(int[] nums) {\n        PriorityQueue<Integer> pq = new PriorityQueue<>();\n        for (int x : nums) pq.offer(x);\n        return pq.peek();\n    }\n}",
+      "explanation": "A min-heap keeps its minimum at the root, so `peek` reads it in O(1) after n O(log n) offers."
     },
-    "hints": ["Default heap is a min-heap; `peek()` gives the minimum."]
+    "hints": [
+      "A default PriorityQueue keeps its smallest element at the front.",
+      "Offer every value, then `return pq.peek();`"
+    ]
   },
   {
     "id": "pq-ref-max-fill",
@@ -105,7 +302,17 @@
     "prompt": "Complete the comparator that turns a PriorityQueue into a max-heap.",
     "drill": true,
     "code": "PriorityQueue<Integer> maxHeap =\n    new PriorityQueue<>((a, b) -> Integer.{{1}}({{2}}, {{3}}));",
-    "blanks": { "1": ["compare"], "2": ["b"], "3": ["a"] },
+    "blanks": {
+      "1": [
+        "compare"
+      ],
+      "2": [
+        "b"
+      ],
+      "3": [
+        "a"
+      ]
+    },
     "explanation": "`Integer.compare(b, a)` reverses the natural order, making the largest element poll first."
   },
   {
@@ -114,16 +321,54 @@
     "title": "Drill: max via heap",
     "prompt": "From memory: return the maximum of `nums` (non-empty) using a MAX-heap (comparator `(a, b) -> Integer.compare(b, a)`), offering all and peeking.",
     "drill": true,
-    "method": { "name": "maxViaHeap", "params": [ { "name": "nums", "type": "int[]" } ], "returns": "int" },
+    "method": {
+      "name": "maxViaHeap",
+      "params": [
+        {
+          "name": "nums",
+          "type": "int[]"
+        }
+      ],
+      "returns": "int"
+    },
     "starter": "import java.util.*;\n\nclass Solution {\n    public int maxViaHeap(int[] nums) {\n\n    }\n}\n",
     "tests": [
-      { "args": [[3, 1, 2]], "expected": 3 },
-      { "args": [[-5, -1]], "expected": -1 },
-      { "args": [[7]], "expected": 7, "hidden": true }
+      {
+        "args": [
+          [
+            3,
+            1,
+            2
+          ]
+        ],
+        "expected": 3
+      },
+      {
+        "args": [
+          [
+            -5,
+            -1
+          ]
+        ],
+        "expected": -1
+      },
+      {
+        "args": [
+          [
+            7
+          ]
+        ],
+        "expected": 7,
+        "hidden": true
+      }
     ],
     "solution": {
-      "code": "import java.util.*;\n\nclass Solution {\n    public int maxViaHeap(int[] nums) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));\n        for (int x : nums) maxHeap.offer(x);\n        return maxHeap.peek();\n    }\n}"
+      "code": "import java.util.*;\n\nclass Solution {\n    public int maxViaHeap(int[] nums) {\n        PriorityQueue<Integer> maxHeap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));\n        for (int x : nums) maxHeap.offer(x);\n        return maxHeap.peek();\n    }\n}",
+      "explanation": "Reversing the comparator makes the largest value rank \"smallest\", so it sits at the root and `peek` returns the maximum. `Integer.compare(b, a)` avoids the overflow of `b - a`."
     },
-    "hints": ["Flip the comparator to `(a, b) -> Integer.compare(b, a)`, then `peek()`."]
+    "hints": [
+      "A max-heap is a min-heap with the comparison flipped.",
+      "`new PriorityQueue<>((a, b) -> Integer.compare(b, a))`, offer all, then `peek()`."
+    ]
   }
 ]

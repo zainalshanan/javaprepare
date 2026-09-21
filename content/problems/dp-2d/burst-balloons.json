@@ -4,27 +4,74 @@
   "title": "Burst Balloons",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/burst-balloons/",
-  "prompt": "Balloons have values `nums`. Bursting balloon `i` earns `nums[left] * nums[i] * nums[right]` where left/right are its current neighbors (missing neighbors count as 1). Return the max coins from bursting all balloons.\n\n**Example**: `[3,1,5,8]` → `167`.\n\nInterval DP — but think of the balloon burst **last** in each range, so its neighbors are the fixed range boundaries.",
+  "prompt": "There are `n` balloons with values `nums`. Bursting balloon `i` earns `nums[left] * nums[i] * nums[right]`, where `left` and `right` are its **current** neighbors. After a burst, its neighbors become adjacent. A missing neighbor past either end counts as `1`. Return the maximum coins from bursting all the balloons.\n\n**Example**: `[3,1,5,8]` → `167` (burst 1, 5, 3, 8: 3·1·5 + 3·5·8 + 1·3·8 + 1·8·1).\n\n**Constraints**: `1 <= n <= 300`, `0 <= nums[i] <= 100`.",
   "method": {
     "name": "maxCoins",
-    "params": [ { "name": "nums", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "nums",
+        "type": "int[]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int maxCoins(int[] nums) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[3, 1, 5, 8]], "expected": 167 },
-    { "args": [[1, 5]], "expected": 10 },
-    { "args": [[5]], "expected": 5 },
-    { "args": [[1]], "expected": 1, "hidden": true },
-    { "args": [[4, 3]], "expected": 16, "hidden": true }
+    {
+      "args": [
+        [
+          3,
+          1,
+          5,
+          8
+        ]
+      ],
+      "expected": 167
+    },
+    {
+      "args": [
+        [
+          1,
+          5
+        ]
+      ],
+      "expected": 10
+    },
+    {
+      "args": [
+        [
+          5
+        ]
+      ],
+      "expected": 5
+    },
+    {
+      "args": [
+        [
+          1
+        ]
+      ],
+      "expected": 1,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          4,
+          3
+        ]
+      ],
+      "expected": 16,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Pad the array with 1 on both ends so edge balloons have neighbors.",
-    "dp[left][right] = max coins from bursting all balloons strictly between left and right.",
-    "Pick the balloon k burst LAST in (left, right): its gain is `pad[left]*pad[k]*pad[right]` plus the two sub-intervals dp[left][k] and dp[k][right]."
+    "Choosing which balloon to burst *first* is messy, because it changes everyone's neighbors. Is there a balloon in a range whose neighbors you know for sure?",
+    "Think about the balloon burst **last** in a range. At that moment its neighbors are the walls just outside the range, and the two sides were handled independently. Pad nums with 1s and let dp[l][r] = best coins for bursting everything in [l..r].",
+    "`dp[l][r] = max over k of dp[l][k-1] + pad[l-1]*pad[k]*pad[r+1] + dp[k+1][r]`. Loop over interval length from short to long."
   ],
   "solution": {
     "code": "class Solution {\n    public int maxCoins(int[] nums) {\n        int n = nums.length;\n        int[] balloons = new int[n + 2];\n        balloons[0] = balloons[n + 1] = 1;\n        for (int i = 0; i < n; i++) balloons[i + 1] = nums[i];\n        int[][] dp = new int[n + 2][n + 2];\n        for (int len = 1; len <= n; len++) {\n            for (int left = 1; left + len - 1 <= n; left++) {\n                int right = left + len - 1;\n                for (int k = left; k <= right; k++) {\n                    dp[left][right] = Math.max(dp[left][right],\n                            dp[left][k - 1]\n                            + balloons[left - 1] * balloons[k] * balloons[right + 1]\n                            + dp[k + 1][right]);\n                }\n            }\n        }\n        return dp[1][n];\n    }\n}",
-    "explanation": "Choosing which balloon to burst FIRST is hard because it changes everyone's neighbors. Reversing it — which balloon in a range is burst LAST — fixes that balloon's neighbors to the untouched range boundaries, decoupling the two sub-ranges into independent subproblems. O(n³) over all intervals and split points."
+    "explanation": "If k is the last balloon burst in [l..r], its neighbors when it bursts are the untouched walls pad[l-1] and pad[r+1]. The balloons on either side never neighbor each other before k goes, so they're independent sub-intervals. Trying every k over intervals in increasing length covers all burst orders. O(n³) time, O(n²) space."
   }
 }

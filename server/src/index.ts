@@ -17,7 +17,7 @@ if (content.errors.length) {
 }
 console.log(`Loaded ${content.exercises.size} exercises across ${content.curriculum.units.length} units.`);
 
-const db = openDb();
+const db = openDb(); // JAVAPREPARE_DB env var overrides the DB path
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 app.use('/api', createRouter(content, db));

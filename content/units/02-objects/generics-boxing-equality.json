@@ -42,6 +42,20 @@
     "explanation": "`==` on strings asks whether they're the same object in memory — sometimes coincidentally true, usually false. `.equals` compares characters. In interviews, `==` on strings is an instant red flag."
   },
   {
+    "id": "gen-fill-integer-cache",
+    "type": "fill-blank",
+    "title": "Predict the output: boxed ==",
+    "prompt": "Predict what each line prints.",
+    "code": "Integer a = 1000, b = 1000;\nSystem.out.println(a == b);        // prints: {{1}}\nSystem.out.println(a.equals(b));   // prints: {{2}}\n\nInteger c = 100, d = 100;\nSystem.out.println(c == d);        // prints: {{3}}\n\nint x = 1000;\nSystem.out.println(a == x);        // prints: {{4}}",
+    "blanks": {
+      "1": ["false"],
+      "2": ["true"],
+      "3": ["true"],
+      "4": ["true"]
+    },
+    "explanation": "`a == b` compares two separate `Integer` objects, since 1000 is outside the -128..127 cache → false. `.equals` compares values → true. 100 is cached, so `c` and `d` are the same object → true (which is exactly why the bug hides in small tests). When one side is a primitive `int`, the `Integer` unboxes and `==` compares numbers → true."
+  },
+  {
     "id": "gen-fill-safe",
     "type": "fill-blank",
     "title": "Null-safe lookups",
@@ -52,5 +66,29 @@
       "2": ["containsKey"]
     },
     "explanation": "`getOrDefault(key, fallback)` and a `containsKey` guard are the two ways to avoid the null-unboxing NPE."
+  },
+  {
+    "id": "gen-code-boxing-bug",
+    "type": "code-method",
+    "title": "Fix the boxing bug",
+    "prompt": "The starter decides whether `s` and `t` use exactly the same characters with the same counts (an anagram check). It passes short examples but fails hidden tests with long strings. Find and fix the bug.",
+    "method": { "name": "sameCounts", "params": [ { "name": "s", "type": "String" }, { "name": "t", "type": "String" } ], "returns": "boolean" },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public boolean sameCounts(String s, String t) {\n        Map<Character, Integer> sc = new HashMap<>();\n        Map<Character, Integer> tc = new HashMap<>();\n        for (char c : s.toCharArray()) sc.put(c, sc.getOrDefault(c, 0) + 1);\n        for (char c : t.toCharArray()) tc.put(c, tc.getOrDefault(c, 0) + 1);\n        if (sc.size() != tc.size()) return false;\n        for (char c : sc.keySet()) {\n            if (sc.get(c) != tc.get(c)) return false;   // BUG?\n        }\n        return true;\n    }\n}\n",
+    "tests": [
+      { "args": ["listen", "silent"], "expected": true },
+      { "args": ["aab", "abb"], "expected": false },
+      { "args": ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab", "baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"], "expected": true, "hidden": true, "note": "counts above 127" },
+      { "args": ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"], "expected": false, "hidden": true, "note": "200 vs 201" },
+      { "args": ["", ""], "expected": true, "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public boolean sameCounts(String s, String t) {\n        Map<Character, Integer> sc = new HashMap<>();\n        Map<Character, Integer> tc = new HashMap<>();\n        for (char c : s.toCharArray()) sc.put(c, sc.getOrDefault(c, 0) + 1);\n        for (char c : t.toCharArray()) tc.put(c, tc.getOrDefault(c, 0) + 1);\n        if (sc.size() != tc.size()) return false;\n        for (char c : sc.keySet()) {\n            if (!sc.get(c).equals(tc.get(c))) return false;\n        }\n        return true;\n    }\n}",
+      "explanation": "`sc.get(c) != tc.get(c)` compares two `Integer` references. Counts up to 127 come from the shared cache, so the check looks correct on small inputs; a count of 200 is boxed into two different objects and `!=` reports them unequal. `.equals` compares the values (and handles a `null` from `tc`, since `sc.get(c)` is never null here). O(n) time."
+    },
+    "hints": [
+      "Run it in your head with a character that appears 200 times in both strings. What type does `map.get` return?",
+      "`!=` on two `Integer` objects compares references, and only -128..127 are cached.",
+      "Compare values instead: `!sc.get(c).equals(tc.get(c))`."
+    ]
   }
 ]

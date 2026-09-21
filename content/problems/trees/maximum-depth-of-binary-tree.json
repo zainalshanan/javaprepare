@@ -7,7 +7,7 @@
   "prompt": "Return the maximum depth of a binary tree — the number of nodes on the longest root-to-leaf path.\n\n**Example**: `[3,9,20,null,null,15,7]` → `3`.",
   "method": {
     "name": "maxDepth",
-    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int maxDepth(TreeNode root) {\n\n    }\n}\n",
@@ -19,11 +19,12 @@
     { "args": [[1, 2, null, 3, null, 4]], "expected": 4, "hidden": true, "note": "left-skewed chain" }
   ],
   "hints": [
-    "Empty tree has depth 0 — the base case.",
-    "A tree's depth = 1 + the deeper of its two subtrees."
+    "If you already knew the depth of the left subtree and of the right subtree, how would you get the depth of the whole tree?",
+    "An empty tree (`root == null`) has depth 0. That's the base case.",
+    "Combine: `return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));`"
   ],
   "solution": {
     "code": "class Solution {\n    public int maxDepth(TreeNode root) {\n        if (root == null) return 0;\n        return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));\n    }\n}",
-    "explanation": "Two lines — the purest example of \"trust the recursion\": assume maxDepth works on the subtrees, and the combining step is just 1 + max."
+    "explanation": "This is the clearest case of trusting the recursion: assume `maxDepth` is correct on the subtrees, and the tree's depth is one more than the deeper of the two. Every node is visited once, O(n) time; the stack grows to O(h), which is O(n) for a skewed tree."
   }
 }

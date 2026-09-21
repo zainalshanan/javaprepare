@@ -4,10 +4,10 @@
   "title": "Word Search II",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/word-search-ii/",
-  "prompt": "Given an `m x n` board of letters and a list of `words`, return all words that can be formed by a path of horizontally/vertically adjacent cells (no cell reused within a word).\n\n**Example**: board `[[\"o\",\"a\",\"a\",\"n\"],[\"e\",\"t\",\"a\",\"e\"],[\"i\",\"h\",\"k\",\"r\"],[\"i\",\"f\",\"l\",\"v\"]]`, words `[\"oath\",\"pea\",\"eat\",\"rain\"]` → `[\"oath\",\"eat\"]`.\n\nSearching each word separately is too slow. Load all words into a trie and DFS the board once, walking the trie in lockstep.",
+  "prompt": "Given an `m x n` board of letters and a list of `words`, return every word that can be spelled by a path of horizontally or vertically adjacent cells. A cell may not be used twice within one word. Return the words in any order.\n\n**Example**: board `[[\"o\",\"a\",\"a\",\"n\"],[\"e\",\"t\",\"a\",\"e\"],[\"i\",\"h\",\"k\",\"r\"],[\"i\",\"f\",\"l\",\"v\"]]`, words `[\"oath\",\"pea\",\"eat\",\"rain\"]` → `[\"oath\",\"eat\"]`.\n\n**Constraints**: 1 ≤ m, n ≤ 12; up to 3·10⁴ distinct words, each 1–10 lowercase letters.",
   "method": {
     "name": "findWords",
-    "params": [ { "name": "board", "type": "char[][]" }, { "name": "words", "type": "String[]" } ],
+    "params": [{ "name": "board", "type": "char[][]" }, { "name": "words", "type": "String[]" }],
     "returns": "List<String>"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public List<String> findWords(char[][] board, String[] words) {\n\n    }\n}\n",
@@ -15,15 +15,16 @@
     { "args": [[["o", "a", "a", "n"], ["e", "t", "a", "e"], ["i", "h", "k", "r"], ["i", "f", "l", "v"]], ["oath", "pea", "eat", "rain"]], "expected": ["oath", "eat"], "compare": "unordered" },
     { "args": [[["a", "b"], ["c", "d"]], ["abcb"]], "expected": [], "compare": "unordered", "note": "would need to reuse a cell" },
     { "args": [[["a", "b"], ["c", "d"]], ["ab", "cd", "ac"]], "expected": ["ab", "cd", "ac"], "compare": "unordered", "hidden": true },
-    { "args": [[["a"]], ["a"]], "expected": ["a"], "compare": "unordered", "hidden": true }
+    { "args": [[["a"]], ["a"]], "expected": ["a"], "compare": "unordered", "hidden": true },
+    { "args": [[["a", "a"]], ["a"]], "expected": ["a"], "compare": "unordered", "hidden": true, "note": "found from two cells, reported once" }
   ],
   "hints": [
-    "Insert every word into a trie; store the full word at its end node.",
-    "DFS from each cell, descending both the board and the trie by the current letter. If the trie node has no matching child, prune immediately.",
-    "When a node holds a word, add it and clear it (to avoid duplicates). Mark cells visited with a sentinel and restore on backtrack."
+    "Running Word Search separately for each of thousands of words repeats the same prefix exploration over and over. How could all the words share their common prefixes?",
+    "Put every word into a trie, then backtrack from each cell once, moving down the trie with each letter. Stop as soon as the trie has no child for the current letter.",
+    "Store the full word at its end node. When you reach it, add it and set `node.word = null` so it can't be added twice. Mark a cell `'#'` before exploring its neighbours and restore it afterwards."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    private static class TrieNode {\n        TrieNode[] children = new TrieNode[26];\n        String word = null;\n    }\n\n    private final List<String> res = new ArrayList<>();\n\n    public List<String> findWords(char[][] board, String[] words) {\n        TrieNode root = new TrieNode();\n        for (String w : words) {\n            TrieNode node = root;\n            for (char c : w.toCharArray()) {\n                int i = c - 'a';\n                if (node.children[i] == null) node.children[i] = new TrieNode();\n                node = node.children[i];\n            }\n            node.word = w;\n        }\n        for (int r = 0; r < board.length; r++) {\n            for (int c = 0; c < board[0].length; c++) {\n                dfs(board, r, c, root);\n            }\n        }\n        return res;\n    }\n\n    private void dfs(char[][] board, int r, int c, TrieNode node) {\n        if (r < 0 || r >= board.length || c < 0 || c >= board[0].length) return;\n        char ch = board[r][c];\n        if (ch == '#') return;\n        TrieNode next = node.children[ch - 'a'];\n        if (next == null) return;\n        if (next.word != null) {\n            res.add(next.word);\n            next.word = null;   // dedupe\n        }\n        board[r][c] = '#';\n        dfs(board, r + 1, c, next);\n        dfs(board, r - 1, c, next);\n        dfs(board, r, c + 1, next);\n        dfs(board, r, c - 1, next);\n        board[r][c] = ch;\n    }\n}",
-    "explanation": "The trie collapses the whole word list into one shared prefix tree, so a single board DFS finds all words simultaneously and prunes the moment the current path isn't a prefix of any word — far better than O(words × board-DFS). Sinking visited cells to `#` enforces no-reuse within a path."
+    "explanation": "The trie merges all the words into one prefix tree, so a single backtracking search per starting cell looks for every word at once and stops the moment the current path isn't a prefix of any word. Clearing `word` after a hit removes duplicates. Worst case O(m·n·4·3^(L−1)) for maximum word length L, but pruning keeps it far lower in practice; O(total word characters) space for the trie."
   }
 }

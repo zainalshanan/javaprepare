@@ -4,26 +4,125 @@
   "title": "Redundant Connection",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/redundant-connection/",
-  "prompt": "A tree of `n` nodes (labeled `1..n`) had one extra edge added, creating exactly one cycle. Given the `edges`, return the added edge that, if removed, restores a tree. If multiple answers, return the one appearing **last** in the input.\n\n**Example**: `[[1,2],[1,3],[2,3]]` → `[2,3]`.\n\nUnion-Find: process edges in order; the first edge whose endpoints are already connected is the redundant one.",
+  "prompt": "A graph started as a tree with `n` nodes labeled `1..n`, then one extra edge was added between two different existing nodes. Given the resulting `edges` (length `n`), return an edge that can be removed so the graph is a tree again. If there are multiple answers, return the one that appears **last** in the input.\n\n**Example**: `[[1,2],[1,3],[2,3]]` → `[2,3]`.\n\n**Constraints**: `3 <= n <= 1000`, no repeated edges.",
   "method": {
     "name": "findRedundantConnection",
-    "params": [ { "name": "edges", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "edges",
+        "type": "int[][]"
+      }
+    ],
     "returns": "int[]"
   },
   "starter": "class Solution {\n    public int[] findRedundantConnection(int[][] edges) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[1, 2], [1, 3], [2, 3]]], "expected": [2, 3] },
-    { "args": [[[1, 2], [2, 3], [3, 4], [1, 4], [1, 5]]], "expected": [1, 4] },
-    { "args": [[[1, 2], [2, 3], [1, 3]]], "expected": [1, 3], "hidden": true },
-    { "args": [[[1, 2], [2, 3], [3, 1]]], "expected": [3, 1], "hidden": true }
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        2,
+        3
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      ],
+      "expected": [
+        1,
+        3
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            3,
+            1
+          ]
+        ]
+      ],
+      "expected": [
+        3,
+        1
+      ],
+      "hidden": true
+    }
   ],
   "hints": [
-    "Nodes are 1-indexed, so size the parent array n+1 (n = number of edges).",
-    "Union each edge in order; if find(a) == find(b), this edge closes the cycle.",
-    "Processing in input order naturally returns the last such edge."
+    "Add the edges one at a time. At what moment does the growing graph stop being a forest?",
+    "An edge creates a cycle exactly when its two endpoints are already connected. Keep a structure that answers 'already connected?' quickly as you add edges.",
+    "Union-Find over nodes `1..n` (size the array `n + 1`). The first edge where `find(u) == find(v)` is the answer."
   ],
   "solution": {
     "code": "class Solution {\n    public int[] findRedundantConnection(int[][] edges) {\n        int n = edges.length;\n        int[] parent = new int[n + 1];\n        for (int i = 1; i <= n; i++) parent[i] = i;\n        for (int[] e : edges) {\n            int ra = find(parent, e[0]), rb = find(parent, e[1]);\n            if (ra == rb) return e;\n            parent[ra] = rb;\n        }\n        return new int[]{};\n    }\n\n    private int find(int[] parent, int x) {\n        while (parent[x] != x) {\n            parent[x] = parent[parent[x]];\n            x = parent[x];\n        }\n        return x;\n    }\n}",
-    "explanation": "In a tree, every edge connects two different components. The one edge whose endpoints already share a root must be the one that formed the cycle — and scanning in input order guarantees we report the last such edge, as required."
+    "explanation": "Every edge of the original tree joins two separate components. The only edge whose endpoints already share a root is the one that closes the cycle. There's exactly one cycle, and every earlier cycle edge was a legal union, so the first edge that fails is the last cycle edge in the input. O(n·α(n)) time, O(n) space."
   }
 }

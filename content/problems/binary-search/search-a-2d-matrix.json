@@ -4,7 +4,7 @@
   "title": "Search a 2D Matrix",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/search-a-2d-matrix/",
-  "prompt": "Each row of `matrix` is sorted left-to-right, and the first element of each row is greater than the last element of the previous row. Return whether `target` is present, in O(log(m·n)).\n\n**Example**: target `3` in `[[1,3,5,7],[10,11,16,20],[23,30,34,60]]` → `true`.\n\nThe whole matrix is one sorted sequence — binary search it, mapping a flat index back to `[mid / cols][mid % cols]`.",
+  "prompt": "You are given an `m x n` integer matrix with two properties:\n\n- each row is sorted in non-decreasing order;\n- the first integer of each row is greater than the last integer of the previous row.\n\nReturn `true` if `target` is in the matrix, else `false`. Your solution must run in O(log(m·n)).\n\n**Example 1**: `matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]]`, `target = 3` → `true`\n\n**Example 2**: same matrix, `target = 13` → `false`\n\n**Constraints**: `1 <= m, n <= 100`, `-10^4 <= matrix[i][j], target <= 10^4`.",
   "method": {
     "name": "searchMatrix",
     "params": [ { "name": "matrix", "type": "int[][]" }, { "name": "target", "type": "int" } ],
@@ -16,15 +16,16 @@
     { "args": [[[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], 13], "expected": false },
     { "args": [[[1]], 1], "expected": true },
     { "args": [[[1, 1]], 2], "expected": false, "hidden": true },
-    { "args": [[[1, 3], [5, 7]], 5], "expected": true, "hidden": true }
+    { "args": [[[1, 3], [5, 7]], 5], "expected": true, "hidden": true },
+    { "args": [[[1, 3], [5, 7]], 8], "expected": false, "hidden": true, "note": "larger than every element" }
   ],
   "hints": [
-    "Treat the m×n grid as one array of length m·n.",
-    "For a flat index `mid`, the real cell is `matrix[mid / cols][mid % cols]`.",
-    "Standard binary search over `0 .. m*n - 1`."
+    "Because of the row-ordering guarantee, what do you get if you read the matrix row by row, left to right?",
+    "It's a single sorted sequence of length m·n — run an ordinary binary search over positions `0 .. m*n - 1`.",
+    "Convert a flat position back to a cell: `matrix[mid / cols][mid % cols]`."
   ],
   "solution": {
     "code": "class Solution {\n    public boolean searchMatrix(int[][] matrix, int target) {\n        int m = matrix.length, n = matrix[0].length;\n        int lo = 0, hi = m * n - 1;\n        while (lo <= hi) {\n            int mid = lo + (hi - lo) / 2;\n            int val = matrix[mid / n][mid % n];\n            if (val == target) return true;\n            else if (val < target) lo = mid + 1;\n            else hi = mid - 1;\n        }\n        return false;\n    }\n}",
-    "explanation": "The row-ordering guarantee means the flattened grid is fully sorted, so a single binary search works. `mid / n` and `mid % n` convert a 1-D index to (row, col). O(log(m·n))."
+    "explanation": "The two ordering properties make the row-major reading of the grid one fully sorted array, so a single binary search over flat indices is valid. `mid / n` gives the row and `mid % n` the column, so no array is actually built. O(log(m·n)) time, O(1) space."
   }
 }

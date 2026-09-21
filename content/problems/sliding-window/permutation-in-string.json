@@ -4,7 +4,7 @@
   "title": "Permutation in String",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/permutation-in-string/",
-  "prompt": "Return `true` if `s2` contains a **permutation of `s1`** as a contiguous substring (lowercase letters).\n\n**Example**: `s1 = \"ab\"`, `s2 = \"eidbaooo\"` → `true` (`\"ba\"`).\n\nA fixed-size window of length `s1.length()`: slide it across `s2` and check whether its letter counts match `s1`'s.",
+  "prompt": "Return `true` if `s2` contains a **permutation of `s1`** as a contiguous substring (lowercase letters).\n\n**Example**: `s1 = \"ab\"`, `s2 = \"eidbaooo\"` → `true` (`\"ba\"`). `s1 = \"ab\"`, `s2 = \"eidboaoo\"` → `false`.\n\n**Constraints**: `1 <= s1.length, s2.length <= 10^4`.",
   "method": {
     "name": "checkInclusion",
     "params": [ { "name": "s1", "type": "String" }, { "name": "s2", "type": "String" } ],
@@ -16,15 +16,16 @@
     { "args": ["ab", "eidboaoo"], "expected": false },
     { "args": ["adc", "dcda"], "expected": true },
     { "args": ["a", "a"], "expected": true, "hidden": true },
-    { "args": ["hello", "ooolleoooleh"], "expected": false, "hidden": true }
+    { "args": ["hello", "ooolleoooleh"], "expected": false, "hidden": true },
+    { "args": ["abc", "ab"], "expected": false, "hidden": true, "note": "s1 longer than s2" }
   ],
   "hints": [
-    "Two `int[26]` count arrays: one fixed for s1, one for the current window of s2.",
-    "Slide a window of width s1.length(): add the entering char, and once the window is too wide, remove the leaving char.",
-    "`Arrays.equals(need, window)` tells you if the current window is a permutation."
+    "What do all permutations of s1 have in common, whatever their order? And how long must a matching substring of s2 be?",
+    "Only substrings of length exactly `s1.length()` can match. Keep letter counts for s1 and for the current length-`s1.length()` stretch of s2, updating the latter in O(1) as it moves one step right.",
+    "Each step: add `s2.charAt(i)`, and if `i >= s1.length()` remove `s2.charAt(i - s1.length())`; then `if (Arrays.equals(need, window)) return true;`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public boolean checkInclusion(String s1, String s2) {\n        if (s1.length() > s2.length()) return false;\n        int[] need = new int[26], window = new int[26];\n        for (char c : s1.toCharArray()) need[c - 'a']++;\n        for (int i = 0; i < s2.length(); i++) {\n            window[s2.charAt(i) - 'a']++;\n            if (i >= s1.length()) {\n                window[s2.charAt(i - s1.length()) - 'a']--;\n            }\n            if (Arrays.equals(need, window)) return true;\n        }\n        return false;\n    }\n}",
-    "explanation": "O(n) — each of s2's characters enters and leaves the window once, and the 26-element Arrays.equals is O(1). A permutation is exactly a substring with identical letter frequencies, which the count-array comparison checks directly."
+    "explanation": "Insight: a permutation of s1 is exactly a substring of the same length with the same letter counts. Sliding a window of width `s1.length()` checks every candidate substring, and adding the entering letter and removing the leaving one keeps its counts up to date in O(1). Comparing two 26-element arrays is also constant time. Time O(|s1| + |s2|), space O(1)."
   }
 }

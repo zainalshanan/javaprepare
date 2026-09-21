@@ -4,7 +4,7 @@
   "title": "Reverse Nodes in k-Group",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
-  "prompt": "Reverse the nodes of the list `k` at a time. Nodes left over at the end (fewer than k) stay in original order.\n\n**Example**: `[1,2,3,4,5]`, `k = 2` → `[2,1,4,3,5]`; `k = 3` → `[3,2,1,4,5]`.\n\nFor each group: first check `k` nodes exist, then reverse that segment and stitch it back to the previous group's tail.",
+  "prompt": "Given the head of a linked list, reverse the nodes of the list `k` at a time and return the modified list. If the number of nodes is not a multiple of `k`, the left-over nodes at the end stay in their original order. Only the nodes may be changed, not their values.\n\n**Example 1**: `[1,2,3,4,5]`, `k = 2` → `[2,1,4,3,5]`\n\n**Example 2**: `[1,2,3,4,5]`, `k = 3` → `[3,2,1,4,5]`\n\n**Constraints**: `1 <= k <= n <= 5000`, `0 <= Node.val <= 1000`.\n\n**Follow-up**: can you do it with O(1) extra memory?",
   "method": {
     "name": "reverseKGroup",
     "params": [ { "name": "head", "type": "ListNode" }, { "name": "k", "type": "int" } ],
@@ -16,15 +16,16 @@
     { "args": [[1, 2, 3, 4, 5], 3], "expected": [3, 2, 1, 4, 5] },
     { "args": [[1, 2, 3, 4, 5], 1], "expected": [1, 2, 3, 4, 5] },
     { "args": [[1, 2], 3], "expected": [1, 2], "hidden": true, "note": "fewer than k — leave as is" },
-    { "args": [[1, 2, 3, 4], 2], "expected": [2, 1, 4, 3], "hidden": true }
+    { "args": [[1, 2, 3, 4], 2], "expected": [2, 1, 4, 3], "hidden": true },
+    { "args": [[1, 2, 3, 4, 5, 6], 3], "expected": [3, 2, 1, 6, 5, 4], "hidden": true, "note": "exact multiple of k" }
   ],
   "hints": [
-    "Use a dummy node; keep a `groupPrev` pointing at the node before the current group.",
-    "Walk k steps to find the k-th node; if you run off the end, stop — leftover stays as-is.",
-    "Reverse the group by pointing each node back, then reconnect groupPrev to the new group head and advance groupPrev to the group's (now last) node."
+    "You already know how to reverse a whole list. Each group is just a segment to reverse — what extra bookkeeping do you need so that each reversed segment reconnects to the nodes before and after it, and so leftovers are left alone?",
+    "Use a dummy node and a `groupPrev` pointer (the node before the current group). Walk k steps ahead to find the group's k-th node; if you run off the end, stop.",
+    "Reverse the group with the usual loop but start `prev` at `kth.next` (the node after the group) so the new tail links onward; then `groupPrev.next = kth` and move `groupPrev` to the group's old first node."
   ],
   "solution": {
     "code": "class Solution {\n    public ListNode reverseKGroup(ListNode head, int k) {\n        ListNode dummy = new ListNode(0, head);\n        ListNode groupPrev = dummy;\n        while (true) {\n            ListNode kth = groupPrev;\n            for (int i = 0; i < k && kth != null; i++) kth = kth.next;\n            if (kth == null) break;                 // fewer than k left\n            ListNode groupNext = kth.next;\n            ListNode prev = groupNext, curr = groupPrev.next;\n            while (curr != groupNext) {             // reverse the group\n                ListNode next = curr.next;\n                curr.next = prev;\n                prev = curr;\n                curr = next;\n            }\n            ListNode newGroupPrev = groupPrev.next; // old head = new tail\n            groupPrev.next = kth;\n            groupPrev = newGroupPrev;\n        }\n        return dummy.next;\n    }\n}",
-    "explanation": "O(n): each node is visited a constant number of times. The k-node lookahead both validates the group and gives the boundary (`groupNext`) that the standard reverse loop stops at. Reconnecting the old group-head (now the tail) as the next `groupPrev` chains the groups together correctly."
+    "explanation": "Each group is handled with the standard reversal, bounded by a k-node lookahead that both checks a full group exists and gives the node after it. Seeding `prev` with that next node attaches the reversed group's tail to the rest of the list, and pointing `groupPrev` at the new group head stitches it to the previous group; the old head becomes the next `groupPrev`. O(n) time (each node visited a constant number of times), O(1) space."
   }
 }

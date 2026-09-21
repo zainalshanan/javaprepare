@@ -4,28 +4,139 @@
   "title": "Course Schedule",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/course-schedule/",
-  "prompt": "There are `numCourses` courses (0 to numCourses-1). `prerequisites[i] = [a, b]` means you must take course `b` before course `a`. Return whether it's possible to finish all courses.\n\nThis is cycle detection in a directed graph — Kahn's topological sort: if peeling zero-prerequisite courses can consume the whole graph, there's no cycle.",
+  "prompt": "There are `numCourses` courses labeled `0..numCourses-1`. `prerequisites[i] = [a, b]` means you must take course `b` before course `a`. Return `true` if you can finish all courses.\n\n**Example**: `numCourses = 2`, `prerequisites = [[1,0],[0,1]]` → `false` (each course requires the other).\n\n**Constraints**: `1 <= numCourses <= 2000`, `0 <= prerequisites.length <= 5000`, all pairs distinct.",
   "method": {
     "name": "canFinish",
-    "params": [ { "name": "numCourses", "type": "int" }, { "name": "prerequisites", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "numCourses",
+        "type": "int"
+      },
+      {
+        "name": "prerequisites",
+        "type": "int[][]"
+      }
+    ],
     "returns": "boolean"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n\n    }\n}\n",
   "tests": [
-    { "args": [2, [[1, 0]]], "expected": true },
-    { "args": [2, [[1, 0], [0, 1]]], "expected": false, "note": "mutual prerequisite = cycle" },
-    { "args": [5, [[1, 0], [2, 1], [3, 2], [4, 3]]], "expected": true },
-    { "args": [1, []], "expected": true, "hidden": true },
-    { "args": [4, [[1, 0], [2, 1], [3, 2], [1, 3]]], "expected": false, "hidden": true, "note": "cycle 1→2→3→1" },
-    { "args": [3, [[0, 1], [0, 2], [1, 2]]], "expected": true, "hidden": true }
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ]
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        2,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "expected": false,
+      "note": "mutual prerequisite = cycle"
+    },
+    {
+      "args": [
+        5,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            4,
+            3
+          ]
+        ]
+      ],
+      "expected": true
+    },
+    {
+      "args": [
+        1,
+        []
+      ],
+      "expected": true,
+      "hidden": true
+    },
+    {
+      "args": [
+        4,
+        [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      ],
+      "expected": false,
+      "hidden": true,
+      "note": "cycle 1→2→3→1"
+    },
+    {
+      "args": [
+        3,
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            2
+          ]
+        ]
+      ],
+      "expected": true,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Edge direction: b → a (prerequisite points to dependent). indegree[a]++ per pair.",
-    "Queue every course with indegree 0; poll, count it, decrement neighbors' indegrees, enqueue those that hit 0.",
-    "All courses processed ⟺ no cycle ⟺ return processed == numCourses."
+    "Draw courses as nodes and prerequisites as arrows. What shape in that graph would make finishing impossible?",
+    "Keep taking courses that have no remaining unmet prerequisites. Track how many prerequisites each course still has, and lower that count as courses finish.",
+    "Edge `b → a` with `indegree[a]++`. Queue indegree-0 courses, `if (--indegree[next] == 0) q.offer(next);`, and at the end `return processed == numCourses;`"
   ],
   "solution": {
-    "code": "import java.util.*;\n\nclass Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        Map<Integer, List<Integer>> adj = new HashMap<>();\n        int[] indegree = new int[numCourses];\n        for (int[] p : prerequisites) {\n            adj.computeIfAbsent(p[1], k -> new ArrayList<>()).add(p[0]);\n            indegree[p[0]]++;\n        }\n        Queue<Integer> q = new LinkedList<>();\n        for (int i = 0; i < numCourses; i++) {\n            if (indegree[i] == 0) q.offer(i);\n        }\n        int processed = 0;\n        while (!q.isEmpty()) {\n            int course = q.poll();\n            processed++;\n            for (int next : adj.getOrDefault(course, new ArrayList<>())) {\n                if (--indegree[next] == 0) q.offer(next);\n            }\n        }\n        return processed == numCourses;\n    }\n}",
-    "explanation": "Kahn's algorithm, O(V + E). Courses inside a cycle never reach indegree 0, so they're never processed — the final count exposes them. (Course Schedule II is the same code returning the poll order.)"
+    "code": "import java.util.*;\n\nclass Solution {\n    public boolean canFinish(int numCourses, int[][] prerequisites) {\n        Map<Integer, List<Integer>> adj = new HashMap<>();\n        int[] indegree = new int[numCourses];\n        for (int[] p : prerequisites) {\n            adj.computeIfAbsent(p[1], k -> new ArrayList<>()).add(p[0]);\n            indegree[p[0]]++;\n        }\n        Deque<Integer> q = new ArrayDeque<>();\n        for (int i = 0; i < numCourses; i++) {\n            if (indegree[i] == 0) q.offer(i);\n        }\n        int processed = 0;\n        while (!q.isEmpty()) {\n            int course = q.poll();\n            processed++;\n            for (int next : adj.getOrDefault(course, new ArrayList<>())) {\n                if (--indegree[next] == 0) q.offer(next);\n            }\n        }\n        return processed == numCourses;\n    }\n}",
+    "explanation": "Kahn's algorithm takes a course only after all its prerequisites are done. Courses in a cycle wait on each other forever, never reach indegree 0, and are never counted, so `processed == numCourses` exactly when there's no cycle. O(V + E) time and space."
   }
 }

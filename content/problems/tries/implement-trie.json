@@ -4,7 +4,7 @@
   "title": "Implement Trie (Prefix Tree)",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/implement-trie-prefix-tree/",
-  "prompt": "Implement a trie over lowercase words:\n\n- `Trie()` — construct\n- `void insert(String word)`\n- `boolean search(String word)` — was this exact word inserted?\n- `boolean startsWith(String prefix)` — was any inserted word prefixed by this?\n\nYou'll need an inner `TrieNode2` class (named that way here to avoid clashing with the lesson's snippets) with a 26-slot children array and an `isEnd` flag — or name your node class anything you like.",
+  "prompt": "Implement a trie (prefix tree) over lowercase words:\n\n- `Trie()`: construct an empty trie\n- `void insert(String word)`\n- `boolean search(String word)`: was this exact word inserted?\n- `boolean startsWith(String prefix)`: does any inserted word start with this prefix?\n\n**Example**: `insert(\"apple\")`, `search(\"apple\")` → `true`, `search(\"app\")` → `false`, `startsWith(\"app\")` → `true`; after `insert(\"app\")`, `search(\"app\")` → `true`.\n\nYou may define a helper node class in the same editor (for example `TrieNode2`, or a nested `static class`).\n\n**Constraints**: 1 ≤ length ≤ 2000, letters `a`–`z`, up to 3·10⁴ calls.",
   "className": "Trie",
   "methods": {
     "Trie": { "params": [], "returns": "void" },
@@ -28,12 +28,12 @@
     }
   ],
   "hints": [
-    "Node class: `TrieNode2[] children = new TrieNode2[26]; boolean isEnd;` (define it as a separate class in the same editor).",
-    "insert: walk char by char, creating missing children; mark isEnd at the final node.",
-    "Share a private `find(String)` walker: search = found && isEnd; startsWith = found."
+    "Words that share a prefix should share storage. What does a node need so that following letters one by one traces out a word?",
+    "A node holds 26 child slots (`children[c - 'a']`) plus a flag marking the end of a word. insert walks the word, creating missing children, then sets the flag on the last node.",
+    "Write one private `find(String s)` that walks and returns the last node or null. Then `search` = found and `isEnd`; `startsWith` = found."
   ],
   "solution": {
     "code": "class TrieNode2 {\n    TrieNode2[] children = new TrieNode2[26];\n    boolean isEnd = false;\n}\n\nclass Trie {\n    private TrieNode2 root;\n\n    public Trie() {\n        root = new TrieNode2();\n    }\n\n    public void insert(String word) {\n        TrieNode2 node = root;\n        for (char c : word.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) node.children[i] = new TrieNode2();\n            node = node.children[i];\n        }\n        node.isEnd = true;\n    }\n\n    public boolean search(String word) {\n        TrieNode2 node = find(word);\n        return node != null && node.isEnd;\n    }\n\n    public boolean startsWith(String prefix) {\n        return find(prefix) != null;\n    }\n\n    private TrieNode2 find(String s) {\n        TrieNode2 node = root;\n        for (char c : s.toCharArray()) {\n            int i = c - 'a';\n            if (node.children[i] == null) return null;\n            node = node.children[i];\n        }\n        return node;\n    }\n}",
-    "explanation": "All operations O(word length). The shared `find` walker collapses search and startsWith to one line each — the only difference is whether the final node must be a word end."
+    "explanation": "Each character selects one of 26 slots, so every operation touches exactly one node per character: O(length) time. The only difference between `search` and `startsWith` is whether the last node must mark the end of a word, so one shared `find` covers both. Space is O(total inserted characters × 26)."
   }
 }

@@ -4,27 +4,69 @@
   "title": "Unique Paths",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/unique-paths/",
-  "prompt": "A robot starts at the top-left of an `m x n` grid and moves only right or down. How many distinct paths reach the bottom-right? (Answers fit in int.)\n\n**Example**: `m = 3, n = 7` → `28`.\n\nYou drilled this exact table in the pattern lesson — now it's the real problem.",
+  "prompt": "A robot starts at the top-left corner of an `m x n` grid and can only move **right** or **down**. How many distinct paths reach the bottom-right corner?\n\n**Example**: `m = 3, n = 7` → `28`. `m = 3, n = 2` → `3`.\n\n**Constraints**: `1 <= m, n <= 100`; the answer fits in a 32-bit int.",
   "method": {
     "name": "uniquePaths",
-    "params": [ { "name": "m", "type": "int" }, { "name": "n", "type": "int" } ],
+    "params": [
+      {
+        "name": "m",
+        "type": "int"
+      },
+      {
+        "name": "n",
+        "type": "int"
+      }
+    ],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int uniquePaths(int m, int n) {\n\n    }\n}\n",
   "tests": [
-    { "args": [3, 7], "expected": 28 },
-    { "args": [3, 2], "expected": 3 },
-    { "args": [1, 1], "expected": 1 },
-    { "args": [7, 3], "expected": 28, "hidden": true, "note": "symmetric" },
-    { "args": [23, 12], "expected": 193536720, "hidden": true }
+    {
+      "args": [
+        3,
+        7
+      ],
+      "expected": 28
+    },
+    {
+      "args": [
+        3,
+        2
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        1,
+        1
+      ],
+      "expected": 1
+    },
+    {
+      "args": [
+        7,
+        3
+      ],
+      "expected": 28,
+      "hidden": true,
+      "note": "symmetric"
+    },
+    {
+      "args": [
+        23,
+        12
+      ],
+      "expected": 193536720,
+      "hidden": true
+    }
   ],
   "hints": [
-    "dp[i][j] = paths into cell (i, j) = dp[i-1][j] + dp[i][j-1].",
-    "First row and first column are all 1 — only one straight-line way in.",
-    "Bonus: a single 1-D row array suffices, updated left to right."
+    "Pick any cell. The robot's last move into it came from where?",
+    "Let dp[i][j] = paths into cell (i, j) = dp[i-1][j] + dp[i][j-1]. The top row and left column each have exactly one path in.",
+    "One rolling row is enough: fill `dp` with 1s, then `dp[j] += dp[j - 1]` for every later row. Before the update, `dp[j]` still holds the value from the row above."
   ],
   "solution": {
     "code": "class Solution {\n    public int uniquePaths(int m, int n) {\n        int[] dp = new int[n];\n        java.util.Arrays.fill(dp, 1);          // first row\n        for (int i = 1; i < m; i++) {\n            for (int j = 1; j < n; j++) {\n                dp[j] = dp[j] + dp[j - 1];      // above + left\n            }\n        }\n        return dp[n - 1];\n    }\n}",
-    "explanation": "The rolled 1-D version: before assignment, `dp[j]` still holds the value from the row above and `dp[j-1]` is already this row's left neighbor. O(m·n) time, O(n) space. (The full 2-D table from the drill is equally accepted.)"
+    "explanation": "Paths into a cell are paths into the cell above plus paths into the cell to the left, and those sets don't overlap. With the 1-D rolling array, `dp[j]` holds the row above until it's overwritten, and `dp[j-1]` is already this row's left neighbor. O(m·n) time, O(n) space."
   }
 }

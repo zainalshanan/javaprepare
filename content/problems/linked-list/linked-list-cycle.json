@@ -20,12 +20,12 @@
     { "args": [{ "vals": [1, 2], "pos": 1 }], "expected": true, "hidden": true, "note": "self-loop at the tail" }
   ],
   "hints": [
-    "Fast moves 2, slow moves 1. In a cycle, the gap closes by 1 each step — they MUST meet.",
-    "Loop guard: `while (fast != null && fast.next != null)`. If fast escapes to null, there's no cycle.",
-    "Compare with `==` (same node object), and only after moving both."
+    "Picture two runners, one twice as fast as the other. On a straight track the fast one simply reaches the end; on a circular track, what eventually happens?",
+    "Slow moves 1 node, fast moves 2. In a cycle, the gap between them shrinks by one each step, so they must land on the same node. Loop guard: `while (fast != null && fast.next != null)` — if fast escapes to null, there's no cycle.",
+    "Compare with `==` (same node object, not equal values), and only after moving both: `if (slow == fast) return true;`"
   ],
   "solution": {
     "code": "class Solution {\n    public boolean hasCycle(ListNode head) {\n        ListNode slow = head, fast = head;\n        while (fast != null && fast.next != null) {\n            slow = slow.next;\n            fast = fast.next.next;\n            if (slow == fast) return true;\n        }\n        return false;\n    }\n}",
-    "explanation": "O(n)/O(1). This is one place where `==` is CORRECT: we're asking whether the pointers reference the same node object, not equal values. (The HashSet-of-visited-nodes solution also works but costs O(n) space.)"
+    "explanation": "Floyd's tortoise-and-hare. Without a cycle, fast reaches null; with one, once both are inside the loop fast gains one node per step on slow, so it can't jump over it and they meet within one lap. `==` is correct here because we care whether they reference the same node object. O(n) time, O(1) space (a HashSet of visited nodes also works but costs O(n) space)."
   }
 }

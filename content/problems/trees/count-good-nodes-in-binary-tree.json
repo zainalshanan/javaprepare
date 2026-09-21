@@ -4,10 +4,10 @@
   "title": "Count Good Nodes in Binary Tree",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/count-good-nodes-in-binary-tree/",
-  "prompt": "A node is **good** if no node on the path from the root down to it has a strictly greater value. Return the count of good nodes.\n\n**Example**: `[3,1,4,3,null,1,5]` → `4` (the root, both 3s... specifically nodes 3, 4, 3, 5).\n\nDFS carrying the maximum value seen so far on the path.",
+  "prompt": "A node is **good** if no node on the path from the root down to it has a strictly greater value. Return the number of good nodes.\n\n**Example**: `[3,1,4,3,null,1,5]` → `4`. The good nodes are the root 3, the 4, the 5, and the 3 under the 1; the two 1s are not good.\n\n**Constraints**: 1 ≤ nodes ≤ 10⁵.",
   "method": {
     "name": "goodNodes",
-    "params": [ { "name": "root", "type": "TreeNode" } ],
+    "params": [{ "name": "root", "type": "TreeNode" }],
     "returns": "int"
   },
   "starter": "class Solution {\n    public int goodNodes(TreeNode root) {\n\n    }\n}\n",
@@ -19,12 +19,12 @@
     { "args": [[9, null, 3, 6]], "expected": 1, "hidden": true, "note": "only the root qualifies on a decreasing path" }
   ],
   "hints": [
-    "Pass the running max down the recursion, starting at Integer.MIN_VALUE (so the root always counts).",
-    "A node is good when `node.val >= maxSoFar`.",
-    "Recurse into both children with `max(maxSoFar, node.val)`."
+    "Whether a node is good depends on the nodes above it, not below it. What single number about the path from the root do you need at each node?",
+    "Pass the largest value seen so far on the path down as a parameter. A node is good when `node.val >= maxSoFar`.",
+    "Start with `dfs(root, Integer.MIN_VALUE)`; children get `Math.max(maxSoFar, node.val)`; return `(good ? 1 : 0) + left + right`."
   ],
   "solution": {
     "code": "class Solution {\n    public int goodNodes(TreeNode root) {\n        return dfs(root, Integer.MIN_VALUE);\n    }\n\n    private int dfs(TreeNode node, int maxSoFar) {\n        if (node == null) return 0;\n        int count = node.val >= maxSoFar ? 1 : 0;\n        int m = Math.max(maxSoFar, node.val);\n        return count + dfs(node.left, m) + dfs(node.right, m);\n    }\n}",
-    "explanation": "O(n). The path-max flows downward as a parameter (top-down), while the good-node count flows upward as the return value — a clean example of carrying context down and aggregating results up in the same DFS."
+    "explanation": "The path maximum flows down as a parameter while the count flows up as the return value (template (d)). Because each call gets its own copy of `maxSoFar`, siblings don't affect each other and nothing needs undoing. O(n) time, O(h) stack."
   }
 }

@@ -91,8 +91,9 @@
       "explanation": "Initialize best with the FIRST window (not 0!) so all-negative arrays work."
     },
     "hints": [
-      "Sum the first k elements before the sliding loop.",
-      "Slide: `windowSum += nums[r] - nums[r - k];`"
+      "Neighbouring windows share k-1 elements. How much actually changes when you slide by one?",
+      "Sum the first k elements, then slide: one element enters on the right, one leaves on the left.",
+      "`windowSum += nums[r] - nums[r - k];` — and start `best` at the first window, not 0."
     ]
   },
   {
@@ -174,10 +175,47 @@
       }
     ],
     "solution": {
-      "code": "class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        int l = 0, sum = 0, best = Integer.MAX_VALUE;\n        for (int r = 0; r < nums.length; r++) {\n            sum += nums[r];\n            while (sum >= target) {\n                best = Math.min(best, r - l + 1);\n                sum -= nums[l++];\n            }\n        }\n        return best == Integer.MAX_VALUE ? 0 : best;\n    }\n}"
+      "code": "class Solution {\n    public int minSubArrayLen(int target, int[] nums) {\n        int l = 0, sum = 0, best = Integer.MAX_VALUE;\n        for (int r = 0; r < nums.length; r++) {\n            sum += nums[r];\n            while (sum >= target) {\n                best = Math.min(best, r - l + 1);\n                sum -= nums[l++];\n            }\n        }\n        return best == Integer.MAX_VALUE ? 0 : best;\n    }\n}",
+      "explanation": "Positive values make the window sum monotonic in both edges, so once `[l..r]` qualifies, the only way to find something shorter ending at r is to move l. Both pointers only move forward, so total work is O(n); space O(1)."
     },
     "hints": [
-      "Add nums[r]; while sum >= target, record the length and shrink from the left."
+      "With only positive numbers, extending a window always increases its sum. What does that tell you about when to shrink?",
+      "Grow `r` every step; while the window already reaches the target, it is a candidate — record it and try shrinking from the left.",
+      "`while (sum >= target) { best = Math.min(best, r - l + 1); sum -= nums[l++]; }`"
     ]
+  },
+  {
+    "id": "pat-sw-fill-variable",
+    "type": "fill-blank",
+    "title": "Template recall: variable window",
+    "prompt": "From memory: longest substring without repeating characters — grow right, shrink left while invalid.",
+    "drill": true,
+    "code": "Set<Character> window = new HashSet<>();\nint l = 0, best = 0;\nfor (int r = 0; r < s.length(); r++) {\n    char c = s.charAt(r);\n    while (window.{{1}}(c)) {\n        window.remove(s.charAt({{2}}));\n    }\n    window.add(c);\n    best = Math.max(best, {{3}});\n}",
+    "blanks": {
+      "1": [
+        "contains"
+      ],
+      "2": [
+        "l++"
+      ],
+      "3": [
+        "r - l + 1"
+      ]
+    },
+    "explanation": "The window is invalid while it already holds `c`; removing from the left (and advancing `l` in the same expression) shrinks it until `c` fits. Inclusive window length is `r - l + 1`. `l` only moves forward, so the whole scan is O(n)."
+  },
+  {
+    "id": "pat-sw-mcq-deque",
+    "type": "mcq",
+    "title": "Why pop from the back?",
+    "prompt": "Sliding Window Maximum keeps a deque of indices. When `nums[r]` arrives, why is it safe to `pollLast()` every index whose value is smaller than `nums[r]`?",
+    "options": [
+      "Those elements are smaller AND leave the window earlier than r, so they can never be a window maximum again",
+      "The deque must stay sorted by index",
+      "To keep the deque size at most k",
+      "Smaller elements are already out of the window"
+    ],
+    "answer": 0,
+    "explanation": "An older, smaller element is dominated: every future window containing it also contains `nums[r]`, which is bigger. Dropping dominated elements keeps values decreasing front→back, so the front is always the max. `pollFirst` handles the separate case of the front sliding out of the window."
   }
 ]

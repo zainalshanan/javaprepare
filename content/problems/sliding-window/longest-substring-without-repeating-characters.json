@@ -4,7 +4,7 @@
   "title": "Longest Substring Without Repeating Characters",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
-  "prompt": "Given a string `s`, find the length of the longest substring with **no repeated characters**.\n\n**Example**: `\"abcabcbb\"` → `3` (`\"abc\"`).\n\nThe variable-size window template verbatim: grow right; while the new character is a duplicate, shrink from the left.",
+  "prompt": "Given a string `s`, find the length of the longest substring with **no repeated characters**.\n\n**Example**: `\"abcabcbb\"` → `3` (`\"abc\"`). `\"pwwkew\"` → `3` (`\"wke\"`; `\"pwke\"` is a subsequence, not a substring).\n\n**Constraints**: `0 <= s.length <= 5 * 10^4`; `s` holds English letters, digits, symbols, and spaces.",
   "method": {
     "name": "lengthOfLongestSubstring",
     "params": [ { "name": "s", "type": "String" } ],
@@ -20,12 +20,12 @@
     { "args": ["abba"], "expected": 2, "hidden": true }
   ],
   "hints": [
-    "Window state: a HashSet of the characters currently inside [l..r].",
-    "Before adding s.charAt(r): while the set already contains it, remove s.charAt(l) and l++.",
-    "Record `r - l + 1` after the window becomes valid."
+    "Suppose `s[l..r-1]` has no repeats but `s[r]` duplicates a character inside it. Can any substring ending at r that still starts at l be valid? Does restarting from scratch waste work?",
+    "Keep a window `[l..r]` of distinct characters plus a record of what's inside it. Extend r each step; when the new character is already inside, drop characters from the left until it isn't.",
+    "Key loop: `while (window.contains(c)) window.remove(s.charAt(l++));` then add c and record `r - l + 1`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int lengthOfLongestSubstring(String s) {\n        Set<Character> window = new HashSet<>();\n        int l = 0, best = 0;\n        for (int r = 0; r < s.length(); r++) {\n            char c = s.charAt(r);\n            while (window.contains(c)) {\n                window.remove(s.charAt(l));\n                l++;\n            }\n            window.add(c);\n            best = Math.max(best, r - l + 1);\n        }\n        return best;\n    }\n}",
-    "explanation": "O(n): l and r each traverse the string once. The while-loop evicts from the left exactly until the duplicate of c leaves — the set then admits c. Test \"dvdf\" is the one that catches broken shrink logic."
+    "explanation": "Insight: when `s[r]` repeats something in the window, every start at or before that earlier copy is invalid, so the left edge only moves forward. The while-loop removes characters from the left until the earlier copy of c is gone, so the window always holds distinct characters and every longest valid substring ending at r gets recorded. \"dvdf\" catches shrink logic that is wrong. Time O(n), since l and r each move at most n times; space O(min(n, alphabet))."
   }
 }

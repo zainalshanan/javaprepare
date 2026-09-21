@@ -4,27 +4,126 @@
   "title": "Swim in Rising Water",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/swim-in-rising-water/",
-  "prompt": "`grid[r][c]` is the elevation at that cell. At time `t`, water covers all cells with elevation ≤ t, and you can swim between adjacent covered cells instantly. Starting at `(0,0)`, return the least time to reach `(n-1, n-1)`.\n\n**Example**: `[[0,2],[1,3]]` → `3`.\n\nA Dijkstra variant where a path's 'cost' is the MAXIMUM elevation along it — a min-heap always expands the lowest-ceiling path first.",
+  "prompt": "In an `n x n` grid, `grid[r][c]` is the elevation of that cell (all values distinct, a permutation of `0..n²-1`). At time `t` the water depth everywhere is `t`, and you can swim between 4-directional neighbors if **both** elevations are `<= t`, taking no time. Starting at `(0,0)`, return the least time until you can reach `(n-1, n-1)`.\n\n**Example**: `[[0,2],[1,3]]` → `3` (you can't leave (0,0) until t = 1, and the goal itself has elevation 3).\n\n**Constraints**: `1 <= n <= 50`.",
   "method": {
     "name": "swimInWater",
-    "params": [ { "name": "grid", "type": "int[][]" } ],
+    "params": [
+      {
+        "name": "grid",
+        "type": "int[][]"
+      }
+    ],
     "returns": "int"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int swimInWater(int[][] grid) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[0, 2], [1, 3]]], "expected": 3 },
-    { "args": [[[0, 1, 2, 3, 4], [24, 23, 22, 21, 5], [12, 13, 14, 15, 16], [11, 17, 18, 19, 20], [10, 9, 8, 7, 6]]], "expected": 16 },
-    { "args": [[[0]]], "expected": 0 },
-    { "args": [[[3, 2], [0, 1]]], "expected": 3, "hidden": true },
-    { "args": [[[0, 3], [2, 1]]], "expected": 2, "hidden": true }
+    {
+      "args": [
+        [
+          [
+            0,
+            2
+          ],
+          [
+            1,
+            3
+          ]
+        ]
+      ],
+      "expected": 3
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            24,
+            23,
+            22,
+            21,
+            5
+          ],
+          [
+            12,
+            13,
+            14,
+            15,
+            16
+          ],
+          [
+            11,
+            17,
+            18,
+            19,
+            20
+          ],
+          [
+            10,
+            9,
+            8,
+            7,
+            6
+          ]
+        ]
+      ],
+      "expected": 16
+    },
+    {
+      "args": [
+        [
+          [
+            0
+          ]
+        ]
+      ],
+      "expected": 0
+    },
+    {
+      "args": [
+        [
+          [
+            3,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "expected": 3,
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            0,
+            3
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      ],
+      "expected": 2,
+      "hidden": true
+    }
   ],
   "hints": [
-    "Min-heap of `{maxElevationSoFar, r, c}`; the path cost is the highest cell you've had to cross.",
-    "Pop the lowest-ceiling cell; push neighbors with `max(currentCeiling, neighborElevation)`.",
-    "The first time you pop the bottom-right cell, its ceiling is the answer."
+    "For a given path, what's the earliest time you could swim along the whole thing? Now you want the path where that number is smallest.",
+    "A path's cost is its **highest** cell. Search like a shortest-path algorithm, but combine costs with `max` instead of `+`, always expanding the cell with the lowest cost so far.",
+    "Min-heap of `{ceiling, r, c}`. Push neighbors with `Math.max(t, grid[nr][nc])`. The first time you pop `(n-1, n-1)`, its ceiling is the answer. (Binary search on t plus BFS also works.)"
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int swimInWater(int[][] grid) {\n        int n = grid.length;\n        boolean[][] visited = new boolean[n][n];\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0])); // {ceiling, r, c}\n        pq.offer(new int[]{grid[0][0], 0, 0});\n        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};\n        while (!pq.isEmpty()) {\n            int[] top = pq.poll();\n            int t = top[0], r = top[1], c = top[2];\n            if (visited[r][c]) continue;\n            visited[r][c] = true;\n            if (r == n - 1 && c == n - 1) return t;\n            for (int[] d : dirs) {\n                int nr = r + d[0], nc = c + d[1];\n                if (nr >= 0 && nr < n && nc >= 0 && nc < n && !visited[nr][nc]) {\n                    pq.offer(new int[]{Math.max(t, grid[nr][nc]), nr, nc});\n                }\n            }\n        }\n        return -1;\n    }\n}",
-    "explanation": "Reaching the exit at time t requires a path whose highest cell is ≤ t, so we want the path that minimizes its maximum elevation. Dijkstra with 'cost = path max' does exactly that: the heap always finalizes the reachable cell with the smallest ceiling, and the exit's ceiling is the answer."
+    "explanation": "You can reach the exit by time t exactly when some path has a highest cell <= t, so the answer is the smallest possible path maximum. This is Dijkstra with `max` instead of `+`, and it works because a path's maximum never decreases as the path gets longer. So the first time the exit is popped, its cost is optimal. O(n² log n) time, O(n²) space."
   }
 }

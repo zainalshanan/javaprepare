@@ -4,7 +4,7 @@
   "title": "Find the Duplicate Number",
   "difficulty": "Medium",
   "leetcodeUrl": "https://leetcode.com/problems/find-the-duplicate-number/",
-  "prompt": "`nums` has `n + 1` integers in the range `[1, n]`, so by pigeonhole at least one value repeats. Return the duplicate — **without modifying the array** and in **O(1) space**.\n\n**Example**: `[1,3,4,2,2]` → `2`.\n\nWhy is this in the Linked List unit? Treat `i → nums[i]` as pointers: the duplicate value is where two indices point to the same node, i.e. a cycle entrance. Floyd's tortoise-and-hare finds it.",
+  "prompt": "Given an array `nums` of `n + 1` integers where each integer is in the range `[1, n]`, there is exactly one repeated value (it may appear more than twice). Return that repeated number.\n\nYou must solve it **without modifying the array** and using only **O(1) extra space**.\n\n**Example 1**: `[1,3,4,2,2]` → `2`\n\n**Example 2**: `[3,1,3,4,2]` → `3`\n\n**Example 3**: `[3,3,3,3,3]` → `3`\n\n**Constraints**: `1 <= n <= 10^5`, `nums.length == n + 1`, `1 <= nums[i] <= n`.",
   "method": {
     "name": "findDuplicate",
     "params": [ { "name": "nums", "type": "int[]" } ],
@@ -19,12 +19,12 @@
     { "args": [[1, 4, 4, 2, 4]], "expected": 4, "hidden": true }
   ],
   "hints": [
-    "Model the array as a linked list: index i links to index nums[i]. The repeated value is the node two links point into — a cycle entrance.",
-    "Phase 1: slow = nums[slow], fast = nums[nums[fast]] until they meet inside the cycle.",
-    "Phase 2: reset slow to 0; advance both by one until they meet — that's the entrance = the duplicate."
+    "Stop thinking of it as an array for a moment: treat each index `i` as a node whose 'next' is index `nums[i]`. Start at index 0 and keep following links — what shape must that path eventually form, and where does the repeated value sit in it?",
+    "Two different indices link to the duplicate value, so it's the node where a tail joins a loop — the entrance of a cycle. This unit has an O(1)-space way to detect a cycle and find its entrance.",
+    "Phase 1: `slow = nums[slow]; fast = nums[nums[fast]];` until they meet. Phase 2: reset `slow = 0`, then step both one hop at a time; where they meet is the duplicate."
   ],
   "solution": {
     "code": "class Solution {\n    public int findDuplicate(int[] nums) {\n        int slow = 0, fast = 0;\n        do {\n            slow = nums[slow];\n            fast = nums[nums[fast]];\n        } while (slow != fast);\n        slow = 0;\n        while (slow != fast) {\n            slow = nums[slow];\n            fast = nums[fast];\n        }\n        return slow;\n    }\n}",
-    "explanation": "O(n) time, O(1) space, array untouched. Values in [1, n] mean index 0 is never a target, so the functional graph from 0 must contain a cycle, and its entrance is the duplicated value — exactly the Linked List Cycle II algorithm applied to indices."
+    "explanation": "Following `i → nums[i]` from index 0 is walking a linked list: values are in [1, n], so 0 is never re-entered and the walk must fall into a cycle, whose entrance has two incoming links — the duplicate value. Floyd's algorithm finds that entrance: once slow and fast meet, the distance from the start to the entrance equals the distance from the meeting point to the entrance (mod cycle length), so two one-step walkers meet exactly there. O(n) time, O(1) space, array untouched."
   }
 }

@@ -27,6 +27,105 @@
     "explanation": "26 slots for a-z; `c - 'a'` maps 'a'→0 ... 'z'→25. This exact loop opens Valid Anagram and many others."
   },
   {
+    "id": "str-predict-surprises",
+    "type": "fill-blank",
+    "title": "Predict the output: chars and ==",
+    "prompt": "Predict exactly what each line prints.",
+    "code": "System.out.println('a' + 1);           // prints: {{1}}\nSystem.out.println((char) ('a' + 1));  // prints: {{2}}\nSystem.out.println(\"a\" + 1);           // prints: {{3}}\n\nString x = \"hi\";\nString y = new String(\"hi\");\nSystem.out.println(x == y);            // prints: {{4}}\nSystem.out.println(x.equals(y));       // prints: {{5}}",
+    "blanks": {
+      "1": ["98"],
+      "2": ["b"],
+      "3": ["a1"],
+      "4": ["false"],
+      "5": ["true"]
+    },
+    "explanation": "`char + int` is int arithmetic: 'a' is 97, so 98 prints. Casting back to `char` gives 'b'. With a String on the left, `+` concatenates → `a1`. `new String(\"hi\")` is a distinct object, so `==` (same reference?) is false while `equals` (same characters?) is true."
+  },
+  {
+    "id": "str-normalize",
+    "type": "code-method",
+    "title": "Keep letters and digits, lowercased",
+    "prompt": "Return `s` with every character that isn't a letter or digit removed, and all letters lowercased. E.g. `\"A man, a plan!\"` → `\"amanaplan\"`. Use `Character.isLetterOrDigit`, `Character.toLowerCase`, and a `StringBuilder`.",
+    "method": {
+      "name": "normalize",
+      "params": [ { "name": "s", "type": "String" } ],
+      "returns": "String"
+    },
+    "starter": "class Solution {\n    public String normalize(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["A man, a plan!"], "expected": "amanaplan" },
+      { "args": ["Race Car 2"], "expected": "racecar2", "note": "digits are kept" },
+      { "args": [""], "expected": "" },
+      { "args": ["!!! ,."], "expected": "", "hidden": true },
+      { "args": ["AbC123xYz"], "expected": "abc123xyz", "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public String normalize(String s) {\n        StringBuilder sb = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            if (Character.isLetterOrDigit(c)) {\n                sb.append(Character.toLowerCase(c));\n            }\n        }\n        return sb.toString();\n    }\n}",
+      "explanation": "One pass: filter with `isLetterOrDigit`, lowercase with `toLowerCase` (which leaves digits unchanged), append to a StringBuilder so the build stays O(n)."
+    },
+    "hints": [
+      "Walk the characters once, deciding for each whether to keep it — and in what form.",
+      "`Character.isLetterOrDigit(c)` decides whether to keep a char; `Character.toLowerCase(c)` is safe to call on digits too.",
+      "Append kept chars to a `StringBuilder`, then return `sb.toString()`."
+    ]
+  },
+  {
+    "id": "str-sum-csv",
+    "type": "code-method",
+    "title": "Sum a comma-separated list",
+    "prompt": "`s` is a non-empty list of integers separated by commas, like `\"3,10,-2\"`. Return their sum. Use `split` and `Integer.parseInt`.",
+    "method": {
+      "name": "sumCsv",
+      "params": [ { "name": "s", "type": "String" } ],
+      "returns": "int"
+    },
+    "starter": "class Solution {\n    public int sumCsv(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["3,10,-2"], "expected": 11 },
+      { "args": ["7"], "expected": 7, "note": "a single number, no commas" },
+      { "args": ["-5,-5"], "expected": -10, "hidden": true },
+      { "args": ["100,200,300,0"], "expected": 600, "hidden": true }
+    ],
+    "solution": {
+      "code": "class Solution {\n    public int sumCsv(String s) {\n        int total = 0;\n        for (String part : s.split(\",\")) {\n            total += Integer.parseInt(part);\n        }\n        return total;\n    }\n}",
+      "explanation": "`split(\",\")` produces the number strings; `Integer.parseInt` handles the minus sign. A string with no commas splits into one piece. O(length of s)."
+    },
+    "hints": [
+      "First break the text into pieces, then turn each piece into a number.",
+      "`s.split(\",\")` gives a `String[]`; loop over it.",
+      "`Integer.parseInt(part)` converts `\"-2\"` to `-2`."
+    ]
+  },
+  {
+    "id": "str-drill-anagram-key",
+    "type": "code-method",
+    "title": "Drill: sorted-character key",
+    "prompt": "From memory: return the characters of `s` sorted ascending, as a String. `\"tea\"` → `\"aet\"`. Three lines: `toCharArray`, `Arrays.sort`, `new String`.",
+    "drill": true,
+    "method": {
+      "name": "sortedKey",
+      "params": [ { "name": "s", "type": "String" } ],
+      "returns": "String"
+    },
+    "starter": "import java.util.*;\n\nclass Solution {\n    public String sortedKey(String s) {\n\n    }\n}\n",
+    "tests": [
+      { "args": ["tea"], "expected": "aet" },
+      { "args": ["eat"], "expected": "aet", "note": "anagrams share a key" },
+      { "args": [""], "expected": "" },
+      { "args": ["banana"], "expected": "aaabnn", "hidden": true },
+      { "args": ["zyx"], "expected": "xyz", "hidden": true }
+    ],
+    "solution": {
+      "code": "import java.util.*;\n\nclass Solution {\n    public String sortedKey(String s) {\n        char[] chars = s.toCharArray();\n        Arrays.sort(chars);\n        return new String(chars);\n    }\n}",
+      "explanation": "Strings are immutable, so copy to a `char[]`, sort that in place, and build a new String from it. Anagrams always produce the same key. O(k log k) for a string of length k."
+    },
+    "hints": [
+      "You can't sort a String directly — get a mutable array of its characters first.",
+      "`s.toCharArray()`, then `Arrays.sort` on that array.",
+      "Turn the sorted array back into text with `new String(chars)` — not `chars.toString()`."
+    ]
+  },
+  {
     "id": "str-mcq-sbwhy",
     "type": "mcq",
     "title": "Why StringBuilder",
@@ -59,9 +158,12 @@
     ],
     "solution": {
       "code": "class Solution {\n    public int countVowels(String s) {\n        int count = 0;\n        for (char c : s.toCharArray()) {\n            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {\n                count++;\n            }\n        }\n        return count;\n    }\n}",
-      "explanation": "`\"aeiou\".indexOf(c) >= 0` is a compact alternative to the chain of ==."
+      "explanation": "Visit each char once and count matches — O(n). `\"aeiou\".indexOf(c) >= 0` is a compact alternative to the chain of ==."
     },
-    "hints": ["chars compare with `==` (they're primitives): `c == 'a'`."]
+    "hints": [
+      "Look at each character once and keep a counter.",
+      "chars compare with `==` (they're primitives): `c == 'a' || c == 'e' || ...`."
+    ]
   },
   {
     "id": "str-drill-reverse",
@@ -82,9 +184,14 @@
       { "args": ["racecar"], "expected": "racecar", "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public String reverseString(String s) {\n        char[] chars = s.toCharArray();\n        for (int l = 0, r = chars.length - 1; l < r; l++, r--) {\n            char t = chars[l];\n            chars[l] = chars[r];\n            chars[r] = t;\n        }\n        return new String(chars);\n    }\n}"
+      "code": "class Solution {\n    public String reverseString(String s) {\n        char[] chars = s.toCharArray();\n        for (int l = 0, r = chars.length - 1; l < r; l++, r--) {\n            char t = chars[l];\n            chars[l] = chars[r];\n            chars[r] = t;\n        }\n        return new String(chars);\n    }\n}",
+      "explanation": "Strings are immutable, so edit a `char[]` copy with the same two-pointer swap as arrays, then rebuild the String. O(n) time."
     },
-    "hints": ["`s.toCharArray()` gives you a mutable copy; `new String(chars)` converts back."]
+    "hints": [
+      "Strings can't be edited — work on a mutable copy of the characters.",
+      "`s.toCharArray()` gives you that copy; reverse it with the two-pointer swap.",
+      "Convert back with `new String(chars)`."
+    ]
   },
   {
     "id": "str-drill-counts",
@@ -107,7 +214,27 @@
       "code": "class Solution {\n    public int maxFrequency(String s) {\n        int[] counts = new int[26];\n        for (char c : s.toCharArray()) {\n            counts[c - 'a']++;\n        }\n        int max = 0;\n        for (int count : counts) {\n            max = Math.max(max, count);\n        }\n        return max;\n    }\n}",
       "explanation": "Count array + scan: the two-pass shape you'll reuse in Valid Anagram, Longest Repeating Character Replacement, and more."
     },
-    "hints": ["First loop fills `counts[c - 'a']++`, second loop finds the max."]
+    "hints": [
+      "Two passes: first tally every letter, then find the biggest tally.",
+      "`int[] counts = new int[26];` and `counts[c - 'a']++` for each char.",
+      "Second loop over `counts` with `Math.max`."
+    ]
+  },
+  {
+    "id": "str-fill-convert",
+    "type": "fill-blank",
+    "title": "Recall: conversions and Character helpers",
+    "prompt": "Fill in the conversion and helper methods.",
+    "drill": true,
+    "code": "int n = Integer.{{1}}(\"42\");            // \"42\" -> 42\nString s = String.{{2}}(42);            // 42 -> \"42\"\nboolean keep = Character.{{3}}(c);      // letter or digit?\nchar lower = Character.{{4}}(c);        // 'A' -> 'a'\nString csv = String.{{5}}(\",\", parts);  // {\"a\",\"b\"} -> \"a,b\"",
+    "blanks": {
+      "1": ["parseInt"],
+      "2": ["valueOf"],
+      "3": ["isLetterOrDigit"],
+      "4": ["toLowerCase"],
+      "5": ["join"]
+    },
+    "explanation": "`Integer.parseInt` reads text as an int; `String.valueOf` goes the other way. `Character.isLetterOrDigit` filters out punctuation and spaces, `Character.toLowerCase` normalizes case, and `String.join(sep, parts)` is the inverse of `split`."
   },
   {
     "id": "str-ref-access-fill",
@@ -133,9 +260,14 @@
       { "args": ["hello"], "expected": "o", "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public String lastChar(String s) {\n        return String.valueOf(s.charAt(s.length() - 1));\n    }\n}"
+      "code": "class Solution {\n    public String lastChar(String s) {\n        return String.valueOf(s.charAt(s.length() - 1));\n    }\n}",
+      "explanation": "Indices run 0..length()-1, so the last char is at `length() - 1`. `charAt` returns a `char`, and `String.valueOf` converts it to the required `String`."
     },
-    "hints": ["The last index is `s.length() - 1`.", "`String.valueOf(char)` turns a char into a String."]
+    "hints": [
+      "Indices start at 0, so the last one is one less than the length.",
+      "The last index is `s.length() - 1`.",
+      "`String.valueOf(char)` turns a char into a String."
+    ]
   },
   {
     "id": "str-ref-search-fill",
@@ -162,9 +294,14 @@
       { "args": ["the quick brown fox"], "expected": 4, "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public int wordCount(String s) {\n        if (s.isEmpty()) return 0;\n        return s.split(\" \").length;\n    }\n}"
+      "code": "class Solution {\n    public int wordCount(String s) {\n        if (s.isEmpty()) return 0;\n        return s.split(\" \").length;\n    }\n}",
+      "explanation": "`split(\" \")` returns one piece per word, so its `.length` (an array field) is the count. `\"\".split(\" \")` returns `[\"\"]` — one empty piece — hence the guard."
     },
-    "hints": ["Guard the empty string (split would give `[\"\"]`, length 1).", "`s.split(\" \").length`"]
+    "hints": [
+      "Splitting gives you an array of words; you only need its size.",
+      "`s.split(\" \").length` — but check what it returns for `\"\"` first.",
+      "Guard the empty string (split would give `[\"\"]`, length 1)."
+    ]
   },
   {
     "id": "str-ref-sb-fill",
@@ -190,8 +327,12 @@
       { "args": [1], "expected": "ab", "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public String repeat(int n) {\n        StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < n; i++) sb.append(\"ab\");\n        return sb.toString();\n    }\n}"
+      "code": "class Solution {\n    public String repeat(int n) {\n        StringBuilder sb = new StringBuilder();\n        for (int i = 0; i < n; i++) sb.append(\"ab\");\n        return sb.toString();\n    }\n}",
+      "explanation": "Appending into one buffer is O(total length); `+=` would recopy the growing string each time. `n = 0` never enters the loop and returns \"\"."
     },
-    "hints": ["Create the builder before the loop, `append` inside, `toString` after."]
+    "hints": [
+      "Use one growable buffer for the whole build instead of creating a new String each iteration.",
+      "Create the builder before the loop, `append(\"ab\")` inside, `toString()` after."
+    ]
   }
 ]

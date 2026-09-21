@@ -14,6 +14,18 @@
     "explanation": "The compiler proves every path returns. Add a final `return 0;` (or an else) to cover the x <= 0 path."
   },
   {
+    "id": "methods-predict-copy",
+    "type": "fill-blank",
+    "title": "Predict the output: parameters are copies",
+    "prompt": "`demo()` is called. Predict what each `println` prints.",
+    "code": "class Solution {\n    void bump(int x) {\n        x = x + 1;\n    }\n\n    int bumped(int x) {\n        return x + 1;\n    }\n\n    void demo() {\n        int n = 5;\n        bump(n);\n        System.out.println(n);   // prints: {{1}}\n        n = bumped(n);\n        System.out.println(n);   // prints: {{2}}\n    }\n}",
+    "blanks": {
+      "1": ["5"],
+      "2": ["6"]
+    },
+    "explanation": "`bump` receives a copy of `n`'s value; changing its own `x` never touches the caller's `n`, which stays 5. To get a new value out of a method, `return` it and assign it: `n = bumped(n)` makes n 6."
+  },
+  {
     "id": "methods-fill-helper",
     "type": "fill-blank",
     "title": "Wire up a helper",
@@ -48,9 +60,13 @@
     ],
     "solution": {
       "code": "class Solution {\n    public boolean isPrime(int n) {\n        if (n < 2) return false;\n        for (int i = 2; i * i <= n; i++) {\n            if (n % i == 0) return false;\n        }\n        return true;\n    }\n}",
-      "explanation": "Early-return on the first divisor found; if the loop survives, n is prime. `i * i <= n` avoids computing a square root."
+      "explanation": "Early-return on the first divisor found; if the loop survives, n is prime. Any factor above √n pairs with one below it, so `i * i <= n` is enough — O(√n) without computing a square root."
     },
-    "hints": ["Handle `n < 2` first.", "`if (n % i == 0) return false;` inside the loop, `return true;` after it."]
+    "hints": [
+      "This is the validation shape: look for a counterexample (a divisor) and bail out the moment you find one.",
+      "Handle `n < 2` first, then try divisors starting at 2 while `i * i <= n`.",
+      "`if (n % i == 0) return false;` inside the loop, `return true;` after it."
+    ]
   },
   {
     "id": "methods-drill-helper",
@@ -71,8 +87,13 @@
       { "args": [-2, -3, 7], "expected": 1, "hidden": true }
     ],
     "solution": {
-      "code": "class Solution {\n    public int countEven(int a, int b, int c) {\n        int count = 0;\n        if (isEven(a)) count++;\n        if (isEven(b)) count++;\n        if (isEven(c)) count++;\n        return count;\n    }\n\n    private boolean isEven(int x) {\n        return x % 2 == 0;\n    }\n}"
+      "code": "class Solution {\n    public int countEven(int a, int b, int c) {\n        int count = 0;\n        if (isEven(a)) count++;\n        if (isEven(b)) count++;\n        if (isEven(c)) count++;\n        return count;\n    }\n\n    private boolean isEven(int x) {\n        return x % 2 == 0;\n    }\n}",
+      "explanation": "The helper names one idea (`isEven`) so the main method reads like the problem statement. `x % 2 == 0` is also correct for negatives, since -2 % 2 is 0 and -3 % 2 is -1."
     },
-    "hints": ["Helper goes below the main method, inside the same class braces."]
+    "hints": [
+      "Write the small yes/no question as its own method first, then use it from the main method.",
+      "Helper signature: `private boolean isEven(int x)` — it goes inside the same class braces, below `countEven`.",
+      "In `countEven`: `if (isEven(a)) count++;` and the same for `b` and `c`."
+    ]
   }
 ]

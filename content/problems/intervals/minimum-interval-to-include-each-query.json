@@ -4,26 +4,133 @@
   "title": "Minimum Interval to Include Each Query",
   "difficulty": "Hard",
   "leetcodeUrl": "https://leetcode.com/problems/minimum-interval-to-include-each-query/",
-  "prompt": "For each query `q`, find the size of the smallest interval `[l, r]` (size = `r - l + 1`) that contains `q` (`l ≤ q ≤ r`), or `-1` if none. Return an array of answers in the original query order.\n\n**Example**: `intervals = [[1,4],[2,4],[3,6],[4,4]]`, `queries = [2,3,4,5]` → `[3,3,1,4]`.\n\nSort intervals and queries; sweep with a min-heap keyed by interval size, adding intervals as queries advance and evicting expired ones.",
+  "prompt": "Given `intervals` where `intervals[i] = [left, right]` (size `right - left + 1`) and an array `queries`, for each query `q` return the size of the smallest interval with `left ≤ q ≤ right`, or `-1` if none contains it. Return the answers in the original query order.\n\n**Example**: `intervals = [[1,4],[2,4],[3,6],[4,4]]`, `queries = [2,3,4,5]` → `[3,3,1,4]`.\n\n**Constraints**: `1 ≤ intervals.length, queries.length ≤ 10^5`. O(n · q) is too slow.",
   "method": {
     "name": "minInterval",
-    "params": [ { "name": "intervals", "type": "int[][]" }, { "name": "queries", "type": "int[]" } ],
+    "params": [
+      {
+        "name": "intervals",
+        "type": "int[][]"
+      },
+      {
+        "name": "queries",
+        "type": "int[]"
+      }
+    ],
     "returns": "int[]"
   },
   "starter": "import java.util.*;\n\nclass Solution {\n    public int[] minInterval(int[][] intervals, int[] queries) {\n\n    }\n}\n",
   "tests": [
-    { "args": [[[1, 4], [2, 4], [3, 6], [4, 4]], [2, 3, 4, 5]], "expected": [3, 3, 1, 4] },
-    { "args": [[[2, 3], [2, 5], [1, 8], [20, 25]], [2, 19, 5, 22]], "expected": [2, -1, 4, 6] },
-    { "args": [[[1, 1]], [1]], "expected": [1], "hidden": true },
-    { "args": [[[1, 2]], [3]], "expected": [-1], "hidden": true }
+    {
+      "args": [
+        [
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        [
+          2,
+          3,
+          4,
+          5
+        ]
+      ],
+      "expected": [
+        3,
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            20,
+            25
+          ]
+        ],
+        [
+          2,
+          19,
+          5,
+          22
+        ]
+      ],
+      "expected": [
+        2,
+        -1,
+        4,
+        6
+      ]
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            1
+          ]
+        ],
+        [
+          1
+        ]
+      ],
+      "expected": [
+        1
+      ],
+      "hidden": true
+    },
+    {
+      "args": [
+        [
+          [
+            1,
+            2
+          ]
+        ],
+        [
+          3
+        ]
+      ],
+      "expected": [
+        -1
+      ],
+      "hidden": true
+    }
   ],
   "hints": [
-    "Sort intervals by start and process queries in increasing order (remember their original indices to place answers back).",
-    "As the query grows, push every interval that has started (`start ≤ q`) into a min-heap keyed by size, storing its end.",
-    "Pop intervals whose end < q (they can't contain it); the heap top is then the smallest valid interval."
+    "Answering queries in their given order means rescanning intervals each time. What would you gain by answering them in increasing order instead?",
+    "Sort intervals by start and sort query indices by query value. As q grows, the intervals that have started (`start ≤ q`) only ever increase, so add them to a min-heap ordered by size.",
+    "Before answering q, pop heap tops whose end < q (they can't contain q or any later query). Then `res[originalIndex] = heap empty ? -1 : top size`."
   ],
   "solution": {
     "code": "import java.util.*;\n\nclass Solution {\n    public int[] minInterval(int[][] intervals, int[] queries) {\n        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));\n        Integer[] order = new Integer[queries.length];\n        for (int i = 0; i < queries.length; i++) order[i] = i;\n        Arrays.sort(order, (a, b) -> Integer.compare(queries[a], queries[b]));\n        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0])); // {size, end}\n        int[] res = new int[queries.length];\n        int idx = 0;\n        for (int qIdx : order) {\n            int q = queries[qIdx];\n            while (idx < intervals.length && intervals[idx][0] <= q) {\n                pq.offer(new int[]{intervals[idx][1] - intervals[idx][0] + 1, intervals[idx][1]});\n                idx++;\n            }\n            while (!pq.isEmpty() && pq.peek()[1] < q) pq.poll();\n            res[qIdx] = pq.isEmpty() ? -1 : pq.peek()[0];\n        }\n        return res;\n    }\n}",
-    "explanation": "Answering queries in sorted order lets the interval pointer advance monotonically (each interval added once). The size-keyed heap yields the smallest containing interval, after lazily discarding ones whose right end fell behind the query. Sorting query indices keeps the output in the caller's original order. O((n + q) log n)."
+    "explanation": "With queries in increasing order, the interval pointer only moves forward and each interval enters the heap once. An interval whose end is below the current query can never contain a later query either, so popping it lazily is safe. The top of the size-ordered heap is then the smallest interval containing q. Sorting indices (not values) puts answers back in the original order. O((n + q) log n) time, O(n + q) space."
   }
 }
